@@ -32,3 +32,13 @@ func (t *Tuple) Add(o *Tuple) *Tuple {
 		w: t.w + o.w,
 	}
 }
+
+//Substract tuples.
+func (t *Tuple) Substract(o *Tuple) *Tuple {
+	return &Tuple{
+		t.x - o.x,
+		t.y - o.y,
+		t.z - o.z,
+		t.w - o.w,
+	}
+}

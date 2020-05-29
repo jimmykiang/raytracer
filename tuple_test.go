@@ -38,3 +38,41 @@ func TestAddTuple(t *testing.T) {
 		t.Errorf("AddTuple: result %v should equal %v", result, expected)
 	}
 }
+
+func TestSubstractTuple(t *testing.T) {
+	a := Point(3.0, 2.0, 1.0)
+	b := Point(5.0, 6.0, 7.0)
+
+	result := a.Substract(b)
+	expected := Vector(-2.0, -4.0, -6.0)
+
+	pass := result.Equals(expected)
+
+	if !pass {
+		t.Errorf("Substract Tuple: result %v should equal %v", result, expected)
+	}
+
+	a = Point(3.0, 2.0, 1.0)
+	b = Vector(5.0, 6.0, 7.0)
+
+	result = a.Substract(b)
+	expected = Point(-2.0, -4.0, -6.0)
+
+	pass = result.Equals(expected)
+
+	if !pass {
+		t.Errorf("Substract Tuple: result %v should equal %v", result, expected)
+	}
+
+	a = Vector(3.0, 2.0, 1.0)
+	b = Vector(5.0, 6.0, 7.0)
+
+	result = a.Substract(b)
+	expected = Vector(-2.0, -4.0, -6.0)
+
+	pass = result.Equals(expected)
+
+	if !pass {
+		t.Errorf("Substract Tuple: result %v should equal %v", result, expected)
+	}
+}
