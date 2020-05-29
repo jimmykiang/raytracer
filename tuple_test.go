@@ -76,3 +76,14 @@ func TestSubstractTuple(t *testing.T) {
 		t.Errorf("Substract Tuple: result %v should equal %v", result, expected)
 	}
 }
+
+func TestNegateTuple(t *testing.T) {
+	vector := &Tuple{1, -2, 3, 4}
+	result := vector.Negate()
+	expected := &Tuple{-1, 2, -3, -4}
+
+	pass := result.Equals(expected)
+	if !pass {
+		t.Errorf("NegateTuple: result %v should equal %v", result, expected)
+	}
+}

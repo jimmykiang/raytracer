@@ -42,3 +42,13 @@ func (t *Tuple) Substract(o *Tuple) *Tuple {
 		t.w - o.w,
 	}
 }
+
+//Negate values contained in tuple.
+func (t *Tuple) Negate() *Tuple {
+	return &Tuple{
+		x: -t.x,
+		y: -t.y,
+		z: -t.z,
+		w: -t.w,
+	}
+}
