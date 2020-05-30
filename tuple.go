@@ -1,13 +1,17 @@
 package main
 
-//Tuple of four floating points.
+import (
+	"math"
+)
+
+// Tuple of four floating points.
 // Point when w == 1
 // vector when w == 0
 type Tuple struct {
 	x, y, z, w float64
 }
 
-//Point creates a tuple representing a point (w == 1)
+// Point creates a tuple representing a point (w == 1)
 func Point(x, y, z float64) *Tuple {
 	return &Tuple{x, y, z, 1.0}
 }
@@ -17,13 +21,13 @@ func Vector(x, y, z float64) *Tuple {
 	return &Tuple{x, y, z, 0.0}
 }
 
-//Equals returns true if x, y, z, w from tuples t and o are within the error margin Epsilon.
+// Equals returns true if x, y, z, w from tuples t and o are within the error margin Epsilon.
 func (t *Tuple) Equals(o *Tuple) bool {
 
 	return floatEqual(t.x, o.x) && floatEqual(t.y, o.y) && floatEqual(t.z, o.z) && floatEqual(t.w, o.w)
 }
 
-//Add tuples.
+// Add tuples.
 func (t *Tuple) Add(o *Tuple) *Tuple {
 	return &Tuple{
 		x: t.x + o.x,
@@ -33,7 +37,7 @@ func (t *Tuple) Add(o *Tuple) *Tuple {
 	}
 }
 
-//Substract tuples.
+// Substract tuples.
 func (t *Tuple) Substract(o *Tuple) *Tuple {
 	return &Tuple{
 		t.x - o.x,
@@ -43,7 +47,7 @@ func (t *Tuple) Substract(o *Tuple) *Tuple {
 	}
 }
 
-//Negate values contained in tuple.
+// Negate values contained in tuple.
 func (t *Tuple) Negate() *Tuple {
 	return &Tuple{
 		x: -t.x,
@@ -53,7 +57,7 @@ func (t *Tuple) Negate() *Tuple {
 	}
 }
 
-//Multiply tuples.
+// Multiply tuples.
 func (t *Tuple) Multiply(o float64) *Tuple {
 	return &Tuple{
 		x: t.x * o,
@@ -63,7 +67,7 @@ func (t *Tuple) Multiply(o float64) *Tuple {
 	}
 }
 
-//Divide tuples.
+// Divide tuples.
 func (t *Tuple) Divide(o float64) *Tuple {
 	return &Tuple{
 		x: t.x / o,
@@ -71,4 +75,17 @@ func (t *Tuple) Divide(o float64) *Tuple {
 		z: t.z / o,
 		w: t.w / o,
 	}
+}
+
+// square the value
+func square(v float64) float64 {
+	return math.Pow(v, 2.0)
+}
+
+// Magnitude of a vector (tuple with w == 0)
+func (t *Tuple) Magnitude() float64 {
+	return math.Sqrt(square(t.x) +
+		square(t.y) +
+		square(t.z) +
+		square(t.w))
 }

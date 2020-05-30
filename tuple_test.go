@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestTupleEqual(t *testing.T) {
 	a := &Tuple{1.000001, 2.000002, 3.000000, 0.0}
@@ -105,7 +108,6 @@ func TestMultiplyTuple(t *testing.T) {
 	if !pass {
 		t.Errorf("Muliply Tuple: result %v should equal %v", result, expected)
 	}
-
 }
 
 func TestDivideTuple(t *testing.T) {
@@ -117,5 +119,36 @@ func TestDivideTuple(t *testing.T) {
 	if !pass {
 		t.Errorf("DivTuple: result %v should equal %v", result, expected)
 	}
+}
 
+func TestMagnitude(t *testing.T) {
+	vector := Vector(0, 1, 0)
+	result := vector.Magnitude()
+	expected := 1.0
+	pass := floatEqual(result, expected)
+	if !pass {
+		t.Errorf("Magnitude: result %f should equal %f", result, expected)
+	}
+
+	vector = Vector(1, 0, 0)
+	result = vector.Magnitude()
+	pass = floatEqual(result, expected)
+	if !pass {
+		t.Errorf("Magnitude: result %f should equal %f", result, expected)
+	}
+
+	vector = Vector(0, 0, 1)
+	result = vector.Magnitude()
+	pass = floatEqual(result, expected)
+	if !pass {
+		t.Errorf("Magnitude: result %f should equal %f", result, expected)
+	}
+
+	vector = Vector(-1, -2, -3)
+	result = vector.Magnitude()
+	expected = math.Sqrt(14.0)
+	pass = floatEqual(result, expected)
+	if !pass {
+		t.Errorf("Magnitude: result %f should equal %f", result, expected)
+	}
 }
