@@ -87,3 +87,35 @@ func TestNegateTuple(t *testing.T) {
 		t.Errorf("NegateTuple: result %v should equal %v", result, expected)
 	}
 }
+
+func TestMultiplyTuple(t *testing.T) {
+	a := Tuple{1, -2, 3, -4}
+	result := a.Multiply(3.5)
+	expected := &Tuple{3.5, -7, 10.5, -14}
+
+	pass := result.Equals(expected)
+	if !pass {
+		t.Errorf("Muliply Tuple: result %v should equal %v", result, expected)
+	}
+
+	result = a.Multiply(0.5)
+	expected = &Tuple{0.5, -1, 1.5, -2}
+
+	pass = result.Equals(expected)
+	if !pass {
+		t.Errorf("Muliply Tuple: result %v should equal %v", result, expected)
+	}
+
+}
+
+func TestDivideTuple(t *testing.T) {
+	a := Tuple{1, -2, 3, -4}
+	result := a.Divide(2)
+	expected := &Tuple{0.5, -1, 1.5, -2}
+
+	pass := result.Equals(expected)
+	if !pass {
+		t.Errorf("DivTuple: result %v should equal %v", result, expected)
+	}
+
+}

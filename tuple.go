@@ -52,3 +52,23 @@ func (t *Tuple) Negate() *Tuple {
 		w: -t.w,
 	}
 }
+
+//Multiply tuples.
+func (t *Tuple) Multiply(o float64) *Tuple {
+	return &Tuple{
+		x: t.x * o,
+		y: t.y * o,
+		z: t.z * o,
+		w: t.w * o,
+	}
+}
+
+//Divide tuples.
+func (t *Tuple) Divide(o float64) *Tuple {
+	return &Tuple{
+		x: t.x / o,
+		y: t.y / o,
+		z: t.z / o,
+		w: t.w / o,
+	}
+}
