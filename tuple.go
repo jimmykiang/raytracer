@@ -95,3 +95,8 @@ func (t *Tuple) Normalize() *Tuple {
 	}
 	return Vector(t.x/mag, t.y/mag, t.z/mag)
 }
+
+// DotProduct from 2 tuples.
+func (t *Tuple) DotProduct(o *Tuple) float64 {
+	return ((t.x * o.x) + (t.y * o.y) + (t.z * o.z) + (t.w * o.w))
+}

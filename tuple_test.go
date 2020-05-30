@@ -180,3 +180,15 @@ func TestNormalize(t *testing.T) {
 		t.Errorf("Magnitude: result %f should equal %f", mag, 1.0)
 	}
 }
+
+func TestDotProduct(t *testing.T) {
+	a := Vector(1, 2, 3)
+	b := Vector(2, 3, 4)
+	result := a.DotProduct(b)
+	expected := 20.0
+
+	pass := floatEqual(result, expected)
+	if !pass {
+		t.Errorf("Magnitude: result %f should equal %f", result, expected)
+	}
+}
