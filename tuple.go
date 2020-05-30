@@ -82,10 +82,16 @@ func square(v float64) float64 {
 	return math.Pow(v, 2.0)
 }
 
-// Magnitude of a vector (tuple with w == 0)
+// Magnitude of a vector
 func (t *Tuple) Magnitude() float64 {
-	return math.Sqrt(square(t.x) +
-		square(t.y) +
-		square(t.z) +
-		square(t.w))
+	return math.Sqrt(square(t.x) + square(t.y) + square(t.z) + square(t.w))
+}
+
+// Normalize a vector (tuple with w == 0)
+func (t *Tuple) Normalize() *Tuple {
+	mag := t.Magnitude()
+	if mag == 0.0 {
+		return t
+	}
+	return Vector(t.x/mag, t.y/mag, t.z/mag)
 }

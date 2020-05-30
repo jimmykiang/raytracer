@@ -152,3 +152,31 @@ func TestMagnitude(t *testing.T) {
 		t.Errorf("Magnitude: result %f should equal %f", result, expected)
 	}
 }
+
+func TestNormalize(t *testing.T) {
+	vector := Vector(4, 0, 0)
+	result := vector.Normalize()
+	expected := Vector(1, 0, 0)
+
+	pass := result.Equals(expected)
+	if !pass {
+		t.Errorf("Normalize: result %v should equal %v", result, expected)
+	}
+
+	vector = Vector(1, 2, 3)
+	result = vector.Normalize()
+	expected = Vector(0.26726, 0.53452, 0.80178)
+	pass = result.Equals(expected)
+	if !pass {
+		t.Errorf("Normalize: result %v should equal %v", result, expected)
+	}
+
+	vector = Vector(1, 2, 3)
+	result = vector.Normalize()
+	mag := result.Magnitude()
+
+	pass = floatEqual(mag, 1.0)
+	if !pass {
+		t.Errorf("Magnitude: result %f should equal %f", mag, 1.0)
+	}
+}
