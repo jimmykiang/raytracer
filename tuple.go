@@ -100,3 +100,8 @@ func (t *Tuple) Normalize() *Tuple {
 func (t *Tuple) DotProduct(o *Tuple) float64 {
 	return ((t.x * o.x) + (t.y * o.y) + (t.z * o.z) + (t.w * o.w))
 }
+
+// CrossProduct from 2 vectors (tuple with w == 0).
+func (t *Tuple) CrossProduct(o *Tuple) *Tuple {
+	return Vector(t.y*o.z-t.z*o.y, t.z*o.x-t.x*o.z, t.x*o.y-t.y*o.x)
+}

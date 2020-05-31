@@ -192,3 +192,23 @@ func TestDotProduct(t *testing.T) {
 		t.Errorf("Magnitude: result %f should equal %f", result, expected)
 	}
 }
+
+func TestCross(t *testing.T) {
+	a := Vector(1, 2, 3)
+	b := Vector(2, 3, 4)
+	result1 := a.CrossProduct(b)
+	expected1 := Vector(-1, 2, -1)
+	result2 := b.CrossProduct(a)
+	expected2 := Vector(1, -2, 1)
+
+	pass := result1.Equals(expected1)
+
+	if !pass {
+		t.Errorf("Cross: result %v should equal %v", result1, expected1)
+	}
+
+	pass = result2.Equals(expected2)
+	if !pass {
+		t.Errorf("Cross: result %v should equal %v", result2, expected2)
+	}
+}
