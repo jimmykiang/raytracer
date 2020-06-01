@@ -1,0 +1,16 @@
+package main
+
+import "testing"
+
+func TestAddColor(t *testing.T) {
+	a := NewColor(0.9, 0.6, 0.75)
+	b := NewColor(0.7, 0.1, 0.25)
+	result := a.Add(b)
+	expected := NewColor(1.6, 0.7, 1.0)
+
+	pass := result.Equals(expected)
+
+	if !pass {
+		t.Errorf("AddColor: result %v should equal %v", result, expected)
+	}
+}
