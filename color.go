@@ -25,6 +25,11 @@ func (c *Color) MultiplyByScalar(scalar float64) *Color {
 	return NewColor(c.r*scalar, c.g*scalar, c.b*scalar)
 }
 
+// Multiply operation for 2 colors (resulting in a blend of colors).
+func (c *Color) Multiply(o *Color) *Color {
+	return NewColor(c.r*o.r, c.g*o.g, c.b*o.b)
+}
+
 // Equals returns true if the r, g, b from tuples t and o are within the error margin Epsilon.
 func (c *Color) Equals(o *Color) bool {
 	return floatEqual(c.r, o.r) && floatEqual(c.g, o.g) && floatEqual(c.b, o.b)

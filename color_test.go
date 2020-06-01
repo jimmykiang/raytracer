@@ -40,3 +40,16 @@ func TestMultiplybyScalarColor(t *testing.T) {
 		t.Errorf("MulScalarColor: result %v should equal %v", result, expected)
 	}
 }
+
+func TestMultiplyColor(t *testing.T) {
+	a := NewColor(1, 0.2, 0.4)
+	b := NewColor(0.9, 1, 0.1)
+	result := a.Multiply(b)
+	expected := NewColor(0.9, 0.2, 0.04)
+
+	pass := result.Equals(expected)
+
+	if !pass {
+		t.Errorf("MulColor: result %v should equal %v", result, expected)
+	}
+}
