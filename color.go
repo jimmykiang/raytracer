@@ -34,3 +34,8 @@ func (c *Color) Multiply(o *Color) *Color {
 func (c *Color) Equals(o *Color) bool {
 	return floatEqual(c.r, o.r) && floatEqual(c.g, o.g) && floatEqual(c.b, o.b)
 }
+
+//String formats a color as a string limit to 8 characters.
+func (c *Color) String() string {
+	return "c(" + floatToString(c.r, 8) + "," + floatToString(c.g, 8) + "," + floatToString(c.b, 8) + ")"
+}

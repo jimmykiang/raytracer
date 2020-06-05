@@ -1,5 +1,7 @@
 package main
 
+import "strconv"
+
 //EPSILON is the error tolerance used for practical comparisons.
 const EPSILON = 0.00001
 
@@ -14,4 +16,14 @@ func abs(n float64) float64 {
 		return -n
 	}
 	return n
+}
+
+// FloatToString converts a float to a String
+func floatToString(n float64, cut int) string {
+	// to convert a float number to a string
+	s := strconv.FormatFloat(n, 'f', 6, 64)
+	if cut > len(s) {
+		return s[:]
+	}
+	return s[:cut]
 }
