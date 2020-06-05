@@ -18,7 +18,7 @@ func abs(n float64) float64 {
 	return n
 }
 
-// FloatToString converts a float to a String
+// floatToString converts a float to a String
 func floatToString(n float64, cut int) string {
 	// to convert a float number to a string
 	s := strconv.FormatFloat(n, 'f', 6, 64)
@@ -26,4 +26,15 @@ func floatToString(n float64, cut int) string {
 		return s[:]
 	}
 	return s[:cut]
+}
+
+func floatToUint8String(f float64) string {
+	if f < 0.0 {
+		return "0"
+	}
+	f *= 256.0
+	if f > 255.0 {
+		return "255"
+	}
+	return strconv.Itoa(int(f))
 }

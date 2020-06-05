@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestNewCanvas(t *testing.T) {
 	h := 10
@@ -35,5 +38,18 @@ func TestCanvasPixels(t *testing.T) {
 	pixelColor := canvas.PixelAt(x, y)
 	if !pixelColor.Equals(red) {
 		t.Errorf("CanvasPixels: pixel %v at %v,%v should be %v", pixelColor.String(), x, y, red.String())
+	}
+}
+
+func TestPPMHeader(t *testing.T) {
+	h := 5
+	w := 3
+	canvas := NewCanvas(h, w)
+
+	result := canvas.ToPPM()
+	expected := "P3\n5 3\n255\n"
+
+	if !strings.Contains(result, expected) {
+		t.Errorf("TestPPMHeader: result %v should contain %v", result, expected)
 	}
 }
