@@ -42,9 +42,9 @@ func TestCanvasPixels(t *testing.T) {
 }
 
 func TestPPMHeader(t *testing.T) {
-	h := 5
-	w := 3
-	canvas := NewCanvas(h, w)
+	width := 5
+	height := 3
+	canvas := NewCanvas(width, height)
 
 	result := canvas.ToPPM()
 	expected := "P3\n5 3\n255\n"
@@ -105,5 +105,19 @@ func TestPPMPixelDataSplitLines(t *testing.T) {
 
 	if !strings.Contains(result, expected) {
 		t.Errorf("TestPPMPixelDataSplitLines: result %v should contain %v", result, expected)
+	}
+}
+
+func TestTerminateByNewLineCharacter(t *testing.T) {
+	width := 5
+	height := 3
+	canvas := NewCanvas(width, height)
+
+	ppm := canvas.ToPPM()
+	newlineIndex := strings.LastIndex(ppm, "\n")
+	expectedIndex := len(ppm) - 1
+
+	if newlineIndex != expectedIndex {
+		t.Errorf("TestTerminateByNewLineCharacter: result %v should contain %v", newlineIndex, expectedIndex)
 	}
 }
