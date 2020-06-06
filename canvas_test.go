@@ -55,9 +55,9 @@ func TestPPMHeader(t *testing.T) {
 }
 
 func TestPPMPixelData(t *testing.T) {
-	h := 5
-	w := 3
-	canvas := NewCanvas(h, w)
+	width := 5
+	height := 3
+	canvas := NewCanvas(width, height)
 	c1 := NewColor(1.5, 0, 0)
 	c2 := NewColor(0, 0.5, 0)
 	c3 := NewColor(-0.5, 0, 1)
@@ -76,5 +76,34 @@ func TestPPMPixelData(t *testing.T) {
 
 	if !strings.Contains(result, expected) {
 		t.Errorf("TestPPMPixelData: result %v should contain %v", result, expected)
+	}
+}
+
+// Ensure that pixel data lines do not exceed 70 characters.
+func TestPPMPixelDataSplitLines(t *testing.T) {
+	width := 10
+	height := 2
+	canvas := NewCanvas(width, height)
+	c := NewColor(1, 0.8, 0.6)
+
+	for i := 0; i < height; i++ {
+
+		for j := 0; j < width; j++ {
+			canvas.WritePixel(j, i, c)
+		}
+	}
+
+	canvas.ToPPM()
+
+	result := canvas.ToPPM()
+	expected := `
+255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+153 255 204 153 255 204 153 255 204 153 255 204 153
+255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+153 255 204 153 255 204 153 255 204 153 255 204 153
+`
+
+	if !strings.Contains(result, expected) {
+		t.Errorf("TestPPMPixelDataSplitLines: result %v should contain %v", result, expected)
 	}
 }

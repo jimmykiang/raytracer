@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -69,34 +68,29 @@ func (canvas *Canvas) ToPPM() string {
 	// where the the outer slice contains the "y" (row) inner slices
 	// which in turn contains the actual "x" (column) pixel rgb color information.
 	// [row][column]
-	lines := [][]rune{}
+	lines := [][]string{}
 
 	for y := 0; y < canvas.height; y++ {
 
-		// insert a new "inner" slice for the next "y" or "row".
-		lines = append(lines, []rune{})
-
+		lines = append(lines, []string{})
 		for x := 0; x < canvas.width; x++ {
 			pixelColorStringFormat := canvas.pixels[y][x].colorToStringFormat()
 
-			// if the current length of the inner "x" or "column" cannot hold
-			// the contents of pixelColorStringFormat without surpassing 69 characters,
-			// then "insert" a new slice (new row) that will contain the pixelColor of the next line.
-			if len(pixelColorStringFormat) > 69-len(lines[len(lines)-1]) {
-				lines = append(lines, []rune{})
-			}
-			for _, ch := range pixelColorStringFormat {
-				lines[len(lines)-1] = append(lines[len(lines)-1], ch)
-			}
+			lines[len(lines)-1] = append(lines[len(lines)-1], pixelColorStringFormat)
 		}
 	}
 
-	ppm := []string{"P3", strconv.Itoa(canvas.width) + " " + strconv.Itoa(canvas.height), "255"}
+	var resultString strings.Builder
+	resultString.WriteString("P3\n")
+	resultString.WriteString(fmt.Sprintf("%d %d\n", canvas.width, canvas.height))
+	resultString.WriteString("255\n")
 
-	for _, line := range lines {
-		ppm = append(ppm, string(line))
+	for _, stringArray := range lines {
+
+		for _, splittedLineString := range split(strings.Join(stringArray, " "), 70) {
+			resultString.WriteString(splittedLineString + "\n")
+		}
 	}
-	ppm = append(ppm, "\n")
 
-	return strings.Join(ppm, "\n")
+	return resultString.String()
 }

@@ -1,6 +1,9 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 //EPSILON is the error tolerance used for practical comparisons.
 const EPSILON = 0.00001
@@ -37,4 +40,17 @@ func floatToUint8String(f float64) string {
 		return "255"
 	}
 	return strconv.Itoa(int(f))
+}
+
+// split the string into a second item of the slice when the original string surpasses
+// the character limit.
+func split(s string, lim int) []string {
+	l := []string{}
+	for len(s) > lim {
+		idx := strings.LastIndex(s[:lim+1], " ")
+		l = append(l, s[:idx])
+		s = s[idx+1:]
+	}
+	l = append(l, s)
+	return l
 }
