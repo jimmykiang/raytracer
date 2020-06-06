@@ -32,7 +32,7 @@ func floatToUint8String(f float64) string {
 	if f < 0.0 {
 		return "0"
 	}
-	f *= 256.0
+	f *= 255.0
 	if f > 255.0 {
 		return "255"
 	}

@@ -53,3 +53,28 @@ func TestPPMHeader(t *testing.T) {
 		t.Errorf("TestPPMHeader: result %v should contain %v", result, expected)
 	}
 }
+
+func TestPPMPixelData(t *testing.T) {
+	h := 5
+	w := 3
+	canvas := NewCanvas(h, w)
+	c1 := NewColor(1.5, 0, 0)
+	c2 := NewColor(0, 0.5, 0)
+	c3 := NewColor(-0.5, 0, 1)
+
+	canvas.WritePixel(0, 0, c1)
+	canvas.WritePixel(2, 1, c2)
+	canvas.WritePixel(4, 2, c3)
+
+	result := canvas.ToPPM()
+	expected :=
+		`
+255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 127 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 
+`
+
+	if !strings.Contains(result, expected) {
+		t.Errorf("TestPPMPixelData: result %v should contain %v", result, expected)
+	}
+}
