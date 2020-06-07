@@ -5,8 +5,8 @@ import (
 )
 
 // Tuple of four floating points.
-// Point when w == 1
-// vector when w == 0
+// Point when w == 1,
+// Vector when w == 0
 type Tuple struct {
 	x, y, z, w float64
 }

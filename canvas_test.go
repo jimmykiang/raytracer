@@ -69,9 +69,9 @@ func TestPPMPixelData(t *testing.T) {
 	result := canvas.ToPPM()
 	expected :=
 		`
-255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
-0 0 0 0 0 0 0 127 0 0 0 0 0 0 0 
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 
+255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 127 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
 `
 
 	if !strings.Contains(result, expected) {
