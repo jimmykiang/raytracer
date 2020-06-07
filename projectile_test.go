@@ -13,15 +13,15 @@ func TestFireProjectile(t *testing.T) {
 	initialVelocity := Vector(1, 1, 0).Normalize()
 	speedFactor := 10.0
 
-	env := Environment{
+	environment := Environment{
 		gravity: gravity,
 		wind:    wind,
 	}
-	trace := env.FireProjectile(startPosition, initialVelocity.Multiply(speedFactor))
+	projectileTrayectory := environment.FireProjectile(startPosition, initialVelocity.Multiply(speedFactor))
 
-	fmt.Printf("len(trace) = %+v\n", len(trace))
+	fmt.Printf("len(trace) = %+v\n", len(projectileTrayectory))
 
-	for _, p := range trace {
-		fmt.Printf("p = %+v\n", p)
+	for _, p := range projectileTrayectory {
+		fmt.Printf("P = %+v\n", *p)
 	}
 }

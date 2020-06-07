@@ -26,21 +26,18 @@ func Tick(env *Environment, p *Projectile) *Projectile {
 // FireProjectile simulates and outputs the trayectory ([]point) of a projectile
 // based on a initial position (point) and initial velocity (vector)
 // it stops when the projectile hits the ground (Y == 0).
-func (e *Environment) FireProjectile(projectilePoint, initialVelocity *Tuple) []Tuple {
-	projectileTrayectory := []Tuple{}
+func (e *Environment) FireProjectile(projectilePoint, initialVelocity *Tuple) []*Tuple {
 
-	// stand alone variables to decouple and avoid overwriting the same memory access problems.
-	projectilePointTmp := *projectilePoint
-	initialVelocityTmp := *initialVelocity
+	projectileTrayectory := []*Tuple{}
 
-	currentProjectile := Projectile{
-		position: &projectilePointTmp,
-		velocity: &initialVelocityTmp,
+	currentProjectile := &Projectile{
+		position: projectilePoint,
+		velocity: initialVelocity,
 	}
 
 	for currentProjectile.position.y >= 0 {
-		projectileTrayectory = append(projectileTrayectory, *currentProjectile.position)
-		currentProjectile = *(Tick(e, &currentProjectile))
+		projectileTrayectory = append(projectileTrayectory, currentProjectile.position)
+		currentProjectile = Tick(e, currentProjectile)
 	}
 
 	return projectileTrayectory
