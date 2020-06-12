@@ -67,5 +67,49 @@ func TestConstrucAndInspect4x4Matrix(t *testing.T) {
 	if !(passMatrix && passSingleValues) {
 		t.Errorf("Matrix: %v to be %v", matrix, expectedMatrix)
 	}
+}
 
+func Test2x2Matrix(t *testing.T) {
+
+	matrix := Matrix(
+		[][]float64{
+			[]float64{-3, 5},
+			[]float64{1, 2},
+		},
+	)
+
+	passSingleValues :=
+		floatEqual(matrix.Get(0, 0), -3) &&
+			floatEqual(matrix.Get(0, 1), 5) &&
+			floatEqual(matrix.Get(1, 0), 1) &&
+			floatEqual(matrix.Get(1, 1), 2)
+
+	if !(passSingleValues) {
+		t.Errorf("Problem in matrix: %v", matrix)
+	}
+}
+
+func TestMatrixEquality(t *testing.T) {
+
+	matrix1 := Matrix([][]float64{
+		[]float64{1, 2, 3, 4},
+		[]float64{5, 6, 7, 8},
+		[]float64{9, 8, 7, 6},
+		[]float64{5, 4, 3, 2},
+	},
+	)
+
+	matrix2 := Matrix([][]float64{
+		[]float64{1, 2, 3, 4},
+		[]float64{5, 6, 7, 8},
+		[]float64{9, 8, 7, 6},
+		[]float64{5, 4, 3, 2},
+	},
+	)
+
+	pass := matrix1.Equals(matrix2)
+
+	if !pass {
+		t.Errorf("Matrix1: %v not equals to matrix2: %v", matrix1, matrix2)
+	}
 }

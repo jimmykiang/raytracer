@@ -41,7 +41,7 @@ func (c *Color) String() string {
 }
 
 //  colorToStringFormat converts the pixel color (range from 0.0 to 1.0 float64) r,g,b information
-//  scaled into a range from (0 to 255) in a specific string format, for example: "255 128 13 "
+//  scaled into a range from (0 to 255) in a specific string format, for example: "255 128 13"
 func (c *Color) colorToStringFormat() string {
 	return floatToUint8String(c.r) + " " + floatToUint8String(c.g) + " " + floatToUint8String(c.b)
 }
