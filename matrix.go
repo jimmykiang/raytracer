@@ -42,3 +42,43 @@ func (matrix Matrix) Equals(other Matrix) bool {
 	}
 	return true
 }
+
+// MultiplyMatrix returns the multiplication of two 4x4 matrices.
+func (matrix Matrix) MultiplyMatrix(matrix2 Matrix) Matrix {
+	newM := NewMatrix(4, 4)
+
+	for row := 0; row < 4; row++ {
+		for col := 0; col < 4; col++ {
+			product := dotProducOfMatricesRowColumn(matrix.Row(row), matrix2.Column(col))
+			newM.Set(row, col, product)
+		}
+	}
+
+	return newM
+
+}
+
+// Row returns the slice from the elements of the entire row from the current matrix.
+func (matrix Matrix) Row(r int) []float64 {
+	return matrix[r]
+}
+
+// Column returns the slice from the elements of the entire column from the current the matrix.
+func (matrix Matrix) Column(c int) []float64 {
+	h, _ := matrix.Size()
+	col := make([]float64, h, h)
+	for i, row := range matrix {
+		col[i] = row[c]
+	}
+	return col
+}
+
+// Size returns the height and width of the current matrix.
+func (matrix Matrix) Size() (int, int) {
+	height := len(matrix)
+	width := 0
+	if height > 0 {
+		width = len(matrix[0])
+	}
+	return height, width
+}

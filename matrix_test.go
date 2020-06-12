@@ -138,3 +138,39 @@ func TestMatrixInequality(t *testing.T) {
 		t.Errorf("Matrix1: %v not equals to matrix2: %v", matrix1, matrix2)
 	}
 }
+
+func TestMatrixMulMatrix(t *testing.T) {
+	m1 := Matrix(
+		[][]float64{
+			[]float64{1, 2, 3, 4},
+			[]float64{5, 6, 7, 8},
+			[]float64{9, 8, 7, 6},
+			[]float64{5, 4, 3, 2},
+		},
+	)
+	m2 := Matrix(
+		[][]float64{
+			[]float64{-2, 1, 2, 3},
+			[]float64{3, 2, 1, -1},
+			[]float64{4, 3, 6, 5},
+			[]float64{1, 2, 7, 8},
+		},
+	)
+
+	expected := Matrix(
+		[][]float64{
+			[]float64{20, 22, 50, 48},
+			[]float64{44, 54, 114, 108},
+			[]float64{40, 58, 110, 102},
+			[]float64{16, 26, 46, 42},
+		},
+	)
+
+	result := m1.MultiplyMatrix(m2)
+	pass := result.Equals(expected)
+
+	if !pass {
+		t.Errorf("MulMatrix: expected %v to be %v", result, expected)
+	}
+
+}

@@ -54,3 +54,24 @@ func split(s string, lim int) []string {
 	l = append(l, s)
 	return l
 }
+
+// dotProducOfMatricesRowColumn computes the dot product of a row-column combination between the two matrices.
+//
+// A[i] * B[i] + A[i + 1] * B[i + 1] ...
+func dotProducOfMatricesRowColumn(A, B []float64) float64 {
+
+	length := int(min(float64(len(A)), float64(len(B))))
+	total := 0.0
+	for i := 0; i < length; i++ {
+		total += A[i] * B[i]
+	}
+	return total
+}
+
+// min returns the smallest value of 2 float64.
+func min(a, b float64) float64 {
+	if b < a {
+		return b
+	}
+	return a
+}
