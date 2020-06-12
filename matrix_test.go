@@ -113,3 +113,28 @@ func TestMatrixEquality(t *testing.T) {
 		t.Errorf("Matrix1: %v not equals to matrix2: %v", matrix1, matrix2)
 	}
 }
+
+func TestMatrixInequality(t *testing.T) {
+
+	matrix1 := Matrix([][]float64{
+		[]float64{1, 2, 3, 4},
+		[]float64{5, 6, 7, 8},
+		[]float64{9, 8, 7, 6},
+		[]float64{5, 4, 3, 2},
+	},
+	)
+
+	matrix2 := Matrix([][]float64{
+		[]float64{2, 3, 4, 5},
+		[]float64{6, 7, 8, 9},
+		[]float64{8, 7, 6, 5},
+		[]float64{4, 3, 2, 1},
+	},
+	)
+
+	pass := !(matrix1.Equals(matrix2))
+
+	if !pass {
+		t.Errorf("Matrix1: %v not equals to matrix2: %v", matrix1, matrix2)
+	}
+}
