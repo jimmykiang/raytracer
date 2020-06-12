@@ -45,16 +45,16 @@ func (matrix Matrix) Equals(other Matrix) bool {
 
 // MultiplyMatrix returns the multiplication of two 4x4 matrices.
 func (matrix Matrix) MultiplyMatrix(matrix2 Matrix) Matrix {
-	newM := NewMatrix(4, 4)
+	resultMatrix := NewMatrix(4, 4)
 
 	for row := 0; row < 4; row++ {
 		for col := 0; col < 4; col++ {
 			product := dotProducOfMatricesRowColumn(matrix.Row(row), matrix2.Column(col))
-			newM.Set(row, col, product)
+			resultMatrix.Set(row, col, product)
 		}
 	}
 
-	return newM
+	return resultMatrix
 
 }
 
@@ -81,4 +81,17 @@ func (matrix Matrix) Size() (int, int) {
 		width = len(matrix[0])
 	}
 	return height, width
+}
+
+// MultiplyMatrixByTuple returns the multiplication of a Matrix by a Tuple.
+func (matrix Matrix) MultiplyMatrixByTuple(tuple *Tuple) *Tuple {
+	tupleAsMatrix := []float64{tuple.x, tuple.y, tuple.z, tuple.w}
+	newTup := &Tuple{
+		dotProducOfMatricesRowColumn(matrix.Row(0), tupleAsMatrix),
+		dotProducOfMatricesRowColumn(matrix.Row(1), tupleAsMatrix),
+		dotProducOfMatricesRowColumn(matrix.Row(2), tupleAsMatrix),
+		dotProducOfMatricesRowColumn(matrix.Row(3), tupleAsMatrix),
+	}
+
+	return newTup
 }

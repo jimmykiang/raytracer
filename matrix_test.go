@@ -174,3 +174,23 @@ func TestMatrixMulMatrix(t *testing.T) {
 	}
 
 }
+
+func TestMatrixMulTuple(t *testing.T) {
+	m := Matrix(
+		[][]float64{
+			[]float64{1, 2, 3, 4},
+			[]float64{2, 4, 4, 2},
+			[]float64{8, 6, 4, 1},
+			[]float64{0, 0, 0, 1},
+		},
+	)
+	tuple := &Tuple{1, 2, 3, 1}
+
+	expected := &Tuple{18, 24, 33, 1}
+
+	result := m.MultiplyMatrixByTuple(tuple)
+
+	if !result.Equals(expected) {
+		t.Errorf("MatrixMulTuple: expected %v to be %v", result, expected)
+	}
+}
