@@ -139,7 +139,7 @@ func TestMatrixInequality(t *testing.T) {
 	}
 }
 
-func TestMatrixMulMatrix(t *testing.T) {
+func TestMatrixMultiply(t *testing.T) {
 	m1 := Matrix(
 		[][]float64{
 			[]float64{1, 2, 3, 4},
@@ -175,7 +175,7 @@ func TestMatrixMulMatrix(t *testing.T) {
 
 }
 
-func TestMatrixMulTuple(t *testing.T) {
+func TestMatrixMultiplyByTuple(t *testing.T) {
 	m := Matrix(
 		[][]float64{
 			[]float64{1, 2, 3, 4},
@@ -193,4 +193,20 @@ func TestMatrixMulTuple(t *testing.T) {
 	if !result.Equals(expected) {
 		t.Errorf("MatrixMulTuple: expected %v to be %v", result, expected)
 	}
+}
+
+func TestIdentityMatrix(t *testing.T) {
+	m := Matrix(
+		[][]float64{
+			[]float64{0, 1, 2, 4},
+			[]float64{1, 2, 4, 8},
+			[]float64{2, 4, 8, 16},
+			[]float64{4, 8, 16, 32},
+		},
+	)
+
+	if !m.Equals(m.MultiplyMatrix(IdentityMatrix)) {
+		t.Errorf("IdentityMatrix invalid.")
+	}
+
 }

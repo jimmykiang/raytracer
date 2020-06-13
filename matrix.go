@@ -3,6 +3,14 @@ package main
 // Matrix is a new type defined by a double slice of float64.
 type Matrix [][]float64
 
+// IdentityMatrix holds a copy if the Identity Matrix.
+var IdentityMatrix Matrix
+
+func init() {
+
+	IdentityMatrix = NewIdentityMatrix()
+}
+
 // NewMatrix creates a rows x cols matrix
 func NewMatrix(rows, columns int) Matrix {
 	matrix := make([][]float64, rows, rows)
@@ -94,4 +102,16 @@ func (matrix Matrix) MultiplyMatrixByTuple(tuple *Tuple) *Tuple {
 	}
 
 	return newTup
+}
+
+// IdentityMatrix returns a copy of that matrix.
+func NewIdentityMatrix() Matrix {
+	return Matrix(
+		[][]float64{
+			[]float64{1, 0, 0, 0},
+			[]float64{0, 1, 0, 0},
+			[]float64{0, 0, 1, 0},
+			[]float64{0, 0, 0, 1},
+		},
+	)
 }
