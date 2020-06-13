@@ -195,7 +195,7 @@ func TestMatrixMultiplyByTuple(t *testing.T) {
 	}
 }
 
-func TestIdentityMatrix(t *testing.T) {
+func TestMultiplyMatrixByIdentityMatrix(t *testing.T) {
 	m := Matrix(
 		[][]float64{
 			[]float64{0, 1, 2, 4},
@@ -206,6 +206,15 @@ func TestIdentityMatrix(t *testing.T) {
 	)
 
 	if !m.Equals(m.MultiplyMatrix(IdentityMatrix)) {
+		t.Errorf("IdentityMatrix invalid.")
+	}
+
+}
+
+func TestMultiplyIdentityMatrixByTuple(t *testing.T) {
+	tuple := &Tuple{1, 2, 3, 1}
+
+	if !tuple.Equals(IdentityMatrix.MultiplyMatrixByTuple(tuple)) {
 		t.Errorf("IdentityMatrix invalid.")
 	}
 
