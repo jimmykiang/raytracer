@@ -115,3 +115,16 @@ func NewIdentityMatrix() Matrix {
 		},
 	)
 }
+
+// Transpose returns a copy of the transposed matrix.
+func (matrix Matrix) Transpose() Matrix {
+	height, width := matrix.Size()
+	transposedMatrix := NewMatrix(width, height)
+
+	for i := 0; i < width; i++ {
+		for j := 0; j < height; j++ {
+			transposedMatrix.Set(i, j, matrix.Get(j, i))
+		}
+	}
+	return transposedMatrix
+}

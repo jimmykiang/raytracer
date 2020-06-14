@@ -217,5 +217,33 @@ func TestMultiplyIdentityMatrixByTuple(t *testing.T) {
 	if !tuple.Equals(IdentityMatrix.MultiplyMatrixByTuple(tuple)) {
 		t.Errorf("IdentityMatrix invalid.")
 	}
+}
 
+func TestTransposeMatrix(t *testing.T) {
+	if !IdentityMatrix.Transpose().Equals(IdentityMatrix) {
+		t.Errorf("MatrixTranspose on IdentityMatrix failed")
+	}
+
+	m := Matrix(
+		[][]float64{
+			[]float64{0, 9, 3, 0},
+			[]float64{9, 8, 0, 8},
+			[]float64{1, 8, 5, 3},
+			[]float64{0, 0, 5, 8},
+		},
+	)
+	expected := Matrix(
+		[][]float64{
+			[]float64{0, 9, 1, 0},
+			[]float64{9, 8, 8, 0},
+			[]float64{3, 0, 5, 5},
+			[]float64{0, 8, 3, 8},
+		},
+	)
+	result := m.Transpose()
+
+	if !result.Equals(expected) {
+		t.Errorf("MatrixTranspose: expected %v to equal %v", result, expected)
+
+	}
 }
