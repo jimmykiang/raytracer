@@ -26,7 +26,7 @@ func (matrix Matrix) Set(row, column int, val float64) float64 {
 	return val
 }
 
-// Get returns the values of a matrix.
+// Get returns a specific value from a matrix.
 func (matrix Matrix) Get(row, column int) float64 {
 	return matrix[row][column]
 }
@@ -127,4 +127,62 @@ func (matrix Matrix) Transpose() Matrix {
 		}
 	}
 	return transposedMatrix
+}
+
+// Determinant calculates the determinant of a matrix.
+func (matrix Matrix) Determinant() float64 {
+	h, w := matrix.Size()
+	if h == 2 && w == 2 {
+		return matrix.Get(0, 0)*matrix.Get(1, 1) - matrix.Get(0, 1)*matrix.Get(1, 0)
+	} else if h > 2 && w > 2 {
+		det := 0.0
+
+		for col := 0; col < w; col++ {
+			det += matrix.Get(0, col) * matrix.Cofactor(0, col)
+		}
+		return det
+	}
+	return 0.0
+}
+
+// Cofactor caculates the cofactor of a submatrix.
+func (matrix Matrix) Cofactor(row, col int) float64 {
+	minor := matrix.Minor(row, col)
+
+	// bitwise "AND" checking for odd number.
+	if ((row + col) & 1) == 1 {
+		return -minor
+	}
+	return minor
+}
+
+// Minor returns the determinant of a submatrix of a 3x3 matrix
+func (matrix Matrix) Minor(row, col int) float64 {
+	return matrix.SubMatrix(row, col).Determinant()
+}
+
+// SubMatrix returns a matrix with the given row and column removed.
+func (matrix Matrix) SubMatrix(row, col int) Matrix {
+	height, width := matrix.Size()
+	subMatrix := NewMatrix(height-1, width-1)
+
+	i := 0
+	j := 0
+
+	for r := 0; r < height; r++ {
+		if r == row {
+			continue
+		}
+		j = 0
+		for c := 0; c < width; c++ {
+			if c == col {
+				continue
+			}
+			subMatrix.Set(i, j, matrix.Get(r, c))
+			j++
+
+		}
+		i++
+	}
+	return subMatrix
 }

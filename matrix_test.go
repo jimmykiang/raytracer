@@ -247,3 +247,116 @@ func TestTransposeMatrix(t *testing.T) {
 
 	}
 }
+
+func TestMatrixDeterminant(t *testing.T) {
+	m := Matrix(
+		[][]float64{
+			[]float64{1, 5},
+			[]float64{-3, 2},
+		},
+	)
+
+	result := m.Determinant()
+	expected := 17.0
+
+	if !floatEqual(result, expected) {
+		t.Errorf("MatrixDeterminant: expected %v to equal %v", result, expected)
+	}
+
+	m = Matrix(
+		[][]float64{
+			[]float64{1, 2, 6},
+			[]float64{-5, 8, -4},
+			[]float64{2, 6, 4},
+		},
+	)
+	result = m.Determinant()
+	expected = -196.0
+
+	if !floatEqual(result, expected) {
+		t.Errorf("MatrixDeterminant: expected %v to equal %v", result, expected)
+	}
+	m = Matrix(
+		[][]float64{
+			[]float64{-2, -8, 3, 5},
+			[]float64{-3, 1, 7, 3},
+			[]float64{1, 2, -9, 6},
+			[]float64{-6, 7, 7, -9},
+		},
+	)
+	result = m.Determinant()
+	expected = -4071.0
+	if !floatEqual(result, expected) {
+		t.Errorf("MatrixDeterminant: expected %v to equal %v", result, expected)
+	}
+}
+
+func TestSubMatrix(t *testing.T) {
+	m1 := Matrix(
+		[][]float64{
+			[]float64{1, 5, 0},
+			[]float64{-3, 2, 7},
+			[]float64{0, 6, -3},
+		},
+	)
+	m1ResultSub := m1.SubMatrix(0, 2)
+	m1ExpectedSub := Matrix(
+		[][]float64{
+			[]float64{-3, 2},
+			[]float64{0, 6},
+		},
+	)
+
+	if !m1ResultSub.Equals(m1ExpectedSub) {
+		t.Errorf("MatrixSubMatrix: expected %v to equal %v", m1ResultSub, m1ExpectedSub)
+	}
+
+	m2 := Matrix(
+		[][]float64{
+			[]float64{-6, 1, 1, 6},
+			[]float64{-8, 5, 8, 6},
+			[]float64{-1, 0, 8, 2},
+			[]float64{-7, 1, -1, 1},
+		},
+	)
+	m2ResultSub := m2.SubMatrix(2, 1)
+	m2ExpectedSub := Matrix(
+		[][]float64{
+			[]float64{-6, 1, 6},
+			[]float64{-8, 8, 6},
+			[]float64{-7, -1, 1},
+		},
+	)
+	if !m2ExpectedSub.Equals(m2ResultSub) {
+		t.Errorf("MatrixSubMatrix: expected %v to equal %v", m2ResultSub, m2ExpectedSub)
+	}
+
+}
+
+func TestMatrixCofactor(t *testing.T) {
+	m := Matrix(
+		[][]float64{
+			[]float64{3, 5, 0},
+			[]float64{2, -1, -7},
+			[]float64{6, -1, 5},
+		},
+	)
+	minor1 := m.Minor(0, 0)
+	cofactor1 := m.Cofactor(0, 0)
+	minor2 := m.Minor(1, 0)
+	cofactor2 := m.Cofactor(1, 0)
+
+	if !floatEqual(minor1, -12) {
+		t.Errorf("MatrixCofactor: expected %f to equal %f", minor1, -12.0)
+	}
+	if !floatEqual(cofactor1, -12) {
+		t.Errorf("MatrixCofactor: expected %f to equal %f", cofactor1, -12.0)
+	}
+	if !floatEqual(minor2, 25) {
+		t.Errorf("MatrixCofactor: expected %f to equal %f", minor2, 25.0)
+	}
+	if !floatEqual(cofactor2, -25) {
+		t.Errorf("MatrixCofactor: expected %f to equal %f", cofactor2, -25.0)
+	}
+
+}
