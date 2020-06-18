@@ -358,5 +358,56 @@ func TestMatrixCofactor(t *testing.T) {
 	if !floatEqual(cofactor2, -25) {
 		t.Errorf("MatrixCofactor: expected %f to equal %f", cofactor2, -25.0)
 	}
+}
 
+func TestMatrixInverse(t *testing.T) {
+	matrix1 := Matrix(
+		[][]float64{
+			[]float64{8, -5, 9, 2},
+			[]float64{7, 5, 6, 1},
+			[]float64{-6, 0, 9, 6},
+			[]float64{-3, 0, -9, -4},
+		},
+	)
+	expected1 := Matrix(
+		[][]float64{
+			[]float64{-0.15385, -0.15385, -0.28205, -0.53846},
+			[]float64{-0.07692, 0.12308, 0.025641, 0.03077},
+			[]float64{0.35897, 0.35897, 0.43590, 0.92308},
+			[]float64{-0.69230, -0.69231, -0.76923, -1.92308},
+		},
+	)
+
+	result1 := matrix1.Inverse()
+	if !result1.Equals(expected1) {
+
+		t.Errorf("MatrixInverse: result %v does not equal %v", result1, expected1)
+
+	}
+}
+
+func TestMultiplyMatrixProductByInverse(t *testing.T) {
+	a := Matrix(
+		[][]float64{
+			[]float64{3, -9, 7, 3},
+			[]float64{3, -8, 2, -9},
+			[]float64{-4, 4, 4, 1},
+			[]float64{-6, 5, -1, 1},
+		},
+	)
+	b := Matrix(
+		[][]float64{
+			[]float64{8, 2, 2, 2},
+			[]float64{3, -1, 7, 0},
+			[]float64{7, 0, 5, 4},
+			[]float64{6, -2, 0, 5},
+		},
+	)
+
+	c := a.MultiplyMatrix(b)
+	expected := c.MultiplyMatrix(b.Inverse())
+
+	if !a.Equals(expected) {
+		t.Errorf("TestMultiplyMatrixProductByInverse: result %v does not equal %v", a, expected)
+	}
 }

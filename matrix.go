@@ -186,3 +186,23 @@ func (matrix Matrix) SubMatrix(row, col int) Matrix {
 	}
 	return subMatrix
 }
+
+// Inverse returns a copy of a inverse matrix.
+func (matrix Matrix) Inverse() Matrix {
+
+	determinant := matrix.Determinant()
+	if determinant == 0 {
+		return nil
+	}
+
+	h, w := matrix.Size()
+	resultMatrix := NewMatrix(h, w)
+
+	for row := 0; row < h; row++ {
+		for col := 0; col < w; col++ {
+			cofactor := matrix.Cofactor(row, col)
+			resultMatrix.Set(col, row, cofactor/determinant)
+		}
+	}
+	return resultMatrix
+}
