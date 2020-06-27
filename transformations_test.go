@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"testing"
 )
 
@@ -68,5 +69,39 @@ func TestScaling(t *testing.T) {
 
 	if !result.Equals(expected) {
 		t.Errorf("Scaling:Point (reflection) expected %v to equal %v", result, expected)
+	}
+}
+
+func TestRotationX(t *testing.T) {
+	p := Point(0, 1, 0)
+	halfQuarter := RotationX(PI / 4)
+
+	result := halfQuarter.MultiplyMatrixByTuple(p)
+
+	expected := Point(0, math.Sqrt(2)/2, math.Sqrt(2)/2)
+
+	if !result.Equals(expected) {
+
+		t.Errorf("RotationX: expected %v to be %v", result, expected)
+	}
+
+	fullQuarter := RotationX(PI / 2)
+
+	expected = Point(0, 0, 1)
+
+	result = fullQuarter.MultiplyMatrixByTuple(p)
+
+	if !result.Equals(expected) {
+		t.Errorf("RotationX: expected %v to be %v", result, expected)
+	}
+
+	invHalfQuarter := halfQuarter.Inverse()
+
+	expected = Point(0, math.Sqrt(2)/2, -math.Sqrt(2)/2)
+
+	result = invHalfQuarter.MultiplyMatrixByTuple(p)
+
+	if !result.Equals(expected) {
+		t.Errorf("RotationX: expected %v to be %v", result, expected)
 	}
 }
