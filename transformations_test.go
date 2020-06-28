@@ -152,3 +152,55 @@ func TestRotationZ(t *testing.T) {
 	}
 
 }
+
+func TestShearing(t *testing.T) {
+	p := Point(2, 3, 4)
+
+	transform := Shearing(1, 0, 0, 0, 0, 0)
+	result := transform.MultiplyMatrixByTuple(p)
+	expected := Point(5, 3, 4)
+
+	if !result.Equals(expected) {
+		t.Errorf("Shearing: xy expected %v to be %v", result, expected)
+	}
+
+	transform = Shearing(0, 1, 0, 0, 0, 0)
+	result = transform.MultiplyMatrixByTuple(p)
+	expected = Point(6, 3, 4)
+
+	if !result.Equals(expected) {
+		t.Errorf("Shearing: xz expected %v to be %v", result, expected)
+	}
+
+	transform = Shearing(0, 0, 1, 0, 0, 0)
+	result = transform.MultiplyMatrixByTuple(p)
+	expected = Point(2, 5, 4)
+
+	if !result.Equals(expected) {
+		t.Errorf("Shearing: yx expected %v to be %v", result, expected)
+	}
+
+	transform = Shearing(0, 0, 0, 1, 0, 0)
+	result = transform.MultiplyMatrixByTuple(p)
+	expected = Point(2, 7, 4)
+
+	if !result.Equals(expected) {
+		t.Errorf("Shearing: yz expected %v to be %v", result, expected)
+	}
+
+	transform = Shearing(0, 0, 0, 0, 1, 0)
+	result = transform.MultiplyMatrixByTuple(p)
+	expected = Point(2, 3, 6)
+
+	if !result.Equals(expected) {
+		t.Errorf("Shearing: zx expected %v to be %v", result, expected)
+	}
+
+	transform = Shearing(0, 0, 0, 0, 0, 1)
+	result = transform.MultiplyMatrixByTuple(p)
+	expected = Point(2, 3, 7)
+
+	if !result.Equals(expected) {
+		t.Errorf("Shearing: zy expected %v to be %v", result, expected)
+	}
+}

@@ -51,3 +51,17 @@ func RotationZ(r float64) Matrix {
 	matrix.Set(1, 1, math.Cos(r))
 	return matrix
 }
+
+// Shearing returns a shearing(for skewing) matrix
+func Shearing(xy, xz, yx, yz, zx, zy float64) Matrix {
+	matrix := NewIdentityMatrix()
+
+	matrix.Set(0, 1, xy)
+	matrix.Set(0, 2, xz)
+	matrix.Set(1, 0, yx)
+	matrix.Set(1, 2, yz)
+	matrix.Set(2, 0, zx)
+	matrix.Set(2, 1, zy)
+
+	return matrix
+}
