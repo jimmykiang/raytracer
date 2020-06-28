@@ -41,3 +41,13 @@ func RotationY(r float64) Matrix {
 	matrix.Set(2, 2, math.Cos(r))
 	return matrix
 }
+
+// RotationZ returns a rotation matrix of the given radians
+func RotationZ(r float64) Matrix {
+	matrix := NewIdentityMatrix()
+	matrix.Set(0, 0, math.Cos(r))
+	matrix.Set(0, 1, -math.Sin(r))
+	matrix.Set(1, 0, math.Sin(r))
+	matrix.Set(1, 1, math.Cos(r))
+	return matrix
+}

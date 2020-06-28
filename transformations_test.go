@@ -128,3 +128,27 @@ func TestRotationY(t *testing.T) {
 		t.Errorf("RotationY expected %v to be %v", result, expected)
 	}
 }
+
+func TestRotationZ(t *testing.T) {
+	p := Point(0, 1, 0)
+	halfQuarter := RotationZ(PI / 4)
+
+	result := halfQuarter.MultiplyMatrixByTuple(p)
+
+	expected := Point(-math.Sqrt(2)/2, math.Sqrt(2)/2, 0)
+
+	if !result.Equals(expected) {
+		t.Errorf("RotationY expected %v to be %v", result, expected)
+	}
+
+	fullQuarter := RotationZ(PI / 2)
+
+	result = fullQuarter.MultiplyMatrixByTuple(p)
+
+	expected = Point(-1, 0, 0)
+
+	if !result.Equals(expected) {
+		t.Errorf("RotationY expected %v to be %v", result, expected)
+	}
+
+}
