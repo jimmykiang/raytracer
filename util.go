@@ -77,3 +77,21 @@ func min(a, b float64) float64 {
 	}
 	return a
 }
+
+// Transform returns the result of multiple chained transformations applied to a tuple in a customized order.
+// T ← C * B * A will be passed here as A * B * C arguments instead.
+func (t *Tuple) Transform(transformations ...Matrix) *Tuple {
+
+	if len(transformations) < 1 {
+		return t
+	}
+
+	current := transformations[0]
+
+	for i := 1; i < len(transformations); i++ {
+		current = transformations[i].MultiplyMatrix(current)
+	}
+
+	return current.MultiplyMatrixByTuple(t)
+
+}
