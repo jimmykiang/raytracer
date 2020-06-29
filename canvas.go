@@ -38,6 +38,21 @@ func (canvas *Canvas) WritePixel(x, y int, c *Color) {
 	canvas.pixels[y][x] = NewColor(c.r, c.g, c.b)
 }
 
+// WriteTuple assign a color to a pixel at a specified tuple (point) position relative from the canvas X, Y origin.
+func (canvas *Canvas) WriteTuple(point *Tuple, c *Color) {
+	canvas.WritePixel(int(point.x)+canvas.originX, (int(point.y) + canvas.originY), c)
+}
+
+// SetOrigin sets the origin of the canvas.
+func (canvas *Canvas) SetOrigin(x, y int) {
+	if !canvas.checkBounds(x, y) {
+		return
+	}
+
+	canvas.originX = x
+	canvas.originY = y
+}
+
 func (canvas *Canvas) checkBounds(x, y int) (check bool) {
 	check = true
 	if y < 0 || y >= canvas.height {
