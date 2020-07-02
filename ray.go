@@ -15,3 +15,11 @@ func NewRay(origin, direction *Tuple) *Ray {
 func (ray *Ray) Position(t float64) *Tuple {
 	return ray.origin.Add(ray.direction.Multiply(t))
 }
+
+// Transform will return a new ray with its origin and direction transformed.
+func (ray *Ray) Transform(transformations ...Matrix) *Ray {
+	return NewRay(
+		ray.origin.Transform(transformations...),
+		ray.direction.Transform(transformations...),
+	)
+}
