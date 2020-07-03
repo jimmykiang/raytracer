@@ -55,3 +55,45 @@ func TestIntersections(t *testing.T) {
 		}
 	}
 }
+
+func TestHit(t *testing.T) {
+	// The hit, when all intersections have positive t.
+	s := NewSphere()
+	i1 := &Intersection{1, s, -1}
+	i2 := &Intersection{2, s, -1}
+	xs := NewIntersections([]*Intersection{i1, i2})
+	i := xs.Hit()
+	if i != i1 {
+		t.Errorf("Hit: expected %v to be %v", i, i1)
+	}
+
+	// The hit, when some intersections have negative t.
+	i1 = &Intersection{-1, s, -1}
+	i2 = &Intersection{2, s, -1}
+	xs = NewIntersections([]*Intersection{i1, i2})
+	i = xs.Hit()
+	if i != i2 {
+		t.Errorf("Hit: expected %v to be %v", i, i2)
+	}
+
+	// The hit, when all intersections have negative t.
+	i1 = &Intersection{-1, s, -1}
+	i2 = &Intersection{-2, s, -1}
+	xs = NewIntersections([]*Intersection{i1, i2})
+	i = xs.Hit()
+	if i != nil {
+		t.Errorf("Hit: expected %v to be %v", i, nil)
+	}
+
+	// The hit is always the lowest nonnegative intersection.
+	i1 = &Intersection{5, s, -1}
+	i2 = &Intersection{7, s, -1}
+	i3 := &Intersection{-3, s, -1}
+	i4 := &Intersection{2, s, -1}
+	xs = NewIntersections([]*Intersection{i1, i2, i3, i4})
+	i = xs.Hit()
+	if i != i4 {
+		t.Errorf("Hit: expected %v to be %v", i, i4)
+	}
+
+}
