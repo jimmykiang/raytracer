@@ -101,5 +101,49 @@ func TestIntersectSphere(t *testing.T) {
 			t.Errorf("IntersectSphere: expected %v to be %v", intersection.t, expected[i])
 		}
 	}
+}
 
+func TestRayTransform(t *testing.T) {
+
+	// Translating a ray.
+	r := NewRay(Point(1, 2, 3), Vector(0, 1, 0))
+	m := Translation(3, 4, 5)
+	r2 := r.Transform(m)
+	expected := NewRay(Point(4, 6, 8), Vector(0, 1, 0))
+
+	if !r2.Equals(expected) {
+		t.Errorf("RayTransform: expected %v to equal %v", r2, expected)
+	}
+
+	// Scaling a ray.
+	r = NewRay(Point(1, 2, 3), Vector(0, 1, 0))
+	m = Scaling(2, 3, 4)
+	r2 = r.Transform(m)
+	expected = NewRay(Point(2, 6, 12), Vector(0, 3, 0))
+	if !r2.Equals(expected) {
+		t.Errorf("RayTransform: expected %v to equal %v", r2, expected)
+	}
+
+	// Intersecting a scaled sphere with a ray.
+	r = NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	s := NewSphere()
+	s.SetTransform(Scaling(2, 2, 2))
+	xs := s.Intersect(r)
+
+	if len(xs) != 2 {
+		t.Errorf("RayTransform: expected number of intersections to be %v but got %v", 2, len(xs))
+	}
+	if !floatEqual(xs[0].t, 3) {
+		t.Errorf("RayTransform: expected %v to equal %v", xs[0].t, 3)
+	}
+	if !floatEqual(xs[1].t, 7) {
+		t.Errorf("RayTransform: expected %v to equal %v", xs[1].t, 7)
+	}
+
+	// Intersecting a translated sphere with a ray
+	s.SetTransform(Translation(5, 0, 0))
+	xs = s.Intersect(r)
+	if len(xs) != 0 {
+		t.Errorf("RayTransform: expected number of intersections to be %v but got %v", 0, len(xs))
+	}
 }

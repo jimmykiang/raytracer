@@ -19,7 +19,7 @@ type Sphere struct {
 	material  *Material
 }
 
-// NewSphere creates a new sphere
+// NewSphere creates a new default sphere centered at the origin with Identity matrix as transform and default material.
 func NewSphere() *Sphere {
 	return &Sphere{Point(0, 0, 0), IdentityMatrix, DefaultMaterial()}
 }

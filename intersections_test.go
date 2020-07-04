@@ -95,5 +95,4 @@ func TestHit(t *testing.T) {
 	if i != i4 {
 		t.Errorf("Hit: expected %v to be %v", i, i4)
 	}
-
 }

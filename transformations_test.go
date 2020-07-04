@@ -247,5 +247,25 @@ func TestChainTransformations(t *testing.T) {
 	if !result.Equals(expected) {
 		t.Errorf("ChainTransformations: expected %v to be %v", result, expected)
 	}
+}
 
+func TestSphereTransformation(t *testing.T) {
+
+	// A sphere's default transformation.
+	s := NewSphere()
+
+	if !s.transform.Equals(IdentityMatrix) {
+		t.Errorf("SphereTransformation: expected %v to be %v", IdentityMatrix, s.transform)
+	}
+
+	// Changing a sphere's transformation.
+
+	s = NewSphere()
+	transform := Translation(2, 3, 4)
+
+	s.transform = transform
+
+	if !s.transform.Equals(transform) {
+		t.Errorf("SphereTransformation: expected %v to be %v", transform, s.transform)
+	}
 }

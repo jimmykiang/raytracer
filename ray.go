@@ -23,3 +23,8 @@ func (ray *Ray) Transform(transformations ...Matrix) *Ray {
 		ray.direction.Transform(transformations...),
 	)
 }
+
+// Equals checks ray equality
+func (ray *Ray) Equals(other *Ray) bool {
+	return ray.origin.Equals(other.origin) && ray.direction.Equals(other.direction)
+}
