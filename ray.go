@@ -28,3 +28,10 @@ func (ray *Ray) Transform(transformations ...Matrix) *Ray {
 func (ray *Ray) Equals(other *Ray) bool {
 	return ray.origin.Equals(other.origin) && ray.direction.Equals(other.direction)
 }
+
+//Intersect calculates the intersection between a ray and an object.
+func (ray *Ray) Intersect(object Shape) Intersections {
+	intersections := object.Intersect(ray)
+
+	return NewIntersections(intersections)
+}
