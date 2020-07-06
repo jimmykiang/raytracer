@@ -212,3 +212,25 @@ func TestCross(t *testing.T) {
 		t.Errorf("Cross: result %v should equal %v", result2, expected2)
 	}
 }
+
+func TestReflect(t *testing.T) {
+	// Reflecting a vector approaching at 45°.
+	vector := Vector(1, -1, 0)
+	normal := Vector(0, 1, 0)
+	reflected := vector.Reflect(normal)
+	expected := Vector(1, 1, 0)
+
+	if !reflected.Equals(expected) {
+		t.Errorf("Reflect: (45deg) expected %v to be %v", reflected, expected)
+	}
+
+	// Reflecting a vector off a slanted surface.
+	vector = Vector(0, -1, 0)
+	normal = Vector(math.Sqrt(2)/2, math.Sqrt(2)/2, 0)
+	reflected = vector.Reflect(normal)
+	expected = Vector(1, 0, 0)
+
+	if !reflected.Equals(expected) {
+		t.Errorf("Reflect: (slanted surface) expected %v to be %v", reflected, expected)
+	}
+}
