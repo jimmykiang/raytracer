@@ -3,6 +3,9 @@ package main
 // White color.
 var White = NewColor(1, 1, 1)
 
+// Black ...
+var Black = NewColor(0, 0, 0)
+
 // Color represents R,G,B values between 0 and 1.
 type Color struct {
 	r, g, b float64
