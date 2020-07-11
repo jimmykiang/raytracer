@@ -34,3 +34,8 @@ func (xs Intersections) Hit() *Intersection {
 	}
 	return nil
 }
+
+// Count returns the number of the Intersections.
+func (xs *Intersections) Count() int {
+	return len(*xs)
+}
