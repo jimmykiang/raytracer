@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 // World creates an struct containing slices of Shape and PointLight.
 type World struct {
 	lights  []*PointLight
@@ -38,7 +40,6 @@ func (world *World) Intersect(ray *Ray) Intersections {
 }
 
 // Computation is a struct for storing some precomputed values.
-
 type Computation struct {
 	t, n1, n2                                             float64
 	object                                                Shape
@@ -107,4 +108,115 @@ func removeIfContains(containers *[]Shape, obj Shape) bool {
 		}
 	}
 	return false
+}
+
+// ShadeHit returns the color encapsulated by the Computation struct of the world.
+func (world *World) ShadeHit(comps *Computation, remaining int) *Color {
+	light := Black
+	material := comps.object.Material()
+	reflectance := 1.0
+	refractance := 1.0
+	if material.reflective > 0 && material.transparency > 0 {
+		reflectance = comps.Schlick()
+		refractance = 1 - reflectance
+	}
+	for i := 0; i < len(world.lights); i++ {
+
+		light = light.Add(
+			Lighting(
+				comps.object.Material(),
+				comps.object,
+				world.lights[i],
+				comps.overPoint,
+				comps.eyev,
+				comps.normalv,
+				world.IsShadowed(comps.overPoint, i)),
+		).Add(
+			world.ReflectedColor(comps, remaining).MultiplyByScalar(reflectance),
+		).Add(
+			world.RefractedColor(comps, remaining).MultiplyByScalar(refractance),
+		)
+	}
+	return light
+}
+
+// ReflectedColor ...
+func (world *World) ReflectedColor(comps *Computation, remaining int) *Color {
+	if comps.object.Material().reflective == 0.0 || remaining < 1 {
+		return Black
+	}
+	reflectRay := NewRay(comps.overPoint, comps.reflectv)
+	color := world.ColorAt(reflectRay, remaining-1)
+
+	return color.MultiplyByScalar(comps.object.Material().reflective)
+}
+
+// ColorAt will combine intersect(), prepare_computations() and shade_hit() functions and will
+// intersect the world with the given ray and then return the color at the resulting intersection.
+func (world *World) ColorAt(ray *Ray, remaining int) *Color {
+	xs := world.Intersect(ray)
+	hit := xs.Hit()
+	if hit == nil {
+		return Black
+	}
+	comps := PrepareComputations(hit, ray, xs)
+	return world.ShadeHit(comps, remaining)
+}
+
+// RefractedColor ...
+func (world *World) RefractedColor(comps *Computation, remaining int) *Color {
+	if comps.object.Material().transparency == 0.0 || remaining < 1 {
+		return Black
+	}
+	nRatio := comps.n1 / comps.n2
+
+	cosI := comps.eyev.DotProduct(comps.normalv)
+
+	sin2t := square(nRatio) * (1 - square(cosI))
+
+	if sin2t > 1.0 {
+		return Black
+	}
+
+	cosT := math.Sqrt(1.0 - sin2t)
+
+	direction := comps.normalv.Multiply(nRatio*cosI - cosT).Substract(comps.eyev.Multiply(nRatio))
+
+	refractRay := NewRay(comps.underPoint, direction)
+
+	color := world.ColorAt(refractRay, remaining-1).MultiplyByScalar(comps.object.Material().transparency)
+
+	return color
+}
+
+// Schlick returns the reflectance, represents what fraction of light is reflected given surface info and the Intersections.Hit()
+func (comps *Computation) Schlick() float64 {
+	cos := comps.eyev.DotProduct(comps.normalv)
+	if comps.n1 > comps.n2 {
+		n := comps.n1 / comps.n2
+		sin2T := square(n) * (1.0 - square(cos))
+		if sin2T > 1.0 {
+			return 1.0
+		}
+		cosT := math.Sqrt(1.0 - sin2T)
+		cos = cosT
+	}
+	ro := square((comps.n1 - comps.n2) / (comps.n1 + comps.n2))
+
+	return ro + (1-ro)*math.Pow(1-cos, 5)
+}
+
+// IsShadowed returns whether a point is in a shadow
+func (world *World) IsShadowed(point *Tuple, light int) bool {
+	v := world.lights[light].position.Substract(point)
+	distance := v.Magnitude()
+	direction := v.Normalize()
+
+	ray := NewRay(point, direction)
+
+	intersections := world.Intersect(ray)
+
+	hit := intersections.Hit()
+
+	return hit != nil && hit.t < distance
 }

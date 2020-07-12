@@ -70,3 +70,50 @@ func TestPrepareComputation(t *testing.T) {
 		t.Errorf("PrepareComputations failed")
 	}
 }
+
+func TestShadeHit(t *testing.T) {
+	// Shading an intersection.
+	w := DefaultWorld()
+	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	shape := w.objects[0]
+	i := NewIntersection(4, shape)
+	comps := PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+	result := w.ShadeHit(comps, 10)
+	expected := NewColor(0.38066, 0.47583, 0.2855)
+
+	if !result.Equals(expected) {
+		t.Errorf("ShadeHit: expected %v to be %v", result, expected)
+	}
+
+	// Shading an intersection from the inside.
+	w.lights[0] = NewPointLight(Point(0, .25, 0), NewColor(1, 1, 1))
+	r = NewRay(Point(0, 0, 0), Vector(0, 0, 1))
+	shape = w.objects[1]
+	i = NewIntersection(0.5, shape)
+	comps = PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+	result = w.ShadeHit(comps, 10)
+	expected = NewColor(0.90498, 0.90498, 0.90498)
+
+	if !result.Equals(expected) {
+		t.Errorf("ShadeHit: expected %v to be %v", result, expected)
+	}
+
+	s1 := NewSphere()
+	s2 := NewSphere()
+	s2.SetTransform(Translation(0, 0, 10))
+
+	w = NewWorld(
+		[]*PointLight{NewPointLight(Point(0, 0, -10), NewColor(1, 1, 1))},
+		[]Shape{s1, s2},
+	)
+	r = NewRay(Point(0, 0, 5), Vector(0, 0, 1))
+	i = NewIntersection(4, s2)
+
+	comps = PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+	result = w.ShadeHit(comps, 10)
+	expected = NewColor(0.1, 0.1, 0.1)
+
+	if !result.Equals(expected) {
+		t.Errorf("ShadeHit: expected %v to be %v", result, expected)
+	}
+}
