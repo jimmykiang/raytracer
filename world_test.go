@@ -117,3 +117,42 @@ func TestShadeHit(t *testing.T) {
 		t.Errorf("ShadeHit: expected %v to be %v", result, expected)
 	}
 }
+
+func TestWorldColorAt(t *testing.T) {
+
+	// The color when a ray misses.
+	w := DefaultWorld()
+	r := NewRay(Point(0, 0, -5), Vector(0, 1, 0))
+	result := w.ColorAt(r, 10)
+	expected := Black
+
+	if !result.Equals(expected) {
+		t.Errorf("WorldColorAt (no hit): expected %v to be %v", result, expected)
+	}
+
+	// The color when a ray hits.
+	r = NewRay(r.origin, Vector(0, 0, 1))
+	result = w.ColorAt(r, 10)
+	expected = NewColor(0.38066, 0.47583, 0.2855)
+
+	if !result.Equals(expected) {
+		t.Errorf("WorldColorAt (hit): expected %v to be %v", result, expected)
+	}
+
+	// The color with an intersection behind the ray.
+	outer := w.objects[0]
+	outer.Material().ambient = 1
+	inner := w.objects[1]
+
+	inner.Material().ambient = 1
+
+	r = NewRay(Point(0, 0, .75), Vector(0, 0, -1))
+
+	result = w.ColorAt(r, 10)
+	expected = inner.Material().color
+
+	if !result.Equals(expected) {
+		t.Errorf("WorldColorAt (hit inner): expected %v to be %v", result, expected)
+	}
+
+}
