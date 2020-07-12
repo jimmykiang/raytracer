@@ -35,5 +35,76 @@ func (world *World) Intersect(ray *Ray) Intersections {
 	xs := NewIntersections(intersections)
 
 	return xs
+}
 
+// Computation is a struct for storing some precomputed values.
+
+type Computation struct {
+	t, n1, n2                                             float64
+	object                                                Shape
+	point, eyev, normalv, reflectv, overPoint, underPoint *Tuple
+	inside                                                bool
+}
+
+// PrepareComputations precomputes the point (in world space)
+// where the intersection occurred, the eye vector (pointing
+// back toward the eye, or camera), and the normal vector.
+func PrepareComputations(hit *Intersection, ray *Ray, xs Intersections) *Computation {
+	point := ray.Position(hit.t)
+	comps := &Computation{
+		t:       hit.t,
+		object:  hit.object,
+		point:   point,
+		eyev:    ray.direction.Negate(),
+		normalv: hit.object.NormalAt(point),
+		inside:  false,
+	}
+	if comps.normalv.DotProduct(comps.eyev) < 0 {
+		comps.inside = true
+		comps.normalv = comps.normalv.Negate()
+	}
+
+	comps.reflectv = ray.direction.Reflect(comps.normalv)
+	comps.overPoint = comps.point.Add(comps.normalv.Multiply(EPSILON))
+	comps.underPoint = comps.point.Substract(comps.normalv.Multiply(EPSILON))
+
+	containers := []Shape{}
+
+	for _, inters := range xs {
+		if inters == hit {
+			if len(containers) == 0 {
+				comps.n1 = 1
+			} else {
+				comps.n1 = containers[len(containers)-1].Material().refractiveIndex
+			}
+		}
+		if !removeIfContains(&containers, inters.object) {
+			containers = append(containers, inters.object)
+		}
+		if inters == hit {
+			if len(containers) == 0 {
+				comps.n2 = 1
+			} else {
+				comps.n2 = containers[len(containers)-1].Material().refractiveIndex
+			}
+			break
+		}
+	}
+
+	return comps
+}
+
+func removeIfContains(containers *[]Shape, obj Shape) bool {
+	C := *containers
+	for i, shape := range C {
+		if shape == obj {
+			for i < len(C)-1 {
+				C[i] = C[i+1]
+				i++
+			}
+			*containers = C[:len(C)-1]
+			return true
+		}
+	}
+	return false
 }
