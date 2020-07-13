@@ -65,3 +65,24 @@ func Shearing(xy, xz, yx, yz, zx, zy float64) Matrix {
 
 	return matrix
 }
+
+// ViewTransform returns a view transformation matrix taking into account the orientation vectors.
+func ViewTransform(from, to, up *Tuple) Matrix {
+	forward := to.Substract(from).Normalize()
+	left := forward.CrossProduct(up.Normalize())
+	trueUp := left.CrossProduct(forward)
+
+	orientation := NewIdentityMatrix()
+	orientation.Set(0, 0, left.x)
+	orientation.Set(0, 1, left.y)
+	orientation.Set(0, 2, left.z)
+	orientation.Set(1, 0, trueUp.x)
+	orientation.Set(1, 1, trueUp.y)
+	orientation.Set(1, 2, trueUp.z)
+	orientation.Set(2, 0, -forward.x)
+	orientation.Set(2, 1, -forward.y)
+	orientation.Set(2, 2, -forward.z)
+
+	return orientation.MultiplyMatrix(Translation(-from.x, -from.y, -from.z))
+
+}
