@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	"math"
+	"sync"
+)
 
 // Camera defines different parameters of it contained in a struct.
 type Camera struct {
@@ -60,4 +63,25 @@ func (cam *Camera) RayForPixel(x, y int) *Ray {
 // SetTransform sets the camera’s transformation describing how the world is moved relative to the camera.
 func (cam *Camera) SetTransform(transform Matrix) {
 	cam.transform = transform.Inverse()
+}
+
+// Render calculates the render of a given world on a canvas from the view of the camera.
+func (cam *Camera) Render(world *World, recursionDepth int) *Canvas {
+	image := NewCanvas(cam.hsize, cam.vsize)
+
+	var wg sync.WaitGroup
+
+	for y := 0; y < cam.vsize; y++ {
+		wg.Add(1)
+		go func(y int) {
+			for x := 0; x < cam.hsize; x++ {
+				ray := cam.RayForPixel(x, y)
+				color := world.ColorAt(ray, recursionDepth)
+				image.WritePixel(x, y, color)
+			}
+			wg.Done()
+		}(y)
+	}
+	wg.Wait()
+	return image
 }

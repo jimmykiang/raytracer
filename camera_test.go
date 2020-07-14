@@ -52,5 +52,24 @@ func TestCameraRayForPixel(t *testing.T) {
 	if !r.Equals(expected) {
 		t.Errorf("CameraRayForPixel(tranformed camera): expected %v to be %v", r, expected)
 	}
+}
 
+// Rendering a world with a camera.
+func TestCameraRender(t *testing.T) {
+
+	w := DefaultWorld()
+	c := NewCamera(11, 11, PI/2)
+	from := Point(0, 0, -5)
+	to := Point(0, 0, 0)
+	up := Vector(0, 1, 0)
+	c.SetTransform(ViewTransform(from, to, up))
+	image := c.Render(w, 10)
+
+	expected := NewColor(0.38066, 0.47583, 0.2855)
+
+	result := image.PixelAt(5, 5)
+
+	if !result.Equals(expected) {
+		t.Errorf("TestCameraRender(default world): expected %v to be %v", result, expected)
+	}
 }
