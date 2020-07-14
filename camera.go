@@ -6,12 +6,19 @@ import "math"
 type Camera struct {
 	hsize, vsize                                  int
 	fieldOfView, halfWidth, halfHeight, pixelSize float64
-	tranform                                      Matrix
+	transform                                     Matrix
 }
 
 // NewCamera returns a pointer to a default camera.
 func NewCamera(hsize, vsize int, fieldOfView float64) *Camera {
-	c := &Camera{hsize, vsize, fieldOfView, 0, 0, 0, NewIdentityMatrix()}
+	c := &Camera{hsize: hsize,
+		vsize:       vsize,
+		fieldOfView: fieldOfView,
+		halfWidth:   0,
+		halfHeight:  0,
+		pixelSize:   0,
+		transform:   NewIdentityMatrix(),
+	}
 	c.SetPixelSize()
 	return c
 }
@@ -28,4 +35,29 @@ func (cam *Camera) SetPixelSize() {
 		cam.halfHeight = halfView
 	}
 	cam.pixelSize = (cam.halfWidth * 2) / float64(cam.hsize)
+}
+
+// RayForPixel computes the world coordinates at the center of the given pixel,
+// and then construct a ray that passes through that point.
+func (cam *Camera) RayForPixel(x, y int) *Ray {
+	px := float64(x)
+	py := float64(y)
+	xoffset := (px + 0.5) * cam.pixelSize
+	yoffset := (py + 0.5) * cam.pixelSize
+
+	worldx := cam.halfWidth - xoffset
+	worldy := cam.halfHeight - yoffset
+
+	pixel := cam.transform.MultiplyMatrixByTuple(Point(worldx, worldy, -1))
+
+	origin := cam.transform.MultiplyMatrixByTuple(Point(0, 0, 0))
+
+	direction := pixel.Substract(origin).Normalize()
+
+	return NewRay(origin, direction)
+}
+
+// SetTransform sets the camera’s transformation describing how the world is moved relative to the camera.
+func (cam *Camera) SetTransform(transform Matrix) {
+	cam.transform = transform.Inverse()
 }
