@@ -206,7 +206,7 @@ func (comps *Computation) Schlick() float64 {
 	return ro + (1-ro)*math.Pow(1-cos, 5)
 }
 
-// IsShadowed returns whether a point is in a shadow
+// IsShadowed returns whether a point is considered to be under a shadow.
 func (world *World) IsShadowed(point *Tuple, light int) bool {
 	v := world.lights[light].position.Substract(point)
 	distance := v.Magnitude()

@@ -154,5 +154,28 @@ func TestWorldColorAt(t *testing.T) {
 	if !result.Equals(expected) {
 		t.Errorf("WorldColorAt (hit inner): expected %v to be %v", result, expected)
 	}
+}
 
+func TestIsShadowed(t *testing.T) {
+	w := DefaultWorld()
+
+	p := Point(0, 10, 0)
+	if w.IsShadowed(p, 0) {
+		t.Errorf("IsShadowed: expected no shadow when nothing is collinear point and light")
+	}
+
+	p = Point(10, -10, 10)
+	if !w.IsShadowed(p, 0) {
+		t.Errorf("IsShadowed: expected object between point and light to create shadow")
+	}
+
+	p = Point(-20, 20, -20)
+	if w.IsShadowed(p, 0) {
+		t.Errorf("IsShadowed: There should be no shadow when an object is behind the light")
+	}
+
+	p = Point(-2, 2, -2)
+	if w.IsShadowed(p, 0) {
+		t.Errorf("IsShadowed: There is no shadow when an object is behind the point ")
+	}
 }
