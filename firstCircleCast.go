@@ -45,7 +45,7 @@ func CircleCast() *Canvas {
 	}
 
 	wg.Wait()
-	fmt.Println(time.Now().Sub(start))
+	fmt.Println("Render time: ", time.Now().Sub(start))
 
 	return canvas
 }
