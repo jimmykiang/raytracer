@@ -96,3 +96,20 @@ func TestHit(t *testing.T) {
 		t.Errorf("Hit: expected %v to be %v", i, i4)
 	}
 }
+
+// The hit should offset the point.
+func TestOverPoint(t *testing.T) {
+
+	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	shape := NewSphere()
+	shape.SetTransform(Translation(0, 0, 1))
+
+	i := NewIntersection(5, shape)
+	xs := NewIntersections([]*Intersection{i})
+	comps := PrepareComputations(i, r, xs)
+
+	if !(comps.underPoint.z > EPSILON/2.0 && comps.point.z < comps.underPoint.z) {
+		t.Errorf("PrepareComputationWithRefraction: underPoint %v not valid", comps.underPoint)
+	}
+
+}

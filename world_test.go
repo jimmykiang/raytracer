@@ -98,6 +98,7 @@ func TestShadeHit(t *testing.T) {
 		t.Errorf("ShadeHit: expected %v to be %v", result, expected)
 	}
 
+	// shade_hit() is given an intersection in shadow.
 	s1 := NewSphere()
 	s2 := NewSphere()
 	s2.SetTransform(Translation(0, 0, 10))
