@@ -25,3 +25,18 @@ func (pattern *Pattern) ColorAt(p *Tuple) *Color {
 	}
 	return color
 }
+
+// StripePattern ...
+func StripePattern(colors ...*Color) *Pattern {
+
+	return NewPattern([][]*Color{colors}, stripeFunc)
+}
+
+// NewPattern ...
+func NewPattern(colors [][]*Color, getColor ...getColorFunc) *Pattern {
+	return &Pattern{colors, getColor, NewIdentityMatrix()}
+}
+
+func stripeFunc(colors []*Color, p *Tuple) *Color {
+	return colors[(int(abs(p.x)))%len(colors)]
+}
