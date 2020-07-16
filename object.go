@@ -72,5 +72,25 @@ func (sphere *Sphere) Intersect(ray *Ray) []*Intersection {
 	t1 := (-b - sqrtDisc) / div
 	t2 := (-b + sqrtDisc) / div
 	return []*Intersection{NewIntersection(t1, sphere), NewIntersection(t2, sphere)}
+}
+
+// Plane Shape
+type Plane struct {
+	transform Matrix
+	material  *Material
+}
+
+// NewPlane creates a new default Plane centered at the origin with Identity matrix as transform and default material.
+func NewPlane() *Plane {
+	return &Plane{IdentityMatrix, DefaultMaterial()}
+
+}
+
+// NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
+func (plane *Plane) NormalAt(point *Tuple) *Tuple {
+	localNormal := Vector(0, 1, 0)
+	worldNormal := plane.transform.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0
+	return worldNormal.Normalize()
 
 }

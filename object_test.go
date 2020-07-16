@@ -55,3 +55,22 @@ func TestSphereNormal(t *testing.T) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
 	}
 }
+
+// The normal of a plane is constant everywhere
+func TestPlaneNormal(t *testing.T) {
+	p := NewPlane()
+	n1 := p.NormalAt(Point(0, 0, 0))
+	n2 := p.NormalAt(Point(10, 0, -10))
+	n3 := p.NormalAt(Point(-5, 0, 150))
+	expected := Vector(0, 1, 0)
+
+	if !n1.Equals(expected) {
+		t.Errorf("PlaneNormal: expected %v to equal %v", n1, expected)
+	}
+	if !n2.Equals(expected) {
+		t.Errorf("PlaneNormal: expected %v to equal %v", n2, expected)
+	}
+	if !n3.Equals(expected) {
+		t.Errorf("PlaneNormal: expected %v to equal %v", n3, expected)
+	}
+}
