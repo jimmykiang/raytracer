@@ -32,7 +32,7 @@ func StripePattern(colors ...*Color) *Pattern {
 	return NewPattern([][]*Color{colors}, stripeFunc)
 }
 
-// NewPattern ...
+// NewPattern returns a reference to a Pattern struct with a pattern generating function.
 func NewPattern(colors [][]*Color, getColor ...getColorFunc) *Pattern {
 	return &Pattern{colors, getColor, NewIdentityMatrix()}
 }
@@ -45,4 +45,17 @@ func stripeFunc(colors []*Color, p *Tuple) *Color {
 // SetTransform sets the transform for the pattern accordingly.
 func (pattern *Pattern) SetTransform(transform Matrix) {
 	pattern.transform = transform.Inverse()
+}
+
+// CheckersPattern ...
+func CheckersPattern(a, b *Color) *Pattern {
+	return NewPattern([][]*Color{[]*Color{a, b}}, checkersFunc)
+}
+
+// // checkersFunc defines the checkers pattern.
+var checkersFunc = func(colors []*Color, p *Tuple) *Color {
+	if (int(p.x)+int(p.y)+int(p.z))%2 == 0 {
+		return colors[0]
+	}
+	return colors[1]
 }

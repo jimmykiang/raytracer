@@ -24,3 +24,16 @@ func TestLightingWithPattern(t *testing.T) {
 		t.Errorf("LightingWithPattern(stripe): expected %v to be %v", c2, Black)
 	}
 }
+func TestCheckersPattern(t *testing.T) {
+	pattern := CheckersPattern(White, Black)
+
+	points := []*Tuple{Point(0, 0, 0), Point(.99, 0, 0), Point(1.01, 0, 0), Point(0, .99, 0), Point(0, 1.01, 0), Point(0, 0, .99), Point(0, 0, 1.01)}
+	expected := []*Color{White, White, Black, White, Black, White, Black}
+
+	for i := 0; i < len(expected); i++ {
+		r := pattern.ColorAt(points[i])
+		if !r.Equals(expected[i]) {
+			t.Errorf("CheckersPattern: expected %v to be %v", r, expected[i])
+		}
+	}
+}
