@@ -39,7 +39,7 @@ func (sphere *Sphere) SetMaterial(material *Material) {
 	sphere.material = material
 }
 
-//Transform returns the transformation
+//Transform returns the transformation.
 func (sphere *Sphere) Transform() Matrix {
 	return sphere.transform
 }
@@ -93,4 +93,35 @@ func (plane *Plane) NormalAt(point *Tuple) *Tuple {
 	worldNormal.w = 0
 	return worldNormal.Normalize()
 
+}
+
+// Intersect calculates the local intersections between a ray and a plane.
+func (plane *Plane) Intersect(ray *Ray) []*Intersection {
+	if abs(ray.direction.y) < EPSILON {
+		return []*Intersection{}
+	}
+	ray = ray.Transform(plane.transform)
+	t := -ray.origin.y / ray.direction.y
+
+	return []*Intersection{NewIntersection(t, plane)}
+}
+
+// Transform returns the transformation.
+func (plane *Plane) Transform() Matrix {
+	return plane.transform
+}
+
+// Material returns the material of a Plane.
+func (plane *Plane) Material() *Material {
+	return plane.material
+}
+
+// SetTransform sets the Plane's transformation.
+func (plane *Plane) SetTransform(transform Matrix) {
+	plane.transform = transform.Inverse()
+}
+
+// SetMaterial returns the material of a Plane.
+func (plane *Plane) SetMaterial(material *Material) {
+	plane.material = material
 }

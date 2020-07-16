@@ -74,3 +74,32 @@ func TestPlaneNormal(t *testing.T) {
 		t.Errorf("PlaneNormal: expected %v to equal %v", n3, expected)
 	}
 }
+
+func TestPlaneIntersect(t *testing.T) {
+	p := NewPlane()
+	r := NewRay(Point(0, 10, 0), Vector(0, 0, 1))
+
+	xs := p.Intersect(r)
+
+	if len(xs) != 0 {
+		t.Errorf("PlaneIntersect(parallel): expected no intersections")
+	}
+
+	r = NewRay(Point(0, 0, 0), Vector(0, 0, 1))
+	xs = p.Intersect(r)
+	if len(xs) != 0 {
+		t.Errorf("PlaneIntersect(coplanar): expected no intersections")
+	}
+
+	r = NewRay(Point(0, 1, 0), Vector(0, -1, 0))
+	xs = p.Intersect(r)
+
+	if len(xs) != 1 {
+		t.Errorf("PlaneIntersect(above): expected one intersection")
+	}
+
+	if !floatEqual(xs[0].t, 1) {
+		t.Errorf("PlaneIntersect(above): expected intersection at %v to be %v", xs[0].t, 1)
+	}
+
+}
