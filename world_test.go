@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 // Intersect a world with a ray.
 func TestWorldIntersections(t *testing.T) {
@@ -178,5 +181,18 @@ func TestIsShadowed(t *testing.T) {
 	p = Point(-2, 2, -2)
 	if w.IsShadowed(p, 0) {
 		t.Errorf("IsShadowed: There is no shadow when an object is behind the point ")
+	}
+}
+
+// Precomputing the reflection vector.
+func TestComputeReflect(t *testing.T) {
+	shape := NewPlane()
+	r := NewRay(Point(0, 1, -1), Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	i := NewIntersection(math.Sqrt(2), shape)
+	comps := PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+	expected := Vector(0, math.Sqrt(2)/2, math.Sqrt(2)/2)
+
+	if !comps.reflectv.Equals(expected) {
+		t.Errorf("PrepareComputationsWithReflect: expected %v to be %v", comps.reflectv, expected)
 	}
 }

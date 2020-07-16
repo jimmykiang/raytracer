@@ -26,7 +26,7 @@ func (pattern *Pattern) ColorAt(p *Tuple) *Color {
 	return color
 }
 
-// StripePattern ...
+// StripePattern creates a new stripe patter using the stripeFunc().
 func StripePattern(colors ...*Color) *Pattern {
 
 	return NewPattern([][]*Color{colors}, stripeFunc)
@@ -47,7 +47,7 @@ func (pattern *Pattern) SetTransform(transform Matrix) {
 	pattern.transform = transform.Inverse()
 }
 
-// CheckersPattern ...
+// CheckersPattern creates a new checker patter using the checkersFunc().
 func CheckersPattern(a, b *Color) *Pattern {
 	return NewPattern([][]*Color{[]*Color{a, b}}, checkersFunc)
 }
