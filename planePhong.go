@@ -42,7 +42,7 @@ func planePhong() *Canvas {
 	left.material.color = NewColor(1, 0.8, 0.1)
 	left.material.diffuse = 0.7
 	left.material.specular = 0.3
-	world := NewWorld(lights, []Shape{p1, right, left})
+	world := NewWorld(lights, []Shape{p1, right, left, middle})
 
 	camera := NewCamera(1000, 500, PI/3)
 	camera.SetTransform(ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)))

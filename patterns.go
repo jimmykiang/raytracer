@@ -9,12 +9,12 @@ type Pattern struct {
 	transform Matrix
 }
 
-// ColorAtObject calculates the end color based on a point of the object.
-func (pattern *Pattern) ColorAtObject(object Shape, point *Tuple) *Color {
-	op := object.Transform().MultiplyMatrixByTuple(point)
-	pp := pattern.transform.MultiplyMatrixByTuple(op)
+// ColorAtObject calculates the end color based on a worldPoint of the object.
+func (pattern *Pattern) ColorAtObject(object Shape, worldPoint *Tuple) *Color {
+	objectPoint := object.Transform().MultiplyMatrixByTuple(worldPoint)
+	patternPoint := pattern.transform.MultiplyMatrixByTuple(objectPoint)
 
-	return pattern.ColorAt(pp)
+	return pattern.ColorAt(patternPoint)
 }
 
 // ColorAt returns a reference to Color at a specific point in the pattern.
@@ -37,6 +37,12 @@ func NewPattern(colors [][]*Color, getColor ...getColorFunc) *Pattern {
 	return &Pattern{colors, getColor, NewIdentityMatrix()}
 }
 
+// stripeFunc defines the stripe pattern.
 func stripeFunc(colors []*Color, p *Tuple) *Color {
 	return colors[(int(abs(p.x)))%len(colors)]
+}
+
+// SetTransform sets the transform for the pattern accordingly.
+func (pattern *Pattern) SetTransform(transform Matrix) {
+	pattern.transform = transform.Inverse()
 }
