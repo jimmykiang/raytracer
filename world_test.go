@@ -341,7 +341,7 @@ func TestWorldShadeHitWithRefraction(t *testing.T) {
 	if !color.Equals(expected) {
 		t.Errorf("WorldShadeHitWithRefraction(no reflection): expected %v to be %v", color, expected)
 	}
-
+	// shade_hit() with a reflective, transparent material.
 	floor.Material().reflective = 0.5
 
 	comps = PrepareComputations(xs[0], r, xs)
@@ -412,5 +412,41 @@ func TestWorldRefractedColor(t *testing.T) {
 	if !c.Equals(expected) {
 		t.Errorf("WorldRefractedColor(actual refraction): expected %v to be %v", c, expected)
 	}
+}
 
+func TestComputationSchlick(t *testing.T) {
+	// The Schlick approximation under total internal reflection.
+	shape := GlassSphere()
+	r := NewRay(Point(0, 0, math.Sqrt(2)/2), Vector(0, 1, 0))
+	xs := NewIntersections([]*Intersection{NewIntersection(-math.Sqrt(2)/2, shape), NewIntersection(math.Sqrt(2)/2, shape)})
+	xs.Hit()
+	comps := PrepareComputations(xs[1], r, xs)
+	reflectance := comps.Schlick()
+	expected := 1.0
+
+	if !floatEqual(reflectance, expected) {
+		t.Errorf("Schlick(internal reflection): expected %v to be %v", reflectance, expected)
+	}
+
+	// The Schlick approximation with a perpendicular viewing angle.
+	r = NewRay(Point(0, 0, 0), Vector(0, 1, 0))
+	xs = NewIntersections([]*Intersection{NewIntersection(-1, shape), NewIntersection(1, shape)})
+	comps = PrepareComputations(xs[1], r, xs)
+	reflectance = comps.Schlick()
+	expected = 0.04
+
+	if !floatEqual(reflectance, expected) {
+		t.Errorf("Schlick(perpendicular viewing): expected %v to be %v", reflectance, expected)
+	}
+
+	// The Schlick approximation with small angle and n2 > n1.
+	r = NewRay(Point(0, 0.99, -2), Vector(0, 0, 1))
+	xs = NewIntersections([]*Intersection{NewIntersection(1.8589, shape)})
+	comps = PrepareComputations(xs[0], r, xs)
+	reflectance = comps.Schlick()
+	expected = 0.48873
+
+	if !floatEqual(reflectance, expected) {
+		t.Errorf("Schlick(small angle, n2 > n1): expected %v to be %v", reflectance, expected)
+	}
 }

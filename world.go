@@ -193,7 +193,8 @@ func (world *World) RefractedColor(comps *Computation, remaining int) *Color {
 	return color
 }
 
-// Schlick returns the reflectance, represents what fraction of light is reflected given surface info and the Intersections.Hit()
+// Schlick returns the reflectance, represents what fraction of light is reflected given surface info and the Intersections.Hit().
+// This is a faster approximation to Fresnel’s equation and with enough accuracy.
 func (comps *Computation) Schlick() float64 {
 	cos := comps.eyev.DotProduct(comps.normalv)
 	if comps.n1 > comps.n2 {
