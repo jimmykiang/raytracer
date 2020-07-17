@@ -316,6 +316,42 @@ func TestPrepareComputationWithRefraction(t *testing.T) {
 	}
 }
 
+func TestWorldShadeHitWithRefraction(t *testing.T) {
+	// shade_hit() with a transparent material.
+	w := DefaultWorld()
+	floor := NewPlane()
+	floor.SetTransform(Translation(0, -1, 0))
+	floor.Material().transparency = 0.5
+	floor.Material().refractiveIndex = 1.5
+	w.objects = append(w.objects, floor)
+
+	ball := NewSphere()
+	ball.Material().color = NewColor(1, 0, 0)
+	ball.Material().ambient = 0.5
+	ball.SetTransform(Translation(0, -3.5, -0.5))
+	w.objects = append(w.objects, ball)
+
+	r := NewRay(Point(0, 0, -3), Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	xs := NewIntersections([]*Intersection{NewIntersection(math.Sqrt(2), floor)})
+
+	comps := PrepareComputations(xs[0], r, xs)
+	color := w.ShadeHit(comps, 5)
+	expected := NewColor(0.936425, 0.686425, 0.686425)
+
+	if !color.Equals(expected) {
+		t.Errorf("WorldShadeHitWithRefraction(no reflection): expected %v to be %v", color, expected)
+	}
+
+	floor.Material().reflective = 0.5
+
+	comps = PrepareComputations(xs[0], r, xs)
+	color = w.ShadeHit(comps, 5)
+	expected = NewColor(0.933915, 0.696434, 0.692430)
+	if !color.Equals(expected) {
+		t.Errorf("WorldShadeHitWithRefraction(with reflection): expected %v to be %v", color, expected)
+	}
+}
+
 func TestWorldRefractedColor(t *testing.T) {
 	// The refracted color with an opaque surface.
 	w := DefaultWorld()
