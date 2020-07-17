@@ -140,7 +140,7 @@ func (world *World) ShadeHit(comps *Computation, remaining int) *Color {
 	return light
 }
 
-// ReflectedColor ...
+// ReflectedColor creates a new ray, originating at the hit’s location and pointing in the direction of reflectv.
 func (world *World) ReflectedColor(comps *Computation, remaining int) *Color {
 	if comps.object.Material().reflective == 0.0 || remaining < 1 {
 		return Black

@@ -196,3 +196,37 @@ func TestComputeReflect(t *testing.T) {
 		t.Errorf("PrepareComputationsWithReflect: expected %v to be %v", comps.reflectv, expected)
 	}
 }
+
+func TestWorldReflect(t *testing.T) {
+
+	//  The reflected color for a nonreflective material.
+	w := DefaultWorld()
+	r := NewRay(Point(0, 0, 0), Vector(0, 0, 1))
+
+	shape := w.objects[1]
+
+	shape.Material().ambient = 1
+	i := NewIntersection(1, shape)
+	comps := PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+
+	color := w.ReflectedColor(comps, 10)
+	if !color.Equals(Black) {
+		t.Errorf("WorldReflect(non-reflective): expected %v to be %v", color, Black)
+	}
+
+	// The reflected color for a reflective material.
+	shape = NewPlane()
+	shape.Material().reflective = 0.5
+	shape.SetTransform(Translation(0, -1, 0))
+	w.objects = append(w.objects, shape)
+	r = NewRay(Point(0, 0, -3), Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	i = NewIntersection(math.Sqrt(2), shape)
+	comps = PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+
+	color = w.ReflectedColor(comps, 10)
+	expected := NewColor(0.19033, 0.237915, 0.142749)
+
+	if !color.Equals(expected) {
+		t.Errorf("WorldReflect(reflective): expected %v to be %v", color, expected)
+	}
+}
