@@ -315,3 +315,66 @@ func TestPrepareComputationWithRefraction(t *testing.T) {
 		t.Errorf("PrepareComputationWithRefraction: underPoint %v not valid", comps.underPoint)
 	}
 }
+
+func TestWorldRefractedColor(t *testing.T) {
+	// The refracted color with an opaque surface.
+	w := DefaultWorld()
+	shape := w.objects[0]
+	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	xs := NewIntersections([]*Intersection{NewIntersection(4, shape), NewIntersection(6, shape)})
+
+	comps := PrepareComputations(xs[0], r, xs)
+	c := w.RefractedColor(comps, 5)
+
+	if !c.Equals(Black) {
+		t.Errorf("WorldRefractedColor(opaque): expected %v to be %v", c, Black)
+	}
+
+	// The refracted color at the maximum recursive depth.
+	shape.Material().transparency = 1.0
+	shape.Material().refractiveIndex = 1.5
+
+	comps = PrepareComputations(xs[0], r, xs)
+
+	c = w.RefractedColor(comps, 0)
+	if !c.Equals(Black) {
+		t.Errorf("WorldRefractedColor(no remaining recursion): expected %v to be %v", c, Black)
+	}
+
+	//  The refracted color under total internal reflection.
+	r = NewRay(Point(0, 0, math.Sqrt(2)/2), Vector(0, 1, 0))
+	xs = NewIntersections([]*Intersection{NewIntersection(-math.Sqrt(2)/2, shape), NewIntersection(math.Sqrt(2)/2, shape)})
+
+	comps = PrepareComputations(xs[1], r, xs)
+
+	c = w.RefractedColor(comps, 5)
+
+	if !c.Equals(Black) {
+		t.Errorf("WorldRefractedColor(total internal reflection): expected %v to be %v", c, Black)
+	}
+
+	// The refracted color with a refracted ray.
+	w = DefaultWorld()
+	A := w.objects[0]
+
+	A.Material().ambient = 1.0
+	A.Material().pattern = NewPattern([][]*Color{[]*Color{}}, func(colors []*Color, point *Tuple) *Color { return NewColor(point.x, point.y, point.z) })
+
+	B := w.objects[1]
+	B.Material().transparency = 1.0
+	B.Material().refractiveIndex = 1.5
+
+	r = NewRay(Point(0, 0, 0.1), Vector(0, 1, 0))
+	xs = NewIntersections([]*Intersection{NewIntersection(-.9899, A), NewIntersection(-.4899, B), NewIntersection(.4899, B), NewIntersection(.9899, A)})
+
+	comps = PrepareComputations(xs[2], r, xs)
+
+	c = w.RefractedColor(comps, 5)
+
+	expected := NewColor(0.000000, 0.998875, 0.047219)
+
+	if !c.Equals(expected) {
+		t.Errorf("WorldRefractedColor(actual refraction): expected %v to be %v", c, expected)
+	}
+
+}

@@ -167,7 +167,7 @@ func (world *World) ColorAt(ray *Ray, remaining int) *Color {
 	return world.ShadeHit(comps, remaining)
 }
 
-// RefractedColor ...
+// RefractedColor calculates the resulting color from a simulated refraction mathematical model.
 func (world *World) RefractedColor(comps *Computation, remaining int) *Color {
 	if comps.object.Material().transparency == 0.0 || remaining < 1 {
 		return Black
