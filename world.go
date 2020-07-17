@@ -95,6 +95,10 @@ func PrepareComputations(hit *Intersection, ray *Ray, xs Intersections) *Computa
 	return comps
 }
 
+// If the intersection’s object is already in the containers list,
+// then this intersection must be exiting the object. Remove the object from the containers
+// list in this case. Otherwise, the intersection is entering the object, and
+// the object should be added to the end of the list.
 func removeIfContains(containers *[]Shape, obj Shape) bool {
 	C := *containers
 	for i, shape := range C {

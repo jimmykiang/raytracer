@@ -125,3 +125,12 @@ func (plane *Plane) SetTransform(transform Matrix) {
 func (plane *Plane) SetMaterial(material *Material) {
 	plane.material = material
 }
+
+// GlassSphere returns a sphere with transparency and refractiveIndex values simulating glass.
+func GlassSphere() *Sphere {
+	m := DefaultMaterial()
+	m.transparency = 1.0
+	m.refractiveIndex = 1.5
+	return &Sphere{Point(0, 0, 0), IdentityMatrix, m}
+
+}

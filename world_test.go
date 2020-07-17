@@ -267,5 +267,51 @@ func TestInfiniteReflection(t *testing.T) {
 	r := NewRay(Point(0, 0, 0), Vector(0, 1, 0))
 
 	w.ColorAt(r, 10)
+}
 
+func TestPrepareComputationWithRefraction(t *testing.T) {
+	// Finding n1 and n2 at various intersections.
+	A := GlassSphere()
+	A.SetTransform(Scaling(2, 2, 2))
+	A.Material().refractiveIndex = 1.5
+
+	B := GlassSphere()
+	B.SetTransform(Translation(0, 0, -.25))
+	B.Material().refractiveIndex = 2.0
+
+	C := GlassSphere()
+	C.SetTransform(Translation(0, 0, 0.25))
+	C.Material().refractiveIndex = 2.5
+
+	r := NewRay(Point(0, 0, -4), Vector(0, 0, 1))
+	xs := NewIntersections([]*Intersection{NewIntersection(2, A), NewIntersection(2.75, B), NewIntersection(3.25, C), NewIntersection(4.75, B), NewIntersection(5.25, C), NewIntersection(6, A)})
+
+	examples := map[int][2]float64{
+		0: [2]float64{1.0, 1.5},
+		1: [2]float64{1.5, 2.0},
+		2: [2]float64{2.0, 2.5},
+		3: [2]float64{2.5, 2.5},
+		4: [2]float64{2.5, 1.5},
+		5: [2]float64{1.5, 1.0},
+	}
+
+	for idx, N := range examples {
+		comps := PrepareComputations(xs[idx], r, xs)
+		n1, n2 := N[0], N[1]
+		if !floatEqual(comps.n1, n1) || !floatEqual(comps.n2, n2) {
+			t.Errorf("PrepareComputationWithRefraction: Expected %v,%v to be %v,%v", comps.n1, comps.n2, n1, n2)
+		}
+	}
+
+	// The under point is offset below the surface.
+	r = NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	shape := GlassSphere()
+	shape.SetTransform(Translation(0, 0, 1))
+	i := NewIntersection(5, shape)
+	xs = NewIntersections([]*Intersection{i})
+	comps := PrepareComputations(i, r, xs)
+
+	if !(comps.underPoint.z > EPSILON/2.0 && comps.point.z < comps.underPoint.z) {
+		t.Errorf("PrepareComputationWithRefraction: underPoint %v not valid", comps.underPoint)
+	}
 }
