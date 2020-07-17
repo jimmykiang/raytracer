@@ -132,5 +132,77 @@ func GlassSphere() *Sphere {
 	m.transparency = 1.0
 	m.refractiveIndex = 1.5
 	return &Sphere{Point(0, 0, 0), IdentityMatrix, m}
+}
 
+// Cube struct.
+type Cube struct {
+	origin    *Tuple
+	transform Matrix
+	material  *Material
+}
+
+// NewCube creates a new default NewCube centered at the origin with Identity matrix as transform and default material.
+func NewCube() *Cube {
+	return &Cube{Point(0, 0, 0), IdentityMatrix, DefaultMaterial()}
+}
+
+// Intersect computes the local intersection between a cube and a ray.
+func (cube *Cube) Intersect(ray *Ray) []*Intersection {
+
+	xTMin, xTMax := checkAxis(ray.origin.x, ray.direction.x)
+	yTMin, yTMax := checkAxis(ray.origin.y, ray.direction.y)
+	zTMin, zTMax := checkAxis(ray.origin.z, ray.direction.z)
+
+	tMin := max(xTMin, yTMin, zTMin)
+	tMax := min(xTMax, yTMax, zTMax)
+
+	return []*Intersection{
+		NewIntersection(tMin, cube),
+		NewIntersection(tMax, cube)}
+}
+
+func checkAxis(origin float64, direction float64) (tMin float64, tMax float64) {
+
+	tMinNumerator := -1 - origin
+	tMaxNumerator := 1 - origin
+
+	if abs(direction) >= EPSILON {
+		tMin = tMinNumerator / direction
+		tMax = tMaxNumerator / direction
+	} else {
+		tMin = tMinNumerator * math.Inf(1)
+		tMax = tMaxNumerator * math.Inf(1)
+	}
+
+	if tMin > tMax {
+		tMin, tMax = tMax, tMin
+	}
+	return
+}
+
+// Material returns the material of a Cube.
+func (cube *Cube) Material() *Material {
+	return cube.material
+}
+
+// NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
+func (cube *Cube) NormalAt(point *Tuple) *Tuple {
+
+	// Todo.
+	return nil
+}
+
+// SetMaterial returns the material of a Cube.
+func (cube *Cube) SetMaterial(material *Material) {
+	cube.material = material
+}
+
+// SetTransform sets the Cube's transformation.
+func (cube *Cube) SetTransform(transform Matrix) {
+	cube.transform = transform.Inverse()
+}
+
+// Transform returns the transformation.
+func (cube *Cube) Transform() Matrix {
+	return cube.transform
 }

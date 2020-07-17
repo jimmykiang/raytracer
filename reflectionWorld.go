@@ -57,9 +57,9 @@ func reflectionWorld() *Canvas {
 		MultiplyMatrix(Scaling(0.33, 0.33, 0.33)))
 	left.material = DefaultMaterial()
 	left.material.color = NewColor(1, 0, 0.1)
-	left.material.diffuse = 0.7
+	left.material.diffuse = 1
 	left.material.specular = 0.3
-	left.material.reflective = 1
+	left.material.reflective = 0.6
 	world := NewWorld(lights, []Shape{p1, right, left, middle})
 
 	camera := NewCamera(1000, 500, PI/3)

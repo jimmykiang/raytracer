@@ -111,5 +111,60 @@ func TestOverPoint(t *testing.T) {
 	if !(comps.underPoint.z > EPSILON/2.0 && comps.point.z < comps.underPoint.z) {
 		t.Errorf("PrepareComputationWithRefraction: underPoint %v not valid", comps.underPoint)
 	}
+}
 
+func TestPlaneIntersect(t *testing.T) {
+	p := NewPlane()
+	r := NewRay(Point(0, 10, 0), Vector(0, 0, 1))
+
+	xs := p.Intersect(r)
+
+	if len(xs) != 0 {
+		t.Errorf("PlaneIntersect(parallel): expected no intersections")
+	}
+
+	r = NewRay(Point(0, 0, 0), Vector(0, 0, 1))
+	xs = p.Intersect(r)
+	if len(xs) != 0 {
+		t.Errorf("PlaneIntersect(coplanar): expected no intersections")
+	}
+
+	r = NewRay(Point(0, 1, 0), Vector(0, -1, 0))
+	xs = p.Intersect(r)
+
+	if len(xs) != 1 {
+		t.Errorf("PlaneIntersect(above): expected one intersection")
+	}
+
+	if !floatEqual(xs[0].t, 1) {
+		t.Errorf("PlaneIntersect(above): expected intersection at %v to be %v", xs[0].t, 1)
+	}
+}
+
+func TestCubeIntersect(t *testing.T) {
+	// A ray intersects a cube.
+
+	c := NewCube()
+
+	expectedIntersectionMap := map[string][]interface{}{
+		"x":      []interface{}{NewRay(Point(5, 0.5, 0), Vector(-1, 0, 0)), 4, 6},
+		"-x":     []interface{}{NewRay(Point(-5, 0.5, 0), Vector(1, 0, 0)), 4, 6},
+		"y":      []interface{}{NewRay(Point(0.5, 5, 0), Vector(0, -1, 0)), 4, 6},
+		"-y":     []interface{}{NewRay(Point(0.5, -5, 0), Vector(0, 1, 0)), 4, 6},
+		"z":      []interface{}{NewRay(Point(0.5, 0, 5), Vector(0, 0, -1)), 4, 6},
+		"-z":     []interface{}{NewRay(Point(0.5, 0, -5), Vector(0, 0, 1)), 4, 6},
+		"inside": []interface{}{NewRay(Point(0, 0.5, 0), Vector(0, 0, 1)), -1, 1},
+	}
+
+	for k, v := range expectedIntersectionMap {
+		xs := c.Intersect(v[0].(*Ray))
+
+		if len(xs) != 2 {
+			t.Errorf("A ray intersects a cube count: %v expected to be %v", len(xs), 2)
+		}
+
+		if !floatEqual(xs[0].t, float64(v[1].(int))) || !floatEqual(xs[1].t, float64(v[2].(int))) {
+			t.Errorf("A ray intersects a cube: expected %v intersection xs[0].t = %v to be %v and xs[1].t = %v to be %v", k, xs[0].t, v[1], xs[1].t, v[2])
+		}
+	}
 }

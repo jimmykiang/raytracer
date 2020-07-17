@@ -70,12 +70,15 @@ func dotProducOfMatricesRowColumn(A, B []float64) float64 {
 	return total
 }
 
-// min returns the smallest value of 2 float64.
-func min(a, b float64) float64 {
-	if b < a {
-		return b
+// min returns the smallest value from the slice.
+func min(values ...float64) float64 {
+	c := values[0]
+	for i := 1; i < len(values); i++ {
+		if values[i] < c {
+			c = values[i]
+		}
 	}
-	return a
+	return c
 }
 
 // Transform returns the result of multiple chained transformations applied to a tuple in a customized order.
@@ -93,5 +96,15 @@ func (t *Tuple) Transform(transformations ...Matrix) *Tuple {
 	}
 
 	return current.MultiplyMatrixByTuple(t)
+}
 
+// max finds the highest value from the slice.
+func max(values ...float64) float64 {
+	c := values[0]
+	for i := 1; i < len(values); i++ {
+		if values[i] > c {
+			c = values[i]
+		}
+	}
+	return c
 }
