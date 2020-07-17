@@ -230,3 +230,42 @@ func TestWorldReflect(t *testing.T) {
 		t.Errorf("WorldReflect(reflective): expected %v to be %v", color, expected)
 	}
 }
+
+// shade_hit() with a reflective material.
+func TestShadeHitWithReflect(t *testing.T) {
+	w := DefaultWorld()
+	shape := NewPlane()
+	shape.Material().reflective = 0.5
+	shape.SetTransform(Translation(0, -1, 0))
+	w.objects = append(w.objects, shape)
+	r := NewRay(Point(0, 0, -3), Vector(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	i := NewIntersection(math.Sqrt(2), shape)
+	comps := PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
+
+	color := w.ShadeHit(comps, 10)
+	expected := NewColor(0.876758, 0.924341, 0.829175)
+
+	if !color.Equals(expected) {
+		t.Errorf("WorldReflect(reflective): expected %v to be %v", color, expected)
+	}
+}
+
+// color_at() with mutually reflective surfaces.
+func TestInfiniteReflection(t *testing.T) {
+	light := NewPointLight(Point(0, 0, 0), NewColor(1, 1, 1))
+
+	lower := NewPlane()
+	lower.Material().reflective = 1
+	lower.SetTransform(Translation(0, -1, 0))
+
+	upper := NewPlane()
+	upper.Material().reflective = 1
+	upper.SetTransform(Translation(0, 1, 0))
+
+	w := NewWorld([]*PointLight{light}, []Shape{lower, upper})
+
+	r := NewRay(Point(0, 0, 0), Vector(0, 1, 0))
+
+	w.ColorAt(r, 10)
+
+}
