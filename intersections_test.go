@@ -168,3 +168,26 @@ func TestCubeIntersect(t *testing.T) {
 		}
 	}
 }
+
+func TestCubeRayMisses(t *testing.T) {
+	//  A ray misses a cube.
+	c := NewCube()
+
+	expectedIntersectionMap := []*Ray{
+		NewRay(Point(-2, 0, 0), Point(0.2673, 0.5345, 0.8018)),
+		NewRay(Point(0, -2, 0), Point(0.8018, 0.2673, 0.5345)),
+		NewRay(Point(0, 0, -2), Point(0.5345, 0.8018, 0.2673)),
+		NewRay(Point(2, 0, 2), Point(0, 0, -1)),
+		NewRay(Point(0, 2, 2), Point(0, -1, 0)),
+		NewRay(Point(2, 2, 0), Point(-1, 0, 0)),
+	}
+
+	for _, v := range expectedIntersectionMap {
+		xs := c.Intersect(v)
+
+		if len(xs) != 0 {
+			t.Errorf("A ray misses a cube: expected Ray intersection count xs= %v to be %v", len(xs), 0)
+		}
+	}
+
+}

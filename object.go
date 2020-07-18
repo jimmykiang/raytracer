@@ -156,6 +156,10 @@ func (cube *Cube) Intersect(ray *Ray) []*Intersection {
 	tMin := max(xTMin, yTMin, zTMin)
 	tMax := min(xTMax, yTMax, zTMax)
 
+	if tMin > tMax {
+		return nil
+	}
+
 	return []*Intersection{
 		NewIntersection(tMin, cube),
 		NewIntersection(tMax, cube)}
