@@ -121,15 +121,17 @@ func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
 
 func (plane *Plane) localIntersect(localRay *Ray) []*Intersection {
 
+	if math.Abs(localRay.direction.y) < EPSILON {
+		return []*Intersection{}
+	}
+
 	t := -localRay.origin.y / localRay.direction.y
 	return []*Intersection{NewIntersection(t, plane)}
 }
 
 // Intersect calculates the local intersections between a ray and a plane.
 func (plane *Plane) Intersect(worldRay *Ray) []*Intersection {
-	if math.Abs(worldRay.direction.y) < EPSILON {
-		return []*Intersection{}
-	}
+
 	localRay := worldRay.Transform(plane.transform)
 	return plane.localIntersect(localRay)
 }
