@@ -190,29 +190,3 @@ func TestCubeRayMisses(t *testing.T) {
 		}
 	}
 }
-
-func TestCubeNormal(t *testing.T) {
-	// The normal on the surface of a cube
-	type cubeTest struct {
-		point, normal *Tuple
-	}
-	c := NewCube()
-	expectedNormals := []*cubeTest{
-		{point: Point(1, 0.5, -0.8), normal: Vector(1, 0, 0)},
-		{point: Point(-1, -0.2, 0.9), normal: Vector(-1, 0, 0)},
-		{point: Point(-0.4, 1, -0.1), normal: Vector(0, 1, 0)},
-		{point: Point(0.3, -1, -0.7), normal: Vector(0, -1, 0)},
-		{point: Point(-0.6, 0.3, 1), normal: Vector(0, 0, 1)},
-		{point: Point(0.4, 0.4, -1), normal: Vector(0, 0, -1)},
-		{point: Point(1, 1, 1), normal: Vector(1, 0, 0)},
-		{point: Point(-1, -1, -1), normal: Vector(-1, 0, 0)},
-	}
-
-	for _, v := range expectedNormals {
-		n := c.NormalAt(v.point)
-
-		if !n.Equals(v.normal) {
-			t.Errorf("The normal on the surface of a cube: expected %v to be %v", n, v.point)
-		}
-	}
-}

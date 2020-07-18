@@ -12,15 +12,7 @@ const PI = math.Pi
 
 //floatEqual determines if two floats are equal within a tolerance Epsilon.
 func floatEqual(a, b float64) bool {
-	return abs(a-b) < EPSILON
-}
-
-//Abs returns absolute value
-func abs(n float64) float64 {
-	if n < 0 {
-		return -n
-	}
-	return n
+	return math.Abs(a-b) < EPSILON
 }
 
 // floatToString converts a float to a String

@@ -9,7 +9,9 @@ type Shape interface {
 	Transform() Matrix
 	Material() *Material
 	Intersect(*Ray) []*Intersection
+	localIntersect(*Ray) []*Intersection
 	NormalAt(*Tuple) *Tuple
+	localNormalAt(*Tuple) *Tuple
 }
 
 // Sphere object
@@ -44,22 +46,28 @@ func (sphere *Sphere) Transform() Matrix {
 	return sphere.transform
 }
 
+func (sphere *Sphere) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+
+	localNormal = localPoint.Substract(sphere.origin)
+	return
+}
+
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
-func (sphere *Sphere) NormalAt(point *Tuple) *Tuple {
-	objectPoint := sphere.transform.MultiplyMatrixByTuple(point)
-	objectNormal := objectPoint.Substract(sphere.origin)
-	worldNormal := sphere.transform.Transpose().MultiplyMatrixByTuple(objectNormal)
+func (sphere *Sphere) NormalAt(worldPoint *Tuple) *Tuple {
+	localPoint := sphere.transform.MultiplyMatrixByTuple(worldPoint)
+
+	localNormal := sphere.localNormalAt(localPoint)
+
+	worldNormal := sphere.transform.Transpose().MultiplyMatrixByTuple(localNormal)
 
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
 
-// Intersect computes the intersection between a sphere and a ray
-func (sphere *Sphere) Intersect(ray *Ray) []*Intersection {
-	ray = ray.Transform(sphere.transform)
-	sphereToRay := ray.origin.Substract(sphere.origin)
-	a := ray.direction.DotProduct(ray.direction)
-	b := 2 * ray.direction.DotProduct(sphereToRay)
+func (sphere *Sphere) localIntersect(localRay *Ray) []*Intersection {
+	sphereToRay := localRay.origin.Substract(sphere.origin)
+	a := localRay.direction.DotProduct(localRay.direction)
+	b := 2 * localRay.direction.DotProduct(sphereToRay)
 	c := sphereToRay.DotProduct(sphereToRay) - 1
 
 	discriminant := (b * b) - 4*a*c
@@ -74,6 +82,12 @@ func (sphere *Sphere) Intersect(ray *Ray) []*Intersection {
 	return []*Intersection{NewIntersection(t1, sphere), NewIntersection(t2, sphere)}
 }
 
+// Intersect computes the intersection between a sphere and a ray
+func (sphere *Sphere) Intersect(worldRay *Ray) []*Intersection {
+	localRay := worldRay.Transform(sphere.transform)
+	return sphere.localIntersect(localRay)
+}
+
 // Plane Shape
 type Plane struct {
 	transform Matrix
@@ -86,24 +100,38 @@ func NewPlane() *Plane {
 
 }
 
+func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+
+	localNormal = Vector(0, 1, 0)
+	return
+}
+
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
-func (plane *Plane) NormalAt(point *Tuple) *Tuple {
-	localNormal := Vector(0, 1, 0)
+func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
+
+	localPoint := plane.transform.MultiplyMatrixByTuple(worldPoint)
+
+	localNormal := plane.localNormalAt(localPoint)
+
 	worldNormal := plane.transform.Transpose().MultiplyMatrixByTuple(localNormal)
 	worldNormal.w = 0
 	return worldNormal.Normalize()
 
 }
 
+func (plane *Plane) localIntersect(localRay *Ray) []*Intersection {
+
+	t := -localRay.origin.y / localRay.direction.y
+	return []*Intersection{NewIntersection(t, plane)}
+}
+
 // Intersect calculates the local intersections between a ray and a plane.
-func (plane *Plane) Intersect(ray *Ray) []*Intersection {
-	if abs(ray.direction.y) < EPSILON {
+func (plane *Plane) Intersect(worldRay *Ray) []*Intersection {
+	if math.Abs(worldRay.direction.y) < EPSILON {
 		return []*Intersection{}
 	}
-	ray = ray.Transform(plane.transform)
-	t := -ray.origin.y / ray.direction.y
-
-	return []*Intersection{NewIntersection(t, plane)}
+	localRay := worldRay.Transform(plane.transform)
+	return plane.localIntersect(localRay)
 }
 
 // Transform returns the transformation.
@@ -136,28 +164,26 @@ func GlassSphere() *Sphere {
 
 // Cube struct.
 type Cube struct {
-	origin    *Tuple
 	transform Matrix
 	material  *Material
 }
 
 // NewCube creates a new default NewCube centered at the origin with Identity matrix as transform and default material.
 func NewCube() *Cube {
-	return &Cube{Point(0, 0, 0), IdentityMatrix, DefaultMaterial()}
+	return &Cube{NewIdentityMatrix(), DefaultMaterial()}
 }
 
-// Intersect computes the local intersection between a cube and a ray.
-func (cube *Cube) Intersect(ray *Ray) []*Intersection {
+func (cube *Cube) localIntersect(localRay *Ray) []*Intersection {
 
-	xTMin, xTMax := checkAxis(ray.origin.x, ray.direction.x)
-	yTMin, yTMax := checkAxis(ray.origin.y, ray.direction.y)
-	zTMin, zTMax := checkAxis(ray.origin.z, ray.direction.z)
+	xTMin, xTMax := checkAxis(localRay.origin.x, localRay.direction.x)
+	yTMin, yTMax := checkAxis(localRay.origin.y, localRay.direction.y)
+	zTMin, zTMax := checkAxis(localRay.origin.z, localRay.direction.z)
 
 	tMin := max(xTMin, yTMin, zTMin)
 	tMax := min(xTMax, yTMax, zTMax)
 
 	if tMin > tMax {
-		return nil
+		return []*Intersection{}
 	}
 
 	return []*Intersection{
@@ -165,23 +191,32 @@ func (cube *Cube) Intersect(ray *Ray) []*Intersection {
 		NewIntersection(tMax, cube)}
 }
 
-func checkAxis(origin float64, direction float64) (tMin float64, tMax float64) {
+// Intersect computes the local intersection between a cube and a ray.
+func (cube *Cube) Intersect(worldRay *Ray) []*Intersection {
 
-	tMinNumerator := -1 - origin
-	tMaxNumerator := 1 - origin
+	ray := worldRay.Transform(cube.transform)
+	return cube.localIntersect(ray)
 
-	if abs(direction) >= EPSILON {
-		tMin = tMinNumerator / direction
-		tMax = tMaxNumerator / direction
+}
+
+func checkAxis(origin float64, direction float64) (min float64, max float64) {
+	tminNumerator := -1 - origin
+	tmaxNumerator := 1 - origin
+	var tmin, tmax float64
+	if math.Abs(direction) >= EPSILON {
+		tmin = tminNumerator / direction
+		tmax = tmaxNumerator / direction
 	} else {
-		tMin = tMinNumerator * math.Inf(1)
-		tMax = tMaxNumerator * math.Inf(1)
+		tmin = tminNumerator * math.Inf(1)
+		tmax = tmaxNumerator * math.Inf(1)
 	}
-
-	if tMin > tMax {
-		tMin, tMax = tMax, tMin
+	if tmin > tmax {
+		// swap
+		temp := tmin
+		tmin = tmax
+		tmax = temp
 	}
-	return
+	return tmin, tmax
 }
 
 // Material returns the material of a Cube.
@@ -189,18 +224,32 @@ func (cube *Cube) Material() *Material {
 	return cube.material
 }
 
-// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
-func (cube *Cube) NormalAt(point *Tuple) *Tuple {
+func (cube *Cube) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 
-	maxc := max(abs(point.x), abs(point.y), abs(point.z))
+	maxc := max(math.Abs(localPoint.x), math.Abs(localPoint.y), math.Abs(localPoint.z))
 
-	if maxc == abs(point.x) {
-		return Vector(point.x, 0, 0)
-	} else if maxc == abs(point.y) {
-		return Vector(0, point.y, 0)
+	if maxc == math.Abs(localPoint.x) {
+
+		localNormal = Vector(localPoint.x, 0, 0)
+	} else if maxc == math.Abs(localPoint.y) {
+
+		localNormal = Vector(0, localPoint.y, 0)
 	} else {
-		return Vector(0, 0, point.z)
+
+		localNormal = Vector(0, 0, localPoint.z)
 	}
+	return
+}
+
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
+func (cube *Cube) NormalAt(worldPoint *Tuple) *Tuple {
+
+	localPoint := cube.transform.MultiplyMatrixByTuple(worldPoint)
+
+	localNormal := cube.localNormalAt(localPoint)
+	worldNormal := cube.transform.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0
+	return worldNormal.Normalize()
 }
 
 // SetMaterial returns the material of a Cube.

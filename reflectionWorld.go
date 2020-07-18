@@ -35,7 +35,7 @@ func reflectionWorld() *Canvas {
 	middle.material.specular = 0.3
 	middle.material.reflective = 1
 	// refractiveIndex aproximate of glass.
-	middle.material.refractiveIndex = 0.9
+	middle.material.refractiveIndex = 1.52
 	middle.material.transparency = 1.0
 	middle.material.shininess = 300
 
@@ -60,7 +60,28 @@ func reflectionWorld() *Canvas {
 	left.material.diffuse = 1
 	left.material.specular = 0.3
 	left.material.reflective = 0.6
-	world := NewWorld(lights, []Shape{p1, right, left, middle})
+
+	// Cube.
+	cube := NewCube()
+	cube.SetTransform(
+		Translation(1.4, 1.3, 0.3).
+			MultiplyMatrix(Scaling(0.6, 0.6, 0.5)).
+			MultiplyMatrix(RotationY(-PI / 5)).
+			MultiplyMatrix(RotationZ(-PI / 7)).
+			MultiplyMatrix(RotationX(PI / 7)),
+	)
+
+	cube.material = DefaultMaterial()
+	cube.material.color = NewColor(0.4, 0.3, 0.6)
+	cube.material.diffuse = 0.4
+	cube.material.specular = 0.3
+	cube.material.reflective = 1
+
+	cube.material.refractiveIndex = 0.2
+	cube.material.transparency = 0.2
+	cube.material.shininess = 300
+
+	world := NewWorld(lights, []Shape{p1, right, left, middle, cube})
 
 	camera := NewCamera(1000, 500, PI/3)
 	camera.SetTransform(ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)))

@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestFloatEqual(t *testing.T) {
 	a := 0.0
@@ -25,7 +28,7 @@ func TestAbs(t *testing.T) {
 	a := 0.0
 	b := 1.0
 
-	pass := abs(a-b) == abs(b-a)
+	pass := math.Abs(a-b) == math.Abs(b-a)
 
 	if !pass {
 		t.Error("Abs test failed")

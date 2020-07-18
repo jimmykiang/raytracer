@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 type getColorFunc func([]*Color, *Tuple) *Color
 
 // Pattern struct.
@@ -39,7 +41,7 @@ func NewPattern(colors [][]*Color, getColor ...getColorFunc) *Pattern {
 
 // stripeFunc defines the stripe pattern.
 func stripeFunc(colors []*Color, p *Tuple) *Color {
-	return colors[(int(abs(p.x)))%len(colors)]
+	return colors[(int(math.Abs(p.x)))%len(colors)]
 }
 
 // SetTransform sets the transform for the pattern accordingly.
