@@ -189,11 +189,18 @@ func (cube *Cube) Material() *Material {
 	return cube.material
 }
 
-// NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cube *Cube) NormalAt(point *Tuple) *Tuple {
 
-	// Todo.
-	return nil
+	maxc := max(abs(point.x), abs(point.y), abs(point.z))
+
+	if maxc == abs(point.x) {
+		return Vector(point.x, 0, 0)
+	} else if maxc == abs(point.y) {
+		return Vector(0, point.y, 0)
+	} else {
+		return Vector(0, 0, point.z)
+	}
 }
 
 // SetMaterial returns the material of a Cube.

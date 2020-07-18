@@ -173,7 +173,7 @@ func TestCubeRayMisses(t *testing.T) {
 	//  A ray misses a cube.
 	c := NewCube()
 
-	expectedIntersectionMap := []*Ray{
+	expectedIntersections := []*Ray{
 		NewRay(Point(-2, 0, 0), Point(0.2673, 0.5345, 0.8018)),
 		NewRay(Point(0, -2, 0), Point(0.8018, 0.2673, 0.5345)),
 		NewRay(Point(0, 0, -2), Point(0.5345, 0.8018, 0.2673)),
@@ -182,12 +182,37 @@ func TestCubeRayMisses(t *testing.T) {
 		NewRay(Point(2, 2, 0), Point(-1, 0, 0)),
 	}
 
-	for _, v := range expectedIntersectionMap {
+	for _, v := range expectedIntersections {
 		xs := c.Intersect(v)
 
 		if len(xs) != 0 {
 			t.Errorf("A ray misses a cube: expected Ray intersection count xs= %v to be %v", len(xs), 0)
 		}
 	}
+}
 
+func TestCubeNormal(t *testing.T) {
+	// The normal on the surface of a cube
+	type cubeTest struct {
+		point, normal *Tuple
+	}
+	c := NewCube()
+	expectedNormals := []*cubeTest{
+		{point: Point(1, 0.5, -0.8), normal: Vector(1, 0, 0)},
+		{point: Point(-1, -0.2, 0.9), normal: Vector(-1, 0, 0)},
+		{point: Point(-0.4, 1, -0.1), normal: Vector(0, 1, 0)},
+		{point: Point(0.3, -1, -0.7), normal: Vector(0, -1, 0)},
+		{point: Point(-0.6, 0.3, 1), normal: Vector(0, 0, 1)},
+		{point: Point(0.4, 0.4, -1), normal: Vector(0, 0, -1)},
+		{point: Point(1, 1, 1), normal: Vector(1, 0, 0)},
+		{point: Point(-1, -1, -1), normal: Vector(-1, 0, 0)},
+	}
+
+	for _, v := range expectedNormals {
+		n := c.NormalAt(v.point)
+
+		if !n.Equals(v.normal) {
+			t.Errorf("The normal on the surface of a cube: expected %v to be %v", n, v.point)
+		}
+	}
 }
