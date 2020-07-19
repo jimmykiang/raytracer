@@ -37,3 +37,18 @@ func TestCheckersPattern(t *testing.T) {
 		}
 	}
 }
+
+func TestGradientPattern(t *testing.T) {
+	pattern := GradientPattern(White, Black)
+	expected := []*Color{White, NewColor(.75, .75, .75), NewColor(0.5, 0.5, 0.5), NewColor(.25, .25, .25)}
+
+	i := 0
+
+	for x := 0.0; x < 1.0; x += .25 {
+		c := pattern.ColorAt(Point(x, 0, 0))
+		if !c.Equals(expected[i]) {
+			t.Errorf("GradientPattern: expected %v to be %v", c, expected[i])
+		}
+		i++
+	}
+}

@@ -8,6 +8,8 @@ import (
 
 //EPSILON is the error tolerance used for practical comparisons.
 const EPSILON = 0.00001
+
+// PI constant value.
 const PI = math.Pi
 
 //floatEqual determines if two floats are equal within a tolerance Epsilon.

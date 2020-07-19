@@ -49,15 +49,47 @@ func (pattern *Pattern) SetTransform(transform Matrix) {
 	pattern.transform = transform.Inverse()
 }
 
-// CheckersPattern creates a new checker patter using the checkersFunc().
+// CheckersPattern creates a new checker pattern using the checkersFunc().
 func CheckersPattern(a, b *Color) *Pattern {
 	return NewPattern([][]*Color{[]*Color{a, b}}, checkersFunc)
 }
 
-// // checkersFunc defines the checkers pattern.
+// checkersFunc defines the checkers pattern.
 var checkersFunc = func(colors []*Color, p *Tuple) *Color {
 	if (int(p.x)+int(p.y)+int(p.z))%2 == 0 {
 		return colors[0]
 	}
 	return colors[1]
+}
+
+// gradientFunc defines a gradient pattern.
+func gradientFunc(colors []*Color, p *Tuple) *Color {
+	dist := colors[1].Subtract(colors[0])
+	frac := p.x - math.Floor(p.x)
+
+	return colors[0].Add(dist.MultiplyByScalar(frac))
+}
+
+// GradientPattern creates a new gradient pattern using the gradientFunc().
+func GradientPattern(a, b *Color) *Pattern {
+	return NewPattern([][]*Color{[]*Color{a, b}}, gradientFunc)
+}
+
+// PatternChain chains patterns together.
+func PatternChain(patterns ...*Pattern) *Pattern {
+	colors := [][]*Color{}
+	funcs := []getColorFunc{}
+	transform := NewIdentityMatrix()
+	for _, p := range patterns {
+		for _, cs := range p.colors {
+			colors = append(colors, cs)
+		}
+		for _, f := range p.funcs {
+			funcs = append(funcs, f)
+		}
+		transform = transform.MultiplyMatrix(p.transform)
+	}
+	resultPatterns := NewPattern(colors, funcs...)
+	resultPatterns.SetTransform(transform)
+	return resultPatterns
 }

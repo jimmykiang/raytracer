@@ -47,8 +47,17 @@ func scenePattern() *Canvas {
 
 	left := NewSphere()
 	left.SetTransform(Translation(-1.5, 0.33, -0.75).
-		MultiplyMatrix(Scaling(0.33, 0.33, 0.33)))
+		MultiplyMatrix(Scaling(0.33, 0.33, 0.33)).
+		MultiplyMatrix(RotationZ(PI / 7)),
+	)
 	left.material = DefaultMaterial()
+	left.material.pattern = GradientPattern(NewColor(1, 1, 0), NewColor(0, 0, 1))
+	left.material.pattern.SetTransform(
+		Scaling(2, 1, 1).
+			MultiplyMatrix(Translation(0.5, 0, 0)),
+	)
+	left.material.pattern = PatternChain(middle.material.pattern, left.material.pattern)
+
 	left.material.color = NewColor(1, 0.8, 0.1)
 	left.material.diffuse = 0.7
 	left.material.specular = 0.3
