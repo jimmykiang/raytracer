@@ -19,7 +19,7 @@ func (pattern *Pattern) ColorAtObject(object Shape, worldPoint *Tuple) *Color {
 	return pattern.ColorAt(patternPoint)
 }
 
-// ColorAt returns a reference to Color at a specific point in the pattern.
+// ColorAt returns a reference to Color at a specific point in world space of the pattern.
 func (pattern *Pattern) ColorAt(p *Tuple) *Color {
 	color := Black
 	for i := 0; i < len(pattern.funcs); i++ {

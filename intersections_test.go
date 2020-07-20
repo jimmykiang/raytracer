@@ -190,3 +190,23 @@ func TestCubeRayMisses(t *testing.T) {
 		}
 	}
 }
+
+func TestCylinderRayMisses(t *testing.T) {
+	//  A ray misses a cylinder.
+
+	c := NewCylinder()
+
+	expectedIntersections := []*Ray{
+		NewRay(Point(1, 0, 0), Point(0, 1, 0)),
+		NewRay(Point(0, 0, 0), Point(0, 1, 0)),
+		NewRay(Point(0, 0, -5), Point(1, 1, 1)),
+	}
+
+	for _, v := range expectedIntersections {
+		xs := c.Intersect(v)
+
+		if len(xs) != 0 {
+			t.Errorf("A ray misses a cylinder: expected Ray intersection count to be xs= %v, got %v", 0, len(xs))
+		}
+	}
+}

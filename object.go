@@ -268,3 +268,78 @@ func (cube *Cube) SetTransform(transform Matrix) {
 func (cube *Cube) Transform() Matrix {
 	return cube.transform
 }
+
+// Cylinder struct.
+type Cylinder struct {
+	transform Matrix
+	material  *Material
+}
+
+// NewCylinder creates a new default Cylinder centered at the origin with Identity matrix as transform and default material.
+func NewCylinder() *Cylinder {
+	return &Cylinder{NewIdentityMatrix(), DefaultMaterial()}
+}
+
+// Intersect calculates the local intersections between a ray and a cylinder.
+func (cylinder *Cylinder) Intersect(worldRay *Ray) []*Intersection {
+
+	// localRay := worldRay.Transform(cylinder.transform)
+	return nil
+}
+
+func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
+
+	a := math.Pow(localRay.direction.x, 2) + math.Pow(localRay.direction.z, 2)
+
+	// localRay is parallel to the y axis.
+	if math.Abs(a) < EPSILON {
+		return []*Intersection{}
+	}
+
+	b := 2*localRay.origin.x*localRay.direction.x +
+		2*localRay.origin.z*localRay.direction.z
+
+	c := math.Pow(localRay.origin.x, 2) + math.Pow(localRay.origin.z, 2) - 1
+
+	disc := b*b - 4*a*c
+
+	// localRay does not intersect the cylinder.
+	if disc < 0 {
+		return []*Intersection{}
+	}
+
+	return []*Intersection{
+		NewIntersection(1, cylinder),
+	}
+}
+
+// Material returns the material of a Sphere.
+func (cylinder *Cylinder) Material() *Material {
+	return cylinder.material
+}
+
+// SetTransform sets the spheres transformation.
+func (cylinder *Cylinder) SetTransform(transformation Matrix) {
+	cylinder.transform = transformation.Inverse()
+}
+
+// SetMaterial sets the spheres material.
+func (cylinder *Cylinder) SetMaterial(material *Material) {
+	cylinder.material = material
+}
+
+//Transform returns the transformation.
+func (cylinder *Cylinder) Transform() Matrix {
+	return nil
+}
+
+func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+
+	localNormal = nil
+	return
+}
+
+// NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
+func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
+	return nil
+}
