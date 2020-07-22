@@ -9,21 +9,21 @@ func TestSphereNormal(t *testing.T) {
 
 	// The normal on a sphere at a point on the x axis.
 	s := NewSphere()
-	n := s.NormalAt(Point(1, 0, 0))
+	n := s.localNormalAt(Point(1, 0, 0))
 	expected := Vector(1, 0, 0)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
 	}
 
 	// The normal on a sphere at a point on the y axis.
-	n = s.NormalAt(Point(0, 1, 0))
+	n = s.localNormalAt(Point(0, 1, 0))
 	expected = Vector(0, 1, 0)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
 	}
 
 	// The normal on a sphere at a point on the z axis.
-	n = s.NormalAt(Point(0, 0, 1))
+	n = s.localNormalAt(Point(0, 0, 1))
 	expected = Vector(0, 0, 1)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
@@ -31,7 +31,7 @@ func TestSphereNormal(t *testing.T) {
 
 	// The normal on a sphere at a nonaxial point.
 	v := math.Sqrt(3) / 3
-	n = s.NormalAt(Point(v, v, v))
+	n = s.localNormalAt(Point(v, v, v))
 	expected = Vector(v, v, v)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
@@ -59,9 +59,9 @@ func TestSphereNormal(t *testing.T) {
 // The normal of a plane is constant everywhere
 func TestPlaneNormal(t *testing.T) {
 	p := NewPlane()
-	n1 := p.NormalAt(Point(0, 0, 0))
-	n2 := p.NormalAt(Point(10, 0, -10))
-	n3 := p.NormalAt(Point(-5, 0, 150))
+	n1 := p.localNormalAt(Point(0, 0, 0))
+	n2 := p.localNormalAt(Point(10, 0, -10))
+	n3 := p.localNormalAt(Point(-5, 0, 150))
 	expected := Vector(0, 1, 0)
 
 	if !n1.Equals(expected) {
@@ -93,10 +93,35 @@ func TestCubeNormal(t *testing.T) {
 	}
 
 	for _, v := range expectedNormals {
-		n := c.NormalAt(v.point)
+		n := c.localNormalAt(v.point)
 
 		if !n.Equals(v.normal) {
 			t.Errorf("The normal on the surface of a cube, got: %v and expected to be %v", n, v.normal)
+		}
+	}
+}
+
+func TestCylinderNormal(t *testing.T) {
+	// Normal vector on a cylinder.
+
+	type cylindertest struct {
+		point, normal *Tuple
+	}
+
+	c := NewCylinder()
+
+	expectedNormals := []*cylindertest{
+		{point: Point(1, 0, 0), normal: Vector(1, 0, 0)},
+		{point: Point(0, 5, -1), normal: Vector(0, 0, -1)},
+		{point: Point(0, -2, 1), normal: Vector(0, 0, 1)},
+		{point: Point(-1, 1, 0), normal: Vector(-1, 0, 0)},
+	}
+
+	for _, v := range expectedNormals {
+		n := c.localNormalAt(v.point)
+
+		if !n.Equals(v.normal) {
+			t.Errorf("Normal vector on a cylinder, got: %v and expected to be %v", n, v.normal)
 		}
 	}
 }

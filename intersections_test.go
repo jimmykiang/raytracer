@@ -212,7 +212,7 @@ func TestCylinderRayMisses(t *testing.T) {
 }
 
 func TestCylinderRayStrike(t *testing.T) {
-	//  A ray strikes a cylinder.
+	// A ray strikes a cylinder.
 
 	type cylindertest struct {
 		point, vector *Tuple

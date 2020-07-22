@@ -337,10 +337,9 @@ func (cylinder *Cylinder) Transform() Matrix {
 	return nil
 }
 
-func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
 
-	localNormal = nil
-	return
+	return Vector(localPoint.x, 0, localPoint.z)
 }
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
