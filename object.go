@@ -271,20 +271,26 @@ func (cube *Cube) Transform() Matrix {
 
 // Cylinder struct.
 type Cylinder struct {
-	transform Matrix
-	material  *Material
+	transform        Matrix
+	material         *Material
+	minimum, maximum float64
 }
 
 // NewCylinder creates a new default Cylinder centered at the origin with Identity matrix as transform and default material.
 func NewCylinder() *Cylinder {
-	return &Cylinder{NewIdentityMatrix(), DefaultMaterial()}
+	return &Cylinder{
+		transform: NewIdentityMatrix(),
+		material:  DefaultMaterial(),
+		minimum:   math.Inf(-1),
+		maximum:   math.Inf(1),
+	}
 }
 
 // Intersect calculates the local intersections between a ray and a cylinder.
 func (cylinder *Cylinder) Intersect(worldRay *Ray) []*Intersection {
 
-	// localRay := worldRay.Transform(cylinder.transform)
-	return nil
+	localRay := worldRay.Transform(cylinder.transform)
+	return cylinder.localIntersect(localRay)
 }
 
 func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
@@ -342,7 +348,13 @@ func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
 	return Vector(localPoint.x, 0, localPoint.z)
 }
 
-// NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
-	return nil
+
+	localPoint := cylinder.transform.MultiplyMatrixByTuple(worldPoint)
+
+	localNormal := cylinder.localNormalAt(localPoint)
+	worldNormal := cylinder.transform.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0
+	return worldNormal.Normalize()
 }

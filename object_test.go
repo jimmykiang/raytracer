@@ -125,3 +125,17 @@ func TestCylinderNormal(t *testing.T) {
 		}
 	}
 }
+
+func TestCylinderMinMax(t *testing.T) {
+	// The default minimum and maximum for a cylinder.
+
+	c := NewCylinder()
+
+	if c.minimum != math.Inf(-1) {
+		t.Errorf("The default minimum for a cylinder, got: %v and expected to be %v", c.minimum, math.Inf(-1))
+	}
+
+	if c.maximum != math.Inf(1) {
+		t.Errorf("The default maximum for a cylinder, got: %v and expected to be %v", c.maximum, math.Inf(1))
+	}
+}
