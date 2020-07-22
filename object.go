@@ -308,8 +308,12 @@ func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
 		return []*Intersection{}
 	}
 
+	t0 := (-b - math.Sqrt(disc)) / (2 * a)
+	t1 := (-b + math.Sqrt(disc)) / (2 * a)
+
 	return []*Intersection{
-		NewIntersection(1, cylinder),
+		NewIntersection(t0, cylinder),
+		NewIntersection(t1, cylinder),
 	}
 }
 

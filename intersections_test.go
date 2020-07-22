@@ -38,10 +38,10 @@ func TestIntersections(t *testing.T) {
 		}
 	}
 
-	// Intersect sets the object on the intersection.
+	// localIntersect sets the object on the intersection.
 	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
 	s = NewSphere()
-	xs = s.Intersect(r)
+	xs = s.localIntersect(r)
 
 	if len(xs) != 2 {
 		t.Errorf("TestIntersections: expected number of intersections to be %v but got %v", 2, len(xs))
@@ -117,20 +117,20 @@ func TestPlaneIntersect(t *testing.T) {
 	p := NewPlane()
 	r := NewRay(Point(0, 10, 0), Vector(0, 0, 1))
 
-	xs := p.Intersect(r)
+	xs := p.localIntersect(r)
 
 	if len(xs) != 0 {
 		t.Errorf("PlaneIntersect(parallel): expected no intersections")
 	}
 
 	r = NewRay(Point(0, 0, 0), Vector(0, 0, 1))
-	xs = p.Intersect(r)
+	xs = p.localIntersect(r)
 	if len(xs) != 0 {
 		t.Errorf("PlaneIntersect(coplanar): expected no intersections")
 	}
 
 	r = NewRay(Point(0, 1, 0), Vector(0, -1, 0))
-	xs = p.Intersect(r)
+	xs = p.localIntersect(r)
 
 	if len(xs) != 1 {
 		t.Errorf("PlaneIntersect(above): expected one intersection")
@@ -157,7 +157,7 @@ func TestCubeIntersect(t *testing.T) {
 	}
 
 	for k, v := range expectedIntersectionMap {
-		xs := c.Intersect(v[0].(*Ray))
+		xs := c.localIntersect(v[0].(*Ray))
 
 		if len(xs) != 2 {
 			t.Errorf("A ray intersects a cube count: %v expected to be %v", len(xs), 2)
@@ -183,7 +183,7 @@ func TestCubeRayMisses(t *testing.T) {
 	}
 
 	for _, v := range expectedIntersections {
-		xs := c.Intersect(v)
+		xs := c.localIntersect(v)
 
 		if len(xs) != 0 {
 			t.Errorf("A ray misses a cube: expected Ray intersection count xs= %v to be %v", len(xs), 0)
@@ -203,10 +203,36 @@ func TestCylinderRayMisses(t *testing.T) {
 	}
 
 	for _, v := range expectedIntersections {
-		xs := c.Intersect(v)
+		xs := c.localIntersect(v)
 
 		if len(xs) != 0 {
 			t.Errorf("A ray misses a cylinder: expected Ray intersection count to be xs= %v, got %v", 0, len(xs))
+		}
+	}
+}
+
+func TestCylinderRayStrike(t *testing.T) {
+	//  A ray strikes a cylinder.
+
+	type cylindertest struct {
+		point, vector *Tuple
+		t0            float64
+		t1            float64
+	}
+
+	c := NewCylinder()
+
+	expectedIntersections := []*cylindertest{
+		{point: Point(1, 0, -5), vector: Vector(0, 0, 1), t0: 5, t1: 5},
+		{point: Point(1, 0, -5), vector: Vector(0, 0, 1), t0: 4, t1: 6},
+		{point: Point(0.5, 0, -5), vector: Vector(0.1, 1, 1), t0: 6.80798, t1: 7.08872},
+	}
+
+	for _, v := range expectedIntersections {
+		xs := c.localIntersect(NewRay(v.point, v.vector))
+
+		if len(xs) != 2 {
+			t.Errorf("A ray strikes a cylinder: expected Ray intersection count to be xs= %v, got %v", 2, len(xs))
 		}
 	}
 }
