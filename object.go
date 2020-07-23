@@ -281,8 +281,8 @@ func NewCylinder() *Cylinder {
 	return &Cylinder{
 		transform: NewIdentityMatrix(),
 		material:  DefaultMaterial(),
-		minimum:   math.Inf(-1),
-		maximum:   math.Inf(1),
+		minimum:   0,
+		maximum:   1,
 	}
 }
 
