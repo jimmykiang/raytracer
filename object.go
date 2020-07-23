@@ -274,6 +274,7 @@ type Cylinder struct {
 	transform        Matrix
 	material         *Material
 	minimum, maximum float64
+	closed           bool
 }
 
 // NewCylinder creates a new default Cylinder centered at the origin with Identity matrix as transform and default material.
@@ -281,8 +282,8 @@ func NewCylinder() *Cylinder {
 	return &Cylinder{
 		transform: NewIdentityMatrix(),
 		material:  DefaultMaterial(),
-		minimum:   0,
-		maximum:   1,
+		minimum:   math.Inf(-1),
+		maximum:   math.Inf(1),
 	}
 }
 
@@ -299,7 +300,7 @@ func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
 
 	// localRay is parallel to the y axis.
 	if math.Abs(a) < EPSILON {
-		return []*Intersection{}
+		return cylinder.intersectCaps(localRay, Intersections{})
 	}
 
 	b := 2*localRay.origin.x*localRay.direction.x +
@@ -331,7 +332,7 @@ func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
 		xs = append(xs, NewIntersection(t1, cylinder))
 	}
 
-	return xs
+	return cylinder.intersectCaps(localRay, xs)
 }
 
 // Material returns the material of a Sphere.
@@ -368,4 +369,34 @@ func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
 	worldNormal := cylinder.transform.Transpose().MultiplyMatrixByTuple(localNormal)
 	worldNormal.w = 0
 	return worldNormal.Normalize()
+}
+
+// Checks to see if the intersection at `t` is within a radius of 1 (the radius of your cylinders) from the y axis.
+func checkCap(ray *Ray, t float64) bool {
+	x := ray.origin.x + t*ray.direction.x
+	z := ray.origin.z + t*ray.direction.z
+	return math.Pow(x, 2)+math.Pow(z, 2) <= 1.0
+}
+
+func (cylinder *Cylinder) intersectCaps(ray *Ray, xs Intersections) Intersections {
+
+	// Caps only matter if the cylinder is closed, and might possibly be intersected by the ray.
+	if !cylinder.closed || math.Abs(ray.direction.y) < EPSILON {
+		return xs
+	}
+
+	// check for an intersection with the lower end cap by intersecting
+	// the ray with the plane at y=cyl.minimum.
+	t := (cylinder.minimum - ray.origin.y) / ray.direction.y
+	if checkCap(ray, t) {
+		xs = append(xs, NewIntersection(t, cylinder))
+	}
+
+	// check for an intersection with the upper end cap by intersecting
+	// the ray with the plane at y=cyl.maximum.
+	t = (cylinder.maximum - ray.origin.y) / ray.direction.y
+	if checkCap(ray, t) {
+		xs = append(xs, NewIntersection(t, cylinder))
+	}
+	return xs
 }

@@ -36,6 +36,8 @@ func cylinderScene() *Canvas {
 	// The smaller green sphere on the right is scaled in half.
 
 	right := NewCylinder()
+	right.minimum = 1
+	right.maximum = 1.5
 	right.SetTransform(Translation(1.5, 0.5, -0.5).
 		MultiplyMatrix(Scaling(0.5, 0.5, 0.5)).
 		MultiplyMatrix(RotationX(-PI / 8)),

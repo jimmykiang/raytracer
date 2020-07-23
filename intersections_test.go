@@ -266,3 +266,33 @@ func TestCylinderConstraints(t *testing.T) {
 		}
 	}
 }
+
+func TestCylinderCapsIntersection(t *testing.T) {
+	// Intersecting the caps of a closed cylinder
+
+	type cylindertest struct {
+		point, direction  *Tuple
+		intersectionCount int
+	}
+
+	c := NewCylinder()
+	c.minimum = 1
+	c.maximum = 2
+	c.closed = true
+
+	expectedIntersections := []*cylindertest{
+		{point: Point(0, 3, 0), direction: Vector(0, -1, 0), intersectionCount: 2},
+		{point: Point(0, 3, -2), direction: Vector(0, -1, 2), intersectionCount: 2},
+		{point: Point(0, 4, -2), direction: Vector(0, -1, 1), intersectionCount: 2},
+		{point: Point(0, 0, -2), direction: Vector(0, 1, 2), intersectionCount: 2},
+		{point: Point(0, -1, -2), direction: Vector(0, 1, 1), intersectionCount: 2},
+	}
+
+	for _, v := range expectedIntersections {
+		xs := c.localIntersect(NewRay(v.point, v.direction))
+
+		if len(xs) != v.intersectionCount {
+			t.Errorf("A ray strikes a cylinder: expected Ray intersection count to be xs= %v, got %v", v.intersectionCount, len(xs))
+		}
+	}
+}

@@ -139,3 +139,14 @@ func TestCylinderMinMax(t *testing.T) {
 		t.Errorf("The default maximum for a cylinder, got: %v and expected to be %v", c.maximum, math.Inf(1))
 	}
 }
+
+func TestCylinderClosedValue(t *testing.T) {
+	// The default closed value for a cylinder.
+
+	c := NewCylinder()
+
+	if c.closed != false {
+		t.Errorf("The default closed value for a cylinder, got: %v and expected to be %v", c.closed, false)
+	}
+
+}
