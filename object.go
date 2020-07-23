@@ -317,10 +317,21 @@ func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
 	t0 := (-b - math.Sqrt(disc)) / (2 * a)
 	t1 := (-b + math.Sqrt(disc)) / (2 * a)
 
-	return []*Intersection{
-		NewIntersection(t0, cylinder),
-		NewIntersection(t1, cylinder),
+	xs := Intersections{}
+
+	y0 := localRay.origin.y + t0*localRay.direction.y
+
+	if cylinder.minimum < y0 && y0 < cylinder.maximum {
+		xs = append(xs, NewIntersection(t0, cylinder))
 	}
+
+	y1 := localRay.origin.y + t1*localRay.direction.y
+
+	if cylinder.minimum < y1 && y1 < cylinder.maximum {
+		xs = append(xs, NewIntersection(t1, cylinder))
+	}
+
+	return xs
 }
 
 // Material returns the material of a Sphere.

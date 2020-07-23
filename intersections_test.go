@@ -215,24 +215,54 @@ func TestCylinderRayStrike(t *testing.T) {
 	// A ray strikes a cylinder.
 
 	type cylindertest struct {
-		point, vector *Tuple
-		t0            float64
-		t1            float64
+		point, direction *Tuple
+		t0               float64
+		t1               float64
 	}
 
 	c := NewCylinder()
 
 	expectedIntersections := []*cylindertest{
-		{point: Point(1, 0, -5), vector: Vector(0, 0, 1), t0: 5, t1: 5},
-		{point: Point(1, 0, -5), vector: Vector(0, 0, 1), t0: 4, t1: 6},
-		{point: Point(0.5, 0, -5), vector: Vector(0.1, 1, 1), t0: 6.80798, t1: 7.08872},
+		{point: Point(1, 0, -5), direction: Vector(0, 0, 1), t0: 5, t1: 5},
+		{point: Point(1, 0, -5), direction: Vector(0, 0, 1), t0: 4, t1: 6},
+		{point: Point(0.5, 0, -5), direction: Vector(0.1, 1, 1), t0: 6.80798, t1: 7.08872},
 	}
 
 	for _, v := range expectedIntersections {
-		xs := c.localIntersect(NewRay(v.point, v.vector))
+		xs := c.localIntersect(NewRay(v.point, v.direction))
 
 		if len(xs) != 2 {
 			t.Errorf("A ray strikes a cylinder: expected Ray intersection count to be xs= %v, got %v", 2, len(xs))
+		}
+	}
+}
+
+func TestCylinderConstraints(t *testing.T) {
+	// Intersecting a constrained cylinder.
+
+	type cylindertest struct {
+		point, direction  *Tuple
+		intersectionCount int
+	}
+
+	c := NewCylinder()
+	c.minimum = 1
+	c.maximum = 2
+
+	expectedIntersections := []*cylindertest{
+		{point: Point(0, 1.5, 0), direction: Vector(0.1, 1, 0), intersectionCount: 0},
+		{point: Point(0, 3, -5), direction: Vector(0, 0, 1), intersectionCount: 0},
+		{point: Point(0, 0, -5), direction: Vector(0, 0, 1), intersectionCount: 0},
+		{point: Point(0, 2, -5), direction: Vector(0, 0, 1), intersectionCount: 0},
+		{point: Point(0, 1, -5), direction: Vector(0, 0, 1), intersectionCount: 0},
+		{point: Point(0, 1.5, -2), direction: Vector(0, 0, 1), intersectionCount: 2},
+	}
+
+	for _, v := range expectedIntersections {
+		xs := c.localIntersect(NewRay(v.point, v.direction))
+
+		if len(xs) != v.intersectionCount {
+			t.Errorf("A ray strikes a cylinder: expected Ray intersection count to be xs= %v, got %v", v.intersectionCount, len(xs))
 		}
 	}
 }
