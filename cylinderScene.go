@@ -27,7 +27,12 @@ func cylinderScene() *Canvas {
 		MultiplyMatrix(RotationX(PI / 6)))
 
 	middle.material = DefaultMaterial()
-	middle.material.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
+	// middle.material.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
+
+	middle.material.pattern = PatternChain(
+		StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7)),
+		CheckersPattern(NewColor(1, 0, 1), NewColor(0, 1, 0)),
+	)
 	middle.material.pattern.SetTransform(RotationZ(PI / 6).
 		MultiplyMatrix(RotationY(-PI / 3)).
 		MultiplyMatrix(Scaling(0.03, 1, 1)))

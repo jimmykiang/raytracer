@@ -86,7 +86,9 @@ func reflectionWorld() *Canvas {
 	camera := NewCamera(1000, 500, PI/3)
 	camera.SetTransform(ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)))
 
-	canvas := camera.Render(world, defaultRecursionDepth)
+	// canvas := camera.Render(world, defaultRecursionDepth)
+	canvas := camera.RenderWithThreadPool(world, defaultRecursionDepth)
+
 	fmt.Println("Render time: ", time.Now().Sub(start))
 
 	return canvas

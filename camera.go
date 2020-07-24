@@ -85,3 +85,64 @@ func (cam *Camera) Render(world *World, recursionDepth int) *Canvas {
 	wg.Wait()
 	return image
 }
+
+type renderResult struct {
+	x, y  int
+	color *Color
+}
+
+// renderWorker function meant to be instantiated as a independent thread.
+func (cam *Camera) renderWorker(world *World, recursionDepth int, jobs <-chan int, results chan<- *renderResult, wg *sync.WaitGroup, workerId int) {
+	defer wg.Done()
+
+	for y := range jobs {
+		for x := 0; x < cam.hsize; x++ {
+			ray := cam.RayForPixel(x, y)
+
+			// fmt.Println("worker:", workerId, "got job y:", y, "x:", x, "color", world.ColorAt(ray, recursionDepth))
+
+			results <- &renderResult{
+				color: world.ColorAt(ray, recursionDepth),
+				x:     x,
+				y:     y,
+			}
+
+		}
+	}
+}
+
+// RenderWithThreadPool calculates the render of a given world on a canvas from the view of the camera.
+// this will use a limited amount of threads as workers for rendering.
+func (cam *Camera) RenderWithThreadPool(world *World, recursionDepth int) *Canvas {
+	image := NewCanvas(cam.hsize, cam.vsize)
+
+	var wg sync.WaitGroup
+
+	// Amount of threads
+	threadSize := 7
+	numJobs := cam.vsize
+	resultSize := cam.vsize * cam.hsize
+	jobs := make(chan int, numJobs)
+	results := make(chan *renderResult, resultSize)
+
+	for worker := 1; worker <= threadSize; worker++ {
+		wg.Add(1)
+		go cam.renderWorker(world, recursionDepth, jobs, results, &wg, worker)
+	}
+
+	for y := 0; y < numJobs; y++ {
+
+		jobs <- y
+	}
+	close(jobs)
+
+	for a := 0; a < resultSize; a++ {
+
+		resultStruct := <-results
+		image.WritePixel((*resultStruct).x, (*resultStruct).y, (*resultStruct).color)
+	}
+
+	wg.Wait()
+
+	return image
+}
