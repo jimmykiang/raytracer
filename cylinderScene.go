@@ -18,9 +18,12 @@ func cylinderScene() *Canvas {
 
 	// The large sphere in the middle is a unit sphere, translated upward slightly and colored green.
 
-	middle := NewSphere()
+	middle := NewCylinder()
+	middle.closed = false
+	middle.minimum = 1
+	middle.maximum = 1.5
 	middle.SetTransform(Scaling(1.1, 1.1, 1.1).
-		MultiplyMatrix(Translation(-0.5, 1, 0.5)).
+		MultiplyMatrix(Translation(-0.5, 0.3, 0.5)).
 		MultiplyMatrix(RotationX(PI / 6)))
 
 	middle.material = DefaultMaterial()

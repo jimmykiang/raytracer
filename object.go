@@ -352,7 +352,7 @@ func (cylinder *Cylinder) SetMaterial(material *Material) {
 
 //Transform returns the transformation.
 func (cylinder *Cylinder) Transform() Matrix {
-	return nil
+	return cylinder.transform
 }
 
 func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
