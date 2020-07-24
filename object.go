@@ -357,7 +357,18 @@ func (cylinder *Cylinder) Transform() Matrix {
 
 func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
 
-	return Vector(localPoint.x, 0, localPoint.z)
+	// Compute the square of the distance from the y axis.
+	dist := math.Pow(localPoint.x, 2) + math.Pow(localPoint.z, 2)
+
+	if dist < 1 && localPoint.y >= cylinder.maximum-EPSILON {
+		return Vector(0, 1, 0)
+
+	} else if dist < 1 && localPoint.y <= cylinder.minimum+EPSILON {
+		return Vector(0, -1, 0)
+
+	} else {
+		return Vector(localPoint.x, 0, localPoint.z)
+	}
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.

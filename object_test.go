@@ -148,5 +148,34 @@ func TestCylinderClosedValue(t *testing.T) {
 	if c.closed != false {
 		t.Errorf("The default closed value for a cylinder, got: %v and expected to be %v", c.closed, false)
 	}
+}
 
+func TestCylinderEndCapsNormal(t *testing.T) {
+	// The normal vector on a cylinder's end caps.
+
+	type cylindertest struct {
+		point, normal *Tuple
+	}
+
+	c := NewCylinder()
+	c.minimum = 1
+	c.maximum = 2
+	c.closed = true
+
+	expectedNormals := []*cylindertest{
+		{point: Point(0, 1, 0), normal: Vector(0, -1, 0)},
+		{point: Point(0.5, 1, 0), normal: Vector(0, -1, 0)},
+		{point: Point(0, 1, 0.5), normal: Vector(0, -1, 0)},
+		{point: Point(0, 2, 0), normal: Vector(0, 1, 0)},
+		{point: Point(0.5, 2, 0), normal: Vector(0, 1, 0)},
+		{point: Point(0, 2, 0.5), normal: Vector(0, 1, 0)},
+	}
+
+	for _, v := range expectedNormals {
+		n := c.localNormalAt(v.point)
+
+		if !n.Equals(v.normal) {
+			t.Errorf("The normal vector on a cylinder's end caps, got: %v and expected to be %v", n, v.normal)
+		}
+	}
 }
