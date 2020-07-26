@@ -296,3 +296,33 @@ func TestCylinderCapsIntersection(t *testing.T) {
 		}
 	}
 }
+
+func TestConeRayIntersect(t *testing.T) {
+	// Intersecting a cone with a ray.
+
+	type conetest struct {
+		point, direction *Tuple
+		t0               float64
+		t1               float64
+	}
+
+	c := NewCone()
+
+	expectedIntersections := []*conetest{
+		{point: Point(0, 0, -5), direction: Vector(0, 0, 1), t0: 5, t1: 5},
+		{point: Point(0, 0, -5), direction: Vector(1, 1, 1), t0: 8.66025, t1: 8.66025},
+		{point: Point(1, 1, -5), direction: Vector(-0.5, -1, 1), t0: 4.55006, t1: 49.44994},
+	}
+
+	for _, v := range expectedIntersections {
+		xs := c.localIntersect(NewRay(v.point, v.direction.Normalize()))
+
+		if len(xs) != 2 {
+			t.Errorf("Intersecting a cone with a ray: expected Ray intersection count to be xs= %v, got %v", 2, len(xs))
+		}
+
+		if !floatEqual(xs[0].t, v.t0) || !floatEqual(xs[1].t, v.t1) {
+			t.Errorf("A ray intersects a cube: expected intersection xs[0].t = %v to be %v and xs[1].t = %v to be %v", xs[0].t, v.t0, xs[1].t, v.t1)
+		}
+	}
+}

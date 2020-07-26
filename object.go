@@ -383,7 +383,7 @@ func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
 }
 
 // Checks to see if the intersection at `t` is within a radius of 1 (the radius of your cylinders) from the y axis.
-func checkCap(ray *Ray, t float64) bool {
+func (cylinder *Cylinder) checkCap(ray *Ray, t float64) bool {
 	x := ray.origin.x + t*ray.direction.x
 	z := ray.origin.z + t*ray.direction.z
 	return math.Pow(x, 2)+math.Pow(z, 2) <= 1.0
@@ -399,15 +399,170 @@ func (cylinder *Cylinder) intersectCaps(ray *Ray, xs Intersections) Intersection
 	// check for an intersection with the lower end cap by intersecting
 	// the ray with the plane at y=cyl.minimum.
 	t := (cylinder.minimum - ray.origin.y) / ray.direction.y
-	if checkCap(ray, t) {
+	if cylinder.checkCap(ray, t) {
 		xs = append(xs, NewIntersection(t, cylinder))
 	}
 
 	// check for an intersection with the upper end cap by intersecting
 	// the ray with the plane at y=cyl.maximum.
 	t = (cylinder.maximum - ray.origin.y) / ray.direction.y
-	if checkCap(ray, t) {
+	if cylinder.checkCap(ray, t) {
 		xs = append(xs, NewIntersection(t, cylinder))
 	}
 	return xs
+}
+
+// Cone struct.
+type Cone struct {
+	transform        Matrix
+	material         *Material
+	minimum, maximum float64
+	closed           bool
+}
+
+// NewCone creates a new default Cone centered at the origin with Identity matrix as transform and default material.
+func NewCone() *Cone {
+	return &Cone{
+		transform: NewIdentityMatrix(),
+		material:  DefaultMaterial(),
+		minimum:   math.Inf(-1),
+		maximum:   math.Inf(1),
+	}
+}
+
+// Intersect calculates the local intersections between a ray and a Cone.
+func (cone *Cone) Intersect(worldRay *Ray) []*Intersection {
+
+	localRay := worldRay.Transform(cone.transform)
+	return cone.localIntersect(localRay)
+}
+
+func (cone *Cone) localIntersect(localRay *Ray) []*Intersection {
+
+	xs := Intersections{}
+
+	a := math.Pow(localRay.direction.x, 2) -
+		math.Pow(localRay.direction.y, 2) +
+		math.Pow(localRay.direction.z, 2)
+
+	b := 2*localRay.origin.x*localRay.direction.x -
+		2*localRay.origin.y*localRay.direction.y +
+		2*localRay.origin.z*localRay.direction.z
+
+	if math.Abs(a) < EPSILON && math.Abs(b) < EPSILON {
+
+		return xs
+	}
+
+	c := math.Pow(localRay.origin.x, 2) -
+		math.Pow(localRay.origin.y, 2) +
+		math.Pow(localRay.origin.z, 2)
+
+	disc := b*b - 4*a*c
+
+	// localRay does not intersect the cone.
+	if disc < 0 {
+		return xs
+	}
+
+	if math.Abs(a) < EPSILON && math.Abs(b) > EPSILON {
+		t0 := -c / (2.0 * b)
+		xs = append(xs, NewIntersection(t0, cone), NewIntersection(t0, cone))
+	} else {
+
+		t0 := (-b - math.Sqrt(disc)) / (2 * a)
+		t1 := (-b + math.Sqrt(disc)) / (2 * a)
+
+		y0 := localRay.origin.y + t0*localRay.direction.y
+
+		if cone.minimum < y0 && y0 < cone.maximum {
+			xs = append(xs, NewIntersection(t0, cone))
+		}
+
+		y1 := localRay.origin.y + t1*localRay.direction.y
+
+		if cone.minimum < y1 && y1 < cone.maximum {
+			xs = append(xs, NewIntersection(t1, cone))
+		}
+	}
+
+	return cone.intersectCaps(localRay, xs)
+}
+
+// Material returns the material of a Sphere.
+func (cone *Cone) Material() *Material {
+	return cone.material
+}
+
+// SetTransform sets the shape's transformation.
+func (cone *Cone) SetTransform(transformation Matrix) {
+	cone.transform = transformation.Inverse()
+}
+
+// SetMaterial sets the shape's material.
+func (cone *Cone) SetMaterial(material *Material) {
+	cone.material = material
+}
+
+//Transform returns the transformation.
+func (cone *Cone) Transform() Matrix {
+	return cone.transform
+}
+
+func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {
+
+	// Compute the square of the distance from the y axis.
+	dist := math.Pow(localPoint.x, 2) + math.Pow(localPoint.z, 2)
+
+	if dist < 1 && localPoint.y >= cone.maximum-EPSILON {
+		return Vector(0, 1, 0)
+
+	} else if dist < 1 && localPoint.y <= cone.minimum+EPSILON {
+		return Vector(0, -1, 0)
+
+	} else {
+		return Vector(localPoint.x, 0, localPoint.z)
+	}
+}
+
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
+func (cone *Cone) NormalAt(worldPoint *Tuple) *Tuple {
+
+	localPoint := cone.transform.MultiplyMatrixByTuple(worldPoint)
+
+	localNormal := cone.localNormalAt(localPoint)
+	worldNormal := cone.transform.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0
+	return worldNormal.Normalize()
+}
+
+func (cone *Cone) intersectCaps(localRay *Ray, xs Intersections) Intersections {
+
+	// Caps only matter if the cone is closed, and might possibly be intersected by the ray.
+	if !cone.closed || math.Abs(localRay.direction.y) < EPSILON {
+		return xs
+	}
+
+	// check for an intersection with the lower end cap by intersecting
+	// the ray with the plane at y=cyl.minimum.
+	t := (cone.minimum - localRay.origin.y) / localRay.direction.y
+	if cone.checkCap(localRay, t, cone.minimum) {
+		xs = append(xs, NewIntersection(t, cone))
+	}
+
+	// check for an intersection with the upper end cap by intersecting
+	// the ray with the plane at y=cyl.maximum.
+	t = (cone.maximum - localRay.origin.y) / localRay.direction.y
+	if cone.checkCap(localRay, t, cone.maximum) {
+		xs = append(xs, NewIntersection(t, cone))
+	}
+	return xs
+}
+
+// checkCap for cone: the radius of a cone will change with y.
+// In fact, a cone’s radius at any given y will be the absolute value of that y.
+func (cone *Cone) checkCap(localRay *Ray, t float64, minMaxY float64) bool {
+	x := localRay.origin.x + t*localRay.direction.x
+	z := localRay.origin.z + t*localRay.direction.z
+	return math.Pow(x, 2)+math.Pow(z, 2) <= math.Abs(minMaxY)
 }
