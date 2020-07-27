@@ -326,3 +326,31 @@ func TestConeRayIntersect(t *testing.T) {
 		}
 	}
 }
+
+func TestConeRayIntersectParallelToHalves(t *testing.T) {
+	// Intersecting a cone with a ray parallel to one of its halves.
+
+	type conetest struct {
+		point, direction *Tuple
+		t0               float64
+		t1               float64
+	}
+
+	c := NewCone()
+
+	expectedIntersections := []*conetest{
+		{point: Point(0, 0, -1), direction: Vector(0, 1, 1), t0: 0.35355, t1: 0.35355},
+	}
+
+	for _, v := range expectedIntersections {
+		xs := c.localIntersect(NewRay(v.point, v.direction.Normalize()))
+
+		if len(xs) != 1 {
+			t.Errorf("Intersecting a cone with a ray parallel to one of its halves: expected Ray intersection count to be xs= %v, got %v", 2, len(xs))
+		}
+
+		if !floatEqual(xs[0].t, v.t0) {
+			t.Errorf("Intersecting a cone with a ray parallel to one of its halves: xs[0].t = %v to be %v", xs[0].t, v.t0)
+		}
+	}
+}

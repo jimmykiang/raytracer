@@ -467,7 +467,7 @@ func (cone *Cone) localIntersect(localRay *Ray) []*Intersection {
 
 	if math.Abs(a) < EPSILON && math.Abs(b) > EPSILON {
 		t0 := -c / (2.0 * b)
-		xs = append(xs, NewIntersection(t0, cone), NewIntersection(t0, cone))
+		xs = append(xs, NewIntersection(t0, cone))
 	} else {
 
 		t0 := (-b - math.Sqrt(disc)) / (2 * a)
