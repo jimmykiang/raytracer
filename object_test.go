@@ -179,3 +179,27 @@ func TestCylinderEndCapsNormal(t *testing.T) {
 		}
 	}
 }
+
+func TestConeNormal(t *testing.T) {
+	// Computing the normal vector on a cone.
+
+	type cylindertest struct {
+		point, normal *Tuple
+	}
+
+	c := NewCone()
+
+	expectedNormals := []*cylindertest{
+		{point: Point(0, 0, 0), normal: Vector(0, 0, 0)},
+		{point: Point(1, 1, 1), normal: Vector(1, -math.Sqrt(2), 1)},
+		{point: Point(-1, -1, 0), normal: Vector(-1, 1, 0)},
+	}
+
+	for _, v := range expectedNormals {
+		n := c.localNormalAt(v.point)
+
+		if !n.Equals(v.normal) {
+			t.Errorf("Computing the normal vector on a cone, got: %v and expected to be %v", n, v.normal)
+		}
+	}
+}

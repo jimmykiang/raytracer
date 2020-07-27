@@ -521,7 +521,13 @@ func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {
 		return Vector(0, -1, 0)
 
 	} else {
-		return Vector(localPoint.x, 0, localPoint.z)
+		y := math.Sqrt(math.Pow(localPoint.x, 2) + math.Pow(localPoint.z, 2))
+
+		if localPoint.y > 0 {
+
+			y = -y
+		}
+		return Vector(localPoint.x, y, localPoint.z)
 	}
 }
 
