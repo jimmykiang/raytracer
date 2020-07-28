@@ -19,11 +19,27 @@ type Sphere struct {
 	origin    *Tuple
 	transform Matrix
 	material  *Material
+	parent    Shape
 }
 
 // NewSphere creates a new default sphere centered at the origin with Identity matrix as transform and default material.
 func NewSphere() *Sphere {
-	return &Sphere{Point(0, 0, 0), IdentityMatrix, DefaultMaterial()}
+	return &Sphere{origin: Point(0, 0, 0),
+		transform: IdentityMatrix,
+		material:  DefaultMaterial(),
+	}
+}
+
+// GlassSphere returns a sphere with transparency and refractiveIndex values simulating glass.
+func GlassSphere() *Sphere {
+	m := DefaultMaterial()
+	m.transparency = 1.0
+	m.refractiveIndex = 1.5
+	return &Sphere{
+		origin:    Point(0, 0, 0),
+		transform: IdentityMatrix,
+		material:  m,
+	}
 }
 
 // Material returns the material of a Sphere.
@@ -92,12 +108,15 @@ func (sphere *Sphere) Intersect(worldRay *Ray) []*Intersection {
 type Plane struct {
 	transform Matrix
 	material  *Material
+	parent    Shape
 }
 
 // NewPlane creates a new default Plane centered at the origin with Identity matrix as transform and default material.
 func NewPlane() *Plane {
-	return &Plane{IdentityMatrix, DefaultMaterial()}
-
+	return &Plane{
+		transform: IdentityMatrix,
+		material:  DefaultMaterial(),
+	}
 }
 
 func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
@@ -156,23 +175,19 @@ func (plane *Plane) SetMaterial(material *Material) {
 	plane.material = material
 }
 
-// GlassSphere returns a sphere with transparency and refractiveIndex values simulating glass.
-func GlassSphere() *Sphere {
-	m := DefaultMaterial()
-	m.transparency = 1.0
-	m.refractiveIndex = 1.5
-	return &Sphere{Point(0, 0, 0), IdentityMatrix, m}
-}
-
 // Cube struct.
 type Cube struct {
 	transform Matrix
 	material  *Material
+	parent    Shape
 }
 
 // NewCube creates a new default NewCube centered at the origin with Identity matrix as transform and default material.
 func NewCube() *Cube {
-	return &Cube{NewIdentityMatrix(), DefaultMaterial()}
+	return &Cube{
+		transform: IdentityMatrix,
+		material:  DefaultMaterial(),
+	}
 }
 
 func (cube *Cube) localIntersect(localRay *Ray) []*Intersection {
@@ -275,6 +290,7 @@ type Cylinder struct {
 	material         *Material
 	minimum, maximum float64
 	closed           bool
+	parent           Shape
 }
 
 // NewCylinder creates a new default Cylinder centered at the origin with Identity matrix as transform and default material.
@@ -418,6 +434,7 @@ type Cone struct {
 	material         *Material
 	minimum, maximum float64
 	closed           bool
+	parent           Shape
 }
 
 // NewCone creates a new default Cone centered at the origin with Identity matrix as transform and default material.
