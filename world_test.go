@@ -31,7 +31,7 @@ func TestPrepareComputation(t *testing.T) {
 	//  Precomputing the state of an intersection.
 	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
 	shape := NewSphere()
-	i := &Intersection{4, shape, -1}
+	i := &Intersection{4, shape}
 	comps := PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
 
 	if !floatEqual(comps.t, i.t) {
@@ -57,7 +57,7 @@ func TestPrepareComputation(t *testing.T) {
 	// The hit, when an intersection occurs on the inside.
 	r = NewRay(Point(0, 0, 0), Vector(0, 0, 1))
 	shape = NewSphere()
-	i = &Intersection{1, shape, -1}
+	i = &Intersection{1, shape}
 	comps = PrepareComputations(i, r, NewIntersections([]*Intersection{i}))
 
 	if !comps.point.Equals(Point(0, 0, 1)) {

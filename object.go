@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	"math"
+	"math/rand"
+)
 
 // Shape interface defining any object in the scene.
 type Shape interface {
@@ -14,6 +17,7 @@ type Shape interface {
 	localNormalAt(*Tuple) *Tuple
 	GetParent() Shape
 	SetParent(shape Shape)
+	getId() int
 }
 
 // Sphere object
@@ -22,6 +26,7 @@ type Sphere struct {
 	transform Matrix
 	material  *Material
 	parent    Shape
+	id        int
 }
 
 // NewSphere creates a new default sphere centered at the origin with Identity matrix as transform and default material.
@@ -29,6 +34,7 @@ func NewSphere() *Sphere {
 	return &Sphere{origin: Point(0, 0, 0),
 		transform: IdentityMatrix,
 		material:  DefaultMaterial(),
+		id:        rand.Int(),
 	}
 }
 
@@ -42,6 +48,11 @@ func GlassSphere() *Sphere {
 		transform: IdentityMatrix,
 		material:  m,
 	}
+}
+
+// getId returns the id of the shape.
+func (sphere *Sphere) getId() int {
+	return sphere.id
 }
 
 // GetParent returns the parent shape from this current shape.
@@ -121,6 +132,7 @@ type Plane struct {
 	transform Matrix
 	material  *Material
 	parent    Shape
+	id        int
 }
 
 // NewPlane creates a new default Plane centered at the origin with Identity matrix as transform and default material.
@@ -128,7 +140,13 @@ func NewPlane() *Plane {
 	return &Plane{
 		transform: IdentityMatrix,
 		material:  DefaultMaterial(),
+		id:        rand.Int(),
 	}
+}
+
+// getId returns the id of the shape.
+func (plane *Plane) getId() int {
+	return plane.id
 }
 
 // GetParent returns the parent shape from this current shape.
@@ -202,6 +220,7 @@ type Cube struct {
 	transform Matrix
 	material  *Material
 	parent    Shape
+	id        int
 }
 
 // NewCube creates a new default NewCube centered at the origin with Identity matrix as transform and default material.
@@ -209,6 +228,7 @@ func NewCube() *Cube {
 	return &Cube{
 		transform: IdentityMatrix,
 		material:  DefaultMaterial(),
+		id:        rand.Int(),
 	}
 }
 
@@ -228,6 +248,11 @@ func (cube *Cube) localIntersect(localRay *Ray) []*Intersection {
 	return []*Intersection{
 		NewIntersection(tMin, cube),
 		NewIntersection(tMax, cube)}
+}
+
+// getId returns the id of the shape.
+func (cube *Cube) getId() int {
+	return cube.id
 }
 
 // GetParent returns the parent shape from this current shape.
@@ -323,6 +348,7 @@ type Cylinder struct {
 	minimum, maximum float64
 	closed           bool
 	parent           Shape
+	id               int
 }
 
 // NewCylinder creates a new default Cylinder centered at the origin with Identity matrix as transform and default material.
@@ -332,7 +358,13 @@ func NewCylinder() *Cylinder {
 		material:  DefaultMaterial(),
 		minimum:   math.Inf(-1),
 		maximum:   math.Inf(1),
+		id:        rand.Int(),
 	}
+}
+
+// getId returns the id of the shape.
+func (cylinder *Cylinder) getId() int {
+	return cylinder.id
 }
 
 // GetParent returns the parent shape from this current shape.
@@ -477,6 +509,7 @@ type Cone struct {
 	minimum, maximum float64
 	closed           bool
 	parent           Shape
+	id               int
 }
 
 // NewCone creates a new default Cone centered at the origin with Identity matrix as transform and default material.
@@ -486,7 +519,13 @@ func NewCone() *Cone {
 		material:  DefaultMaterial(),
 		minimum:   math.Inf(-1),
 		maximum:   math.Inf(1),
+		id:        rand.Int(),
 	}
+}
+
+// getId returns the id of the shape.
+func (cone *Cone) getId() int {
+	return cone.id
 }
 
 func (cone *Cone) GetParent() Shape {

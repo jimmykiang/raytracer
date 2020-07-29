@@ -37,3 +37,57 @@ func TestGroup_AddChild(t *testing.T) {
 		t.Errorf("Adding a child to a group, child shape should contain (reference) parent shape (group): got: %v, expected: %v", reflect.TypeOf(s.GetParent), reflect.TypeOf(g))
 	}
 }
+
+func TestIntersectEmptyGroup(t *testing.T) {
+	// Intersecting a ray with an empty group.
+	g := NewGroup()
+	r := NewRay(Point(0, 0, 0), Vector(0, 0, 1))
+	xs := g.localIntersect(r)
+
+	if !(len(xs) == 0) {
+		t.Errorf("Intersecting a ray with an empty group: got: %v, expected: %v", len(xs), 0)
+	}
+}
+
+func TestIntersectGroup(t *testing.T) {
+	// Intersecting a ray with a nonempty group.
+	// The spheres are arranged inside the group so that the ray will intersect two of the
+	// spheres but miss the third. The resulting collection of intersections should
+	// include those of the two spheres.
+
+	g := NewGroup()
+	s1 := NewSphere()
+
+	s2 := NewSphere()
+	s2.SetTransform(Translation(0, 0, -3))
+
+	s3 := NewSphere()
+	s3.SetTransform(Translation(5, 0, 0))
+
+	g.AddChild(s1)
+	g.AddChild(s2)
+	g.AddChild(s3)
+
+	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+
+	xs := g.localIntersect(r)
+
+	if !(len(xs) == 4) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", len(xs), 4)
+	}
+	if !(s2.getId() == xs[0].object.getId()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	}
+	// assert.Equal(t, s2.Id, xs[1].S.ID())
+	if !(s2.getId() == xs[1].object.getId()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	}
+	// assert.Equal(t, s1.Id, xs[2].S.ID())
+	if !(s1.getId() == xs[2].object.getId()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	}
+	// assert.Equal(t, s1.Id, xs[3].S.ID())
+	if !(s1.getId() == xs[3].object.getId()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	}
+}
