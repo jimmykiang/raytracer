@@ -12,6 +12,8 @@ type Shape interface {
 	localIntersect(*Ray) []*Intersection
 	NormalAt(*Tuple) *Tuple
 	localNormalAt(*Tuple) *Tuple
+	GetParent() Shape
+	SetParent(shape Shape)
 }
 
 // Sphere object
@@ -40,6 +42,16 @@ func GlassSphere() *Sphere {
 		transform: IdentityMatrix,
 		material:  m,
 	}
+}
+
+// GetParent returns the parent shape from this current shape.
+func (sphere *Sphere) GetParent() Shape {
+	return sphere.parent
+}
+
+// SetParent sets the parent shape from this current shape.
+func (sphere *Sphere) SetParent(shape Shape) {
+	sphere.parent = shape
 }
 
 // Material returns the material of a Sphere.
@@ -117,6 +129,16 @@ func NewPlane() *Plane {
 		transform: IdentityMatrix,
 		material:  DefaultMaterial(),
 	}
+}
+
+// GetParent returns the parent shape from this current shape.
+func (plane *Plane) GetParent() Shape {
+	return plane.parent
+}
+
+// SetParent sets the parent shape from this current shape.
+func (plane *Plane) SetParent(shape Shape) {
+	plane.parent = shape
 }
 
 func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
@@ -206,6 +228,16 @@ func (cube *Cube) localIntersect(localRay *Ray) []*Intersection {
 	return []*Intersection{
 		NewIntersection(tMin, cube),
 		NewIntersection(tMax, cube)}
+}
+
+// GetParent returns the parent shape from this current shape.
+func (cube *Cube) GetParent() Shape {
+	return cube.parent
+}
+
+// SetParent sets the parent shape from this current shape.
+func (cube *Cube) SetParent(shape Shape) {
+	cube.parent = shape
 }
 
 // Intersect computes the local intersection between a cube and a ray.
@@ -301,6 +333,16 @@ func NewCylinder() *Cylinder {
 		minimum:   math.Inf(-1),
 		maximum:   math.Inf(1),
 	}
+}
+
+// GetParent returns the parent shape from this current shape.
+func (cylinder *Cylinder) GetParent() Shape {
+	return cylinder.parent
+}
+
+// SetParent sets the parent shape from this current shape.
+func (cylinder *Cylinder) SetParent(shape Shape) {
+	cylinder.parent = shape
 }
 
 // Intersect calculates the local intersections between a ray and a cylinder.
@@ -445,6 +487,15 @@ func NewCone() *Cone {
 		minimum:   math.Inf(-1),
 		maximum:   math.Inf(1),
 	}
+}
+
+func (cone *Cone) GetParent() Shape {
+	return cone.parent
+}
+
+// SetParent sets the parent shape from this current shape.
+func (cone *Cone) SetParent(shape Shape) {
+	cone.parent = shape
 }
 
 // Intersect calculates the local intersections between a ray and a Cone.
