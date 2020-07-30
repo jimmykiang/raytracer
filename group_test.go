@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"reflect"
 	"testing"
 )
@@ -108,5 +109,25 @@ func TestGroupTransform(t *testing.T) {
 
 	if !(len(xs) == 2) {
 		t.Errorf("Intersecting a transformed group: got: %v, expected: %v", len(xs), 2)
+	}
+}
+
+func TestConvertPointFromWorldToObjectSpace(t *testing.T) {
+	// Converting a point from world to object space.
+
+	g1 := NewGroup()
+	g1.SetTransform(RotationY(math.Pi / 2))
+	g2 := NewGroup()
+	g2.SetTransform(Scaling(2, 2, 2))
+	g1.AddChild(g2)
+	s := NewSphere()
+	s.SetTransform(Translation(5, 0, 0))
+	g2.AddChild(s)
+
+	p := WorldToObject(s, Point(-2, 0, -10))
+
+	expectedPoint := Point(0, 0, -1)
+	if !(expectedPoint.Equals(p)) {
+		t.Errorf("Converting a point from world to object space: got: %v, expected: %v", p, expectedPoint)
 	}
 }

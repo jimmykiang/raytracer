@@ -10,6 +10,7 @@ type Group struct {
 	transform Matrix
 	children  []Shape
 	id        int
+	parent    Shape
 }
 
 func NewGroup() *Group {
@@ -73,9 +74,25 @@ func (g *Group) Transform() Matrix {
 	return g.transform
 }
 
+// WorldToObject converts a point from world space to the defined (shape) object space,
+// recursively taking into consideration any parent object(s) between the two spaces.
+func WorldToObject(shape Shape, point *Tuple) *Tuple {
+	if shape.GetParent() != nil {
+		point = WorldToObject(shape.GetParent(), point)
+	}
+
+	return shape.Transform().MultiplyMatrixByTuple(point)
+}
+
+func (g *Group) GetParent() Shape {
+	return g.parent
+}
+
+func (g *Group) SetParent(shape Shape) {
+	g.parent = shape
+}
+
 func (g *Group) SetMaterial(material *Material) {}
 func (g *Group) Material() *Material            { return nil }
 func (g *Group) NormalAt(*Tuple) *Tuple         { return nil }
 func (g *Group) localNormalAt(*Tuple) *Tuple    { return nil }
-func (g *Group) GetParent() Shape               { return nil }
-func (g *Group) SetParent(shape Shape)          {}
