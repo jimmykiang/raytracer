@@ -78,16 +78,35 @@ func TestIntersectGroup(t *testing.T) {
 	if !(s2.getId() == xs[0].object.getId()) {
 		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
 	}
-	// assert.Equal(t, s2.Id, xs[1].S.ID())
 	if !(s2.getId() == xs[1].object.getId()) {
 		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
 	}
-	// assert.Equal(t, s1.Id, xs[2].S.ID())
 	if !(s1.getId() == xs[2].object.getId()) {
 		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
 	}
-	// assert.Equal(t, s1.Id, xs[3].S.ID())
 	if !(s1.getId() == xs[3].object.getId()) {
 		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	}
+
+	xs3 := s3.Intersect(r)
+	if !(len(xs3) == 0) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", len(xs3), 0)
+	}
+}
+
+func TestGroupTransform(t *testing.T) {
+	// Intersecting a transformed group.
+
+	g := NewGroup()
+	g.SetTransform(Scaling(2, 2, 2))
+	s := NewSphere()
+	s.SetTransform(Translation(5, 0, 0))
+	g.AddChild(s)
+
+	r := NewRay(Point(10, 0, -10), Vector(0, 0, 1))
+	xs := g.Intersect(r)
+
+	if !(len(xs) == 2) {
+		t.Errorf("Intersecting a transformed group: got: %v, expected: %v", len(xs), 2)
 	}
 }

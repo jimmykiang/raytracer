@@ -80,7 +80,7 @@ func (sphere *Sphere) SetMaterial(material *Material) {
 	sphere.material = material
 }
 
-//Transform returns the transformation.
+// Transform returns the transformation.
 func (sphere *Sphere) Transform() Matrix {
 	return sphere.transform
 }

@@ -59,12 +59,23 @@ func (g *Group) localIntersect(r *Ray) []*Intersection {
 	return intersections
 }
 
-func (g *Group) SetMaterial(material *Material)   {}
-func (g *Group) SetTransform(Matrix)              {}
-func (g *Group) Transform() Matrix                { return nil }
-func (g *Group) Material() *Material              { return nil }
-func (g *Group) Intersect(r *Ray) []*Intersection { return nil }
-func (g *Group) NormalAt(*Tuple) *Tuple           { return nil }
-func (g *Group) localNormalAt(*Tuple) *Tuple      { return nil }
-func (g *Group) GetParent() Shape                 { return nil }
-func (g *Group) SetParent(shape Shape)            {}
+// Intersect with the Shapes being transformed by both its own transformation and that of its parent (Group).
+func (g *Group) Intersect(worldRay *Ray) []*Intersection {
+	localGroupRay := worldRay.Transform(g.transform)
+	return g.localIntersect(localGroupRay)
+}
+
+func (g *Group) SetTransform(transformation Matrix) {
+	g.transform = transformation.Inverse()
+}
+
+func (g *Group) Transform() Matrix {
+	return g.transform
+}
+
+func (g *Group) SetMaterial(material *Material) {}
+func (g *Group) Material() *Material            { return nil }
+func (g *Group) NormalAt(*Tuple) *Tuple         { return nil }
+func (g *Group) localNormalAt(*Tuple) *Tuple    { return nil }
+func (g *Group) GetParent() Shape               { return nil }
+func (g *Group) SetParent(shape Shape)          {}
