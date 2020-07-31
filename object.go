@@ -285,10 +285,7 @@ func checkAxis(origin float64, direction float64) (min float64, max float64) {
 		tmax = tmaxNumerator * math.Inf(1)
 	}
 	if tmin > tmax {
-		// swap
-		temp := tmin
-		tmin = tmax
-		tmax = temp
+		tmin, tmax = tmax, tmin
 	}
 	return tmin, tmax
 }

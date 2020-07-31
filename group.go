@@ -1,16 +1,18 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 	"sort"
 )
 
 // Group will implement all the methods defined in the interface Shape becoming a Shape itself.
 type Group struct {
-	transform Matrix
-	children  []Shape
-	id        int
-	parent    Shape
+	transform   Matrix
+	children    []Shape
+	id          int
+	parent      Shape
+	BoundingBox *BoundingBox
 }
 
 func NewGroup() *Group {
@@ -37,6 +39,10 @@ func (g *Group) AddChild(shapes ...Shape) {
 
 func (g *Group) localIntersect(r *Ray) []*Intersection {
 
+	if g.BoundingBox != nil && !g.IntersectRayWithBox(r) {
+		return nil
+	}
+
 	// intersections := []*Intersection{}
 	intersections := Intersections{}
 	for i := range g.children {
@@ -58,6 +64,36 @@ func (g *Group) localIntersect(r *Ray) []*Intersection {
 	}
 
 	return intersections
+}
+
+func (g *Group) IntersectRayWithBox(ray *Ray) bool {
+
+	xtmin, xtmax := checkAxisForBB(ray.origin.x, ray.direction.x, g.BoundingBox.min.x, g.BoundingBox.max.x)
+	ytmin, ytmax := checkAxisForBB(ray.origin.y, ray.direction.x, g.BoundingBox.min.x, g.BoundingBox.max.x)
+	ztmin, ztmax := checkAxisForBB(ray.origin.z, ray.direction.x, g.BoundingBox.min.x, g.BoundingBox.max.x)
+
+	tmin := max(xtmin, ytmin, ztmin)
+	tmax := min(xtmax, ytmax, ztmax)
+	return tmin < tmax
+}
+func checkAxisForBB(origin, direction, minBB, maxBB float64) (min float64, max float64) {
+	tminNumerator := minBB - origin
+	tmaxNumerator := maxBB - origin
+	var tmin, tmax float64
+	if math.Abs(direction) >= EPSILON {
+		tmin = tminNumerator / direction
+		tmax = tmaxNumerator / direction
+	} else {
+		tmin = tminNumerator * math.Inf(1)
+		tmax = tmaxNumerator * math.Inf(1)
+	}
+	if tmin > tmax {
+		// swap
+		temp := tmin
+		tmin = tmax
+		tmax = temp
+	}
+	return tmin, tmax
 }
 
 // Intersect with the Shapes being transformed by both its own transformation and that of its parent (Group).
