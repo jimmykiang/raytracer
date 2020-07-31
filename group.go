@@ -74,7 +74,7 @@ func (g *Group) Transform() Matrix {
 	return g.transform
 }
 
-// WorldToObject converts a point from world space to the defined (shape) object space,
+// WorldToObject converts a Point from world space to the defined (shape) object space,
 // recursively taking into consideration any parent object(s) between the two spaces.
 func WorldToObject(shape Shape, point *Tuple) *Tuple {
 	if shape.GetParent() != nil {
@@ -82,6 +82,19 @@ func WorldToObject(shape Shape, point *Tuple) *Tuple {
 	}
 
 	return shape.Transform().MultiplyMatrixByTuple(point)
+}
+
+func NormalToWorld(shape Shape, normal *Tuple) *Tuple {
+
+	normal = shape.Transform().Transpose().MultiplyMatrixByTuple(normal)
+	normal.w = 0
+	normal = normal.Normalize()
+
+	if shape.GetParent() != nil {
+		normal = NormalToWorld(shape.GetParent(), normal)
+	}
+
+	return normal
 }
 
 func (g *Group) GetParent() Shape {

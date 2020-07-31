@@ -131,3 +131,23 @@ func TestConvertPointFromWorldToObjectSpace(t *testing.T) {
 		t.Errorf("Converting a point from world to object space: got: %v, expected: %v", p, expectedPoint)
 	}
 }
+
+func TestConvertNormalFromObjectToWorldSpace(t *testing.T) {
+	// Converting a normal from object to world space.
+
+	g1 := NewGroup()
+	g1.SetTransform(RotationY(math.Pi / 2))
+	g2 := NewGroup()
+	g2.SetTransform(Scaling(1, 2, 3))
+	g1.AddChild(g2)
+	s := NewSphere()
+	s.SetTransform(Translation(5, 0, 0))
+	g2.AddChild(s)
+
+	v := NormalToWorld(s, Vector(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3))
+
+	expectedVector := Vector(0.28571428571428575, 0.42857142857142855, -0.8571428571428571)
+	if !(expectedVector.Equals(v)) {
+		t.Errorf("Converting a normal from object to world space: got: %v, expected: %v", v, expectedVector)
+	}
+}
