@@ -151,3 +151,23 @@ func TestConvertNormalFromObjectToWorldSpace(t *testing.T) {
 		t.Errorf("Converting a normal from object to world space: got: %v, expected: %v", v, expectedVector)
 	}
 }
+
+func TestNormalOnChildObject(t *testing.T) {
+	// Finding the normal on a child object.
+
+	g1 := NewGroup()
+	g1.SetTransform(RotationY(math.Pi / 2))
+	g2 := NewGroup()
+	g2.SetTransform(Scaling(1, 2, 3))
+	g1.AddChild(g2)
+	s := NewSphere()
+	s.SetTransform(Translation(5, 0, 0))
+	g2.AddChild(s)
+
+	v := NormalAt(s, Point(1.7321, 1.1547, -5.5774))
+
+	expectedVector := Vector(0.28570368184140726, 0.42854315178114105, -0.8571605294481017)
+	if !(expectedVector.Equals(v)) {
+		t.Errorf("Finding the normal on a child object: %v, expected: %v", v, expectedVector)
+	}
+}

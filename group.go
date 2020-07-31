@@ -84,6 +84,8 @@ func WorldToObject(shape Shape, point *Tuple) *Tuple {
 	return shape.Transform().MultiplyMatrixByTuple(point)
 }
 
+// NormalToWorld receives a normal vector in object space and transform it to world space,
+// taking into consideration any parent objects between the two spaces.
 func NormalToWorld(shape Shape, normal *Tuple) *Tuple {
 
 	normal = shape.Transform().Transpose().MultiplyMatrixByTuple(normal)
@@ -95,6 +97,22 @@ func NormalToWorld(shape Shape, normal *Tuple) *Tuple {
 	}
 
 	return normal
+}
+
+// Find the normal on a child object of a group, taking into account transformations
+// on both the child object and the parent(s).
+func NormalAt(s Shape, worldPoint *Tuple) *Tuple {
+
+	// Transform point from world to object space, including recursively traversing any parent object
+	// transforms.
+	localPoint := WorldToObject(s, worldPoint)
+
+	// Normal in local space given the shape's implementation.
+	objectNormal := s.localNormalAt(localPoint)
+
+	// Convert normal from object space back into world space, again recursively applying any
+	// parent transforms.
+	return NormalToWorld(s, objectNormal)
 }
 
 func (g *Group) GetParent() Shape {
