@@ -123,7 +123,12 @@ func (g *Group) SetParent(shape Shape) {
 	g.parent = shape
 }
 
+func (g *Group) NormalAt(*Tuple) *Tuple {
+	panic("not applicable to a group. Use NormalAt() instead")
+}
+func (g *Group) localNormalAt(*Tuple) *Tuple {
+	panic("not applicable to a group. normals are always computed by calling the concrete shape’s local_normal_at()")
+}
+
 func (g *Group) SetMaterial(material *Material) {}
 func (g *Group) Material() *Material            { return nil }
-func (g *Group) NormalAt(*Tuple) *Tuple         { return nil }
-func (g *Group) localNormalAt(*Tuple) *Tuple    { return nil }

@@ -12,8 +12,11 @@ type Pattern struct {
 }
 
 // ColorAtObject calculates the end color based on a worldPoint of the object.
+// Allows patterns to be transformed by converting points from world space to object space,
+// and from there to pattern space, before computing the color. Added support for parent grouping.
 func (pattern *Pattern) ColorAtObject(object Shape, worldPoint *Tuple) *Color {
-	objectPoint := object.Transform().MultiplyMatrixByTuple(worldPoint)
+	// objectPoint := object.Transform().MultiplyMatrixByTuple(worldPoint)
+	objectPoint := WorldToObject(object, worldPoint)
 	patternPoint := pattern.transform.MultiplyMatrixByTuple(objectPoint)
 
 	return pattern.ColorAt(patternPoint)
