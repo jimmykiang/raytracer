@@ -79,6 +79,7 @@ func (sphere *Sphere) Material() *Material {
 func (sphere *Sphere) SetTransform(transformation Matrix) {
 	sphere.transform = sphere.transform.MultiplyMatrix(transformation)
 	sphere.inverse = sphere.transform.Inverse()
+	sphere.inverseTranspose = sphere.inverse.Transpose()
 }
 
 // SetMaterial sets the spheres material.
@@ -103,7 +104,7 @@ func (sphere *Sphere) NormalAt(worldPoint *Tuple) *Tuple {
 
 	localNormal := sphere.localNormalAt(localPoint)
 
-	worldNormal := sphere.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal := sphere.inverseTranspose.MultiplyMatrixByTuple(localNormal)
 
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
@@ -179,7 +180,7 @@ func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
 	localPoint := plane.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := plane.localNormalAt(localPoint)
-	worldNormal := plane.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal := plane.inverseTranspose.MultiplyMatrixByTuple(localNormal)
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 
@@ -216,6 +217,7 @@ func (plane *Plane) Material() *Material {
 func (plane *Plane) SetTransform(transform Matrix) {
 	plane.transform = plane.transform.MultiplyMatrix(transform)
 	plane.inverse = plane.transform.Inverse()
+	plane.inverseTranspose = plane.inverse.Transpose()
 }
 
 // SetMaterial returns the material of a Plane.
@@ -329,7 +331,7 @@ func (cube *Cube) NormalAt(worldPoint *Tuple) *Tuple {
 
 	localPoint := cube.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := cube.localNormalAt(localPoint)
-	worldNormal := cube.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal := cube.inverseTranspose.MultiplyMatrixByTuple(localNormal)
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
@@ -343,6 +345,7 @@ func (cube *Cube) SetMaterial(material *Material) {
 func (cube *Cube) SetTransform(transform Matrix) {
 	cube.transform = cube.transform.MultiplyMatrix(transform)
 	cube.inverse = cube.transform.Inverse()
+	cube.inverseTranspose = cube.inverse.Transpose()
 }
 
 // Transform returns the transformation.
@@ -447,6 +450,7 @@ func (cylinder *Cylinder) Material() *Material {
 func (cylinder *Cylinder) SetTransform(transformation Matrix) {
 	cylinder.transform = cylinder.transform.MultiplyMatrix(transformation)
 	cylinder.inverse = cylinder.transform.Inverse()
+	cylinder.inverseTranspose = cylinder.inverse.Transpose()
 }
 
 // SetMaterial sets the spheres material.
@@ -480,7 +484,7 @@ func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
 
 	localPoint := cylinder.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := cylinder.localNormalAt(localPoint)
-	worldNormal := cylinder.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal := cylinder.inverseTranspose.MultiplyMatrixByTuple(localNormal)
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
@@ -622,6 +626,7 @@ func (cone *Cone) Material() *Material {
 func (cone *Cone) SetTransform(transformation Matrix) {
 	cone.transform = cone.transform.MultiplyMatrix(transformation)
 	cone.inverse = cone.transform.Inverse()
+	cone.inverseTranspose = cone.inverse.Transpose()
 }
 
 // SetMaterial sets the shape's material.
@@ -661,7 +666,7 @@ func (cone *Cone) NormalAt(worldPoint *Tuple) *Tuple {
 
 	localPoint := cone.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := cone.localNormalAt(localPoint)
-	worldNormal := cone.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal := cone.inverseTranspose.MultiplyMatrixByTuple(localNormal)
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
