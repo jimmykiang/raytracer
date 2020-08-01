@@ -14,6 +14,13 @@ func NewBoundingBoxFloat(x1, y1, z1, x2, y2, z2 float64) *BoundingBox {
 	}
 }
 
+func NewBoundingBox(pointA *Tuple, pointB *Tuple) *BoundingBox {
+	return &BoundingBox{
+		min: pointA,
+		max: pointB,
+	}
+}
+
 func NewEmptyBoundingBox() *BoundingBox {
 	return &BoundingBox{
 		min: Point(math.Inf(1), math.Inf(1), math.Inf(1)),
@@ -24,6 +31,15 @@ func NewEmptyBoundingBox() *BoundingBox {
 func ParentSpaceBounds(shape Shape) *BoundingBox {
 	BoundingBox := Bounds(shape)
 	return TransformBoundingBox(BoundingBox, shape.Transform().Inverse())
+}
+
+func (b *BoundingBox) ContainsPoint(p *Tuple) bool {
+	return b.min.x <= p.x && b.min.y <= p.y && b.min.z <= p.z &&
+		b.max.x >= p.x && b.max.y >= p.y && b.max.z >= p.z
+}
+
+func (b *BoundingBox) ContainsBox(b2 *BoundingBox) bool {
+	return b.ContainsPoint(b2.min) && b.ContainsPoint(b2.max)
 }
 
 func TransformBoundingBox(bbox *BoundingBox, m1 Matrix) *BoundingBox {
@@ -66,8 +82,8 @@ func (b *BoundingBox) Add(p *Tuple) {
 	if b.max.y < p.y {
 		b.max.y = p.y
 	}
-	if b.max.y < p.z {
-		b.max.y = p.z
+	if b.max.z < p.z {
+		b.max.z = p.z
 	}
 }
 
