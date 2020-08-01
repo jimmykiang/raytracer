@@ -341,3 +341,36 @@ func TestIntersectBoundingBoxWithRayAtOrigin(t *testing.T) {
 		}
 	}
 }
+
+func TestIntersectNonCubicBoundingBoxWithRay(t *testing.T) {
+
+	box := NewBoundingBoxFloat(5, -2, 0, 11, 4, 7)
+
+	testcases := []struct {
+		origin    *Tuple
+		direction *Tuple
+		result    bool
+	}{
+		{Point(15, 1, 2), Vector(-1, 0, 0), true},
+		{Point(-5, -1, 4), Vector(1, 0, 0), true},
+		{Point(7, 6, 5), Vector(0, -1, 0), true},
+		{Point(9, -5, 6), Vector(0, 1, 0), true},
+		{Point(8, 2, 12), Vector(0, 0, -1), true},
+		{Point(6, 0, -5), Vector(0, 0, 1), true},
+		{Point(8, 1, 3.5), Vector(0, 0, 1), true},
+		{Point(9, -1, -8), Vector(2, 4, 6), false},
+		{Point(8, 3, -4), Vector(6, 2, 4), false},
+		{Point(9, -1, -2), Vector(4, 6, 2), false},
+		{Point(4, 0, 9), Vector(0, 0, -1), false},
+		{Point(8, 6, -1), Vector(0, -1, 0), false},
+		{Point(12, 5, 4), Vector(-1, 0, 0), false},
+	}
+
+	for _, tc := range testcases {
+		direction := tc.direction.Normalize()
+		r := NewRay(tc.origin, direction)
+		if !(tc.result == IntersectRayWithBox(r, box)) {
+			t.Errorf("TestIntersectNonCubicBoundingBoxWithRay: got %v, expected: %v", IntersectRayWithBox(r, box), tc.result)
+		}
+	}
+}
