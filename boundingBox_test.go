@@ -236,3 +236,32 @@ func TestBoxContainsBox(t *testing.T) {
 		}
 	}
 }
+
+func TestTransformBoundingBox(t *testing.T) {
+
+	box := NewBoundingBoxFloat(-1, -1, -1, 1, 1, 1)
+	// m1 := Multiply(RotateX(math.Pi/4), RotateY(math.Pi/4))
+
+	m1 := RotationX(math.Pi / 4).MultiplyMatrix(RotationY(math.Pi / 4))
+
+	box2 := TransformBoundingBox(box, m1)
+
+	tests := []struct {
+		boxFloatValue float64
+		expectedValue float64
+	}{
+		{box2.min.x, -1.414213562373095},
+		{box2.min.y, -1.7071067811865475},
+		{box2.min.z, -1.7071067811865475},
+		{box2.max.x, 1.414213562373095},
+		{box2.max.y, 1.7071067811865475},
+		{box2.max.z, 1.7071067811865475},
+	}
+
+	for _, expected := range tests {
+
+		if !(expected.boxFloatValue == expected.expectedValue) {
+			t.Errorf("TestTransformBoundingBox: got %v, expected: %v", expected.expectedValue, expected.boxFloatValue)
+		}
+	}
+}
