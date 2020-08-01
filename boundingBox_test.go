@@ -282,3 +282,62 @@ func TestQueryBBTransformInParentSpace(t *testing.T) {
 		t.Errorf("TestQueryBBTransformInParentSpace max: got %v, expected: %v", box.max, expectedMaxPoint)
 	}
 }
+
+func TestGroupBoundingBoxContainsAllItsChildren(t *testing.T) {
+
+	s := NewSphere()
+	s.SetTransform(Translation(2, 5, -3))
+	s.SetTransform(Scaling(2, 2, 2))
+
+	c := NewCylinder()
+	c.minimum = -2
+	c.maximum = 2
+	c.SetTransform(Translation(-4, -1, 4))
+	c.SetTransform(Scaling(0.5, 1, 0.5))
+	g := NewGroup()
+	g.AddChild(s)
+	g.AddChild(c)
+	box := Bounds(g)
+
+	expectedMinPoint := Point(-4.5, -3, -5)
+	if !(expectedMinPoint.Equals(box.min)) {
+		t.Errorf("TestQueryBBTransformInParentSpace min: got %v, expected: %v", box.min, expectedMinPoint)
+	}
+	expectedMaxPoint := Point(4, 7, 4.5)
+	if !(expectedMaxPoint.Equals(box.max)) {
+		t.Errorf("TestQueryBBTransformInParentSpace max: got %v, expected: %v", box.max, expectedMaxPoint)
+	}
+}
+
+func TestIntersectBoundingBoxWithRayAtOrigin(t *testing.T) {
+
+	box := NewBoundingBoxFloat(-1, -1, -1, 1, 1, 1)
+
+	testcases := []struct {
+		origin    *Tuple
+		direction *Tuple
+		result    bool
+	}{
+		{Point(5, 0.5, 0), Vector(-1, 0, 0), true},
+		{Point(-5, 0.5, 0), Vector(1, 0, 0), true},
+		{Point(0.5, 5, 0), Vector(0, -1, 0), true},
+		{Point(0.5, -5, 0), Vector(0, 1, 0), true},
+		{Point(0.5, 0, 5), Vector(0, 0, -1), true},
+		{Point(0.5, 0, -5), Vector(0, 0, 1), true},
+		{Point(0, 0.5, 0), Vector(0, 0, 1), true},
+		{Point(-2, 0, 0), Vector(2, 4, 6), false},
+		{Point(0, -2, 0), Vector(6, 2, 4), false},
+		{Point(0, 0, -2), Vector(4, 6, 2), false},
+		{Point(2, 0, 2), Vector(0, 0, -1), false},
+		{Point(0, 2, 2), Vector(0, -1, 0), false},
+		{Point(2, 2, 0), Vector(-1, 0, 0), false},
+	}
+
+	for _, tc := range testcases {
+		direction := tc.direction.Normalize()
+		r := NewRay(tc.origin, direction)
+		if !(tc.result == IntersectRayWithBox(r, box)) {
+			t.Errorf("TestIntersectBoundingBoxWithRayAtOrigin: got %v, expected: %v", IntersectRayWithBox(r, box), tc.result)
+		}
+	}
+}

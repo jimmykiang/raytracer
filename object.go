@@ -10,6 +10,8 @@ type Shape interface {
 	SetMaterial(*Material)
 	SetTransform(Matrix)
 	Transform() Matrix
+	GetInverse() Matrix
+	GetInverseTranspose() Matrix
 	Material() *Material
 	Intersect(*Ray) []*Intersection
 	localIntersect(*Ray) []*Intersection
@@ -48,10 +50,11 @@ func GlassSphere() *Sphere {
 	m.transparency = 1.0
 	m.refractiveIndex = 1.5
 	return &Sphere{
-		origin:    Point(0, 0, 0),
-		transform: IdentityMatrix,
-		inverse:   IdentityMatrix,
-		material:  m,
+		origin:           Point(0, 0, 0),
+		transform:        IdentityMatrix,
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		material:         m,
 	}
 }
 
@@ -80,6 +83,16 @@ func (sphere *Sphere) SetTransform(transformation Matrix) {
 	sphere.transform = sphere.transform.MultiplyMatrix(transformation)
 	sphere.inverse = sphere.transform.Inverse()
 	sphere.inverseTranspose = sphere.inverse.Transpose()
+}
+
+func (sphere *Sphere) GetInverse() Matrix {
+
+	return sphere.inverse
+}
+
+func (sphere *Sphere) GetInverseTranspose() Matrix {
+
+	return sphere.inverseTranspose
 }
 
 // SetMaterial sets the spheres material.
@@ -206,6 +219,16 @@ func (plane *Plane) Intersect(worldRay *Ray) []*Intersection {
 // Transform returns the transformation.
 func (plane *Plane) Transform() Matrix {
 	return plane.transform
+}
+
+func (plane *Plane) GetInverse() Matrix {
+
+	return plane.inverse
+}
+
+func (plane *Plane) GetInverseTranspose() Matrix {
+
+	return plane.inverseTranspose
 }
 
 // Material returns the material of a Plane.
@@ -348,6 +371,16 @@ func (cube *Cube) SetTransform(transform Matrix) {
 	cube.inverseTranspose = cube.inverse.Transpose()
 }
 
+func (cube *Cube) GetInverse() Matrix {
+
+	return cube.inverse
+}
+
+func (cube *Cube) GetInverseTranspose() Matrix {
+
+	return cube.inverseTranspose
+}
+
 // Transform returns the transformation.
 func (cube *Cube) Transform() Matrix {
 	return cube.transform
@@ -461,6 +494,14 @@ func (cylinder *Cylinder) SetMaterial(material *Material) {
 //Transform returns the transformation.
 func (cylinder *Cylinder) Transform() Matrix {
 	return cylinder.transform
+}
+
+func (cylinder *Cylinder) GetInverse() Matrix {
+	return cylinder.inverse
+}
+
+func (cylinder *Cylinder) GetInverseTranspose() Matrix {
+	return cylinder.inverseTranspose
 }
 
 func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
@@ -637,6 +678,14 @@ func (cone *Cone) SetMaterial(material *Material) {
 //Transform returns the transformation.
 func (cone *Cone) Transform() Matrix {
 	return cone.transform
+}
+
+func (cone *Cone) GetInverse() Matrix {
+	return cone.inverse
+}
+
+func (cone *Cone) GetInverseTranspose() Matrix {
+	return cone.inverseTranspose
 }
 
 func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {

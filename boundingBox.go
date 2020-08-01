@@ -126,3 +126,33 @@ func (b *BoundingBox) Merge(b2 *BoundingBox) {
 	b.Add(b2.min)
 	b.Add(b2.max)
 }
+
+func IntersectRayWithBox(ray *Ray, boundingBox *BoundingBox) bool {
+
+	xtmin, xtmax := checkAxisForBB(ray.origin.x, ray.direction.x, boundingBox.min.x, boundingBox.max.x)
+	ytmin, ytmax := checkAxisForBB(ray.origin.y, ray.direction.y, boundingBox.min.y, boundingBox.max.y)
+	ztmin, ztmax := checkAxisForBB(ray.origin.z, ray.direction.z, boundingBox.min.z, boundingBox.max.z)
+
+	tmin := max(xtmin, ytmin, ztmin)
+	tmax := min(xtmax, ytmax, ztmax)
+	return tmin < tmax
+}
+func checkAxisForBB(origin, direction, minBB, maxBB float64) (min float64, max float64) {
+	tminNumerator := minBB - origin
+	tmaxNumerator := maxBB - origin
+	var tmin, tmax float64
+	if math.Abs(direction) >= EPSILON {
+		tmin = tminNumerator / direction
+		tmax = tmaxNumerator / direction
+	} else {
+		tmin = tminNumerator * math.Inf(1)
+		tmax = tmaxNumerator * math.Inf(1)
+	}
+	if tmin > tmax {
+		// swap
+		temp := tmin
+		tmin = tmax
+		tmax = temp
+	}
+	return tmin, tmax
+}

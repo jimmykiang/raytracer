@@ -1,26 +1,29 @@
 package main
 
 import (
-	"math"
 	"math/rand"
 	"sort"
 )
 
 // Group will implement all the methods defined in the interface Shape becoming a Shape itself.
 type Group struct {
-	transform   Matrix
-	children    []Shape
-	id          int
-	parent      Shape
-	BoundingBox *BoundingBox
+	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
+	children         []Shape
+	id               int
+	parent           Shape
+	BoundingBox      *BoundingBox
 }
 
 func NewGroup() *Group {
 
 	return &Group{
-		transform: IdentityMatrix,
-		children:  make([]Shape, 0),
-		id:        rand.Int(),
+		transform:        IdentityMatrix,
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		children:         make([]Shape, 0),
+		id:               rand.Int(),
 	}
 }
 
@@ -39,7 +42,7 @@ func (g *Group) AddChild(shapes ...Shape) {
 
 func (g *Group) localIntersect(r *Ray) []*Intersection {
 
-	if g.BoundingBox != nil && !g.IntersectRayWithBox(r) {
+	if g.BoundingBox != nil && !IntersectRayWithBox(r, g.BoundingBox) {
 		return nil
 	}
 
@@ -66,48 +69,30 @@ func (g *Group) localIntersect(r *Ray) []*Intersection {
 	return intersections
 }
 
-func (g *Group) IntersectRayWithBox(ray *Ray) bool {
-
-	xtmin, xtmax := checkAxisForBB(ray.origin.x, ray.direction.x, g.BoundingBox.min.x, g.BoundingBox.max.x)
-	ytmin, ytmax := checkAxisForBB(ray.origin.y, ray.direction.x, g.BoundingBox.min.x, g.BoundingBox.max.x)
-	ztmin, ztmax := checkAxisForBB(ray.origin.z, ray.direction.x, g.BoundingBox.min.x, g.BoundingBox.max.x)
-
-	tmin := max(xtmin, ytmin, ztmin)
-	tmax := min(xtmax, ytmax, ztmax)
-	return tmin < tmax
-}
-func checkAxisForBB(origin, direction, minBB, maxBB float64) (min float64, max float64) {
-	tminNumerator := minBB - origin
-	tmaxNumerator := maxBB - origin
-	var tmin, tmax float64
-	if math.Abs(direction) >= EPSILON {
-		tmin = tminNumerator / direction
-		tmax = tmaxNumerator / direction
-	} else {
-		tmin = tminNumerator * math.Inf(1)
-		tmax = tmaxNumerator * math.Inf(1)
-	}
-	if tmin > tmax {
-		// swap
-		temp := tmin
-		tmin = tmax
-		tmax = temp
-	}
-	return tmin, tmax
-}
-
 // Intersect with the Shapes being transformed by both its own transformation and that of its parent (Group).
 func (g *Group) Intersect(worldRay *Ray) []*Intersection {
-	localGroupRay := worldRay.Transform(g.transform)
+	localGroupRay := worldRay.Transform(g.inverse)
 	return g.localIntersect(localGroupRay)
 }
 
 func (g *Group) SetTransform(transformation Matrix) {
-	g.transform = transformation.Inverse()
+	g.transform = g.transform.MultiplyMatrix(transformation)
+	g.inverse = g.transform.Inverse()
+	g.inverseTranspose = g.inverse.Transpose()
 }
 
 func (g *Group) Transform() Matrix {
 	return g.transform
+}
+
+func (g *Group) GetInverse() Matrix {
+
+	return g.inverse
+}
+
+func (g *Group) GetInverseTranspose() Matrix {
+
+	return g.inverseTranspose
 }
 
 // WorldToObject converts a Point from world space to the defined (shape) object space,
@@ -117,14 +102,14 @@ func WorldToObject(shape Shape, point *Tuple) *Tuple {
 		point = WorldToObject(shape.GetParent(), point)
 	}
 
-	return shape.Transform().MultiplyMatrixByTuple(point)
+	return shape.GetInverse().MultiplyMatrixByTuple(point)
 }
 
 // NormalToWorld receives a normal vector in object space and transform it to world space,
 // taking into consideration any parent objects between the two spaces.
 func NormalToWorld(shape Shape, normal *Tuple) *Tuple {
 
-	normal = shape.Transform().Transpose().MultiplyMatrixByTuple(normal)
+	normal = shape.GetInverseTranspose().MultiplyMatrixByTuple(normal)
 	normal.w = 0
 	normal = normal.Normalize()
 
