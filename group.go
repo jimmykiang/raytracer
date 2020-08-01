@@ -151,5 +151,10 @@ func (g *Group) localNormalAt(*Tuple) *Tuple {
 	panic("not applicable to a group. normals are always computed by calling the concrete shape’s local_normal_at()")
 }
 
-func (g *Group) SetMaterial(material *Material) {}
-func (g *Group) Material() *Material            { return nil }
+// SetMaterial will propagate the material to the child shapes.
+func (g *Group) SetMaterial(material *Material) {
+	for _, c := range g.children {
+		c.SetMaterial(material)
+	}
+}
+func (g *Group) Material() *Material { panic("not applicable to a group.") }

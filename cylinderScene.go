@@ -51,10 +51,19 @@ func cylinderScene() *Canvas {
 		MultiplyMatrix(Scaling(0.5, 0.5, 0.5)).
 		MultiplyMatrix(RotationX(-PI / 8)),
 	)
-	right.material = DefaultMaterial()
-	right.material.color = NewColor(0.5, 1, 0.1)
+	// right.material = DefaultMaterial()
+	// right.material.color = NewColor(0.5, 1, 0.1)
+	// right.material.diffuse = 0.7
+	// right.material.specular = 0.3
+
+	right.material.color = NewColor(0.6, 0.4, 0.3)
 	right.material.diffuse = 0.7
 	right.material.specular = 0.3
+	right.material.reflective = 1
+	// refractiveIndex aproximate of glass.
+	right.material.refractiveIndex = 1.52
+	right.material.transparency = 1.0
+	right.material.shininess = 300
 
 	// The smallest sphere is scaled by a third, before being translated.
 
@@ -74,6 +83,7 @@ func cylinderScene() *Canvas {
 	left.material.color = NewColor(1, 0.8, 0.1)
 	left.material.diffuse = 0.7
 	left.material.specular = 0.3
+
 	world := NewWorld(lights, []Shape{p1, right, left, middle})
 
 	camera := NewCamera(1000, 500, PI/3)
