@@ -22,19 +22,23 @@ type Shape interface {
 
 // Sphere object
 type Sphere struct {
-	origin    *Tuple
-	transform Matrix
-	material  *Material
-	parent    Shape
-	id        int
+	origin           *Tuple
+	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
+	material         *Material
+	parent           Shape
+	id               int
 }
 
 // NewSphere creates a new default sphere centered at the origin with Identity matrix as transform and default material.
 func NewSphere() *Sphere {
 	return &Sphere{origin: Point(0, 0, 0),
-		transform: IdentityMatrix,
-		material:  DefaultMaterial(),
-		id:        rand.Int(),
+		transform:        IdentityMatrix,
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		material:         DefaultMaterial(),
+		id:               rand.Int(),
 	}
 }
 
@@ -46,6 +50,7 @@ func GlassSphere() *Sphere {
 	return &Sphere{
 		origin:    Point(0, 0, 0),
 		transform: IdentityMatrix,
+		inverse:   IdentityMatrix,
 		material:  m,
 	}
 }
@@ -72,7 +77,8 @@ func (sphere *Sphere) Material() *Material {
 
 // SetTransform sets the spheres transformation.
 func (sphere *Sphere) SetTransform(transformation Matrix) {
-	sphere.transform = transformation.Inverse()
+	sphere.transform = sphere.transform.MultiplyMatrix(transformation)
+	sphere.inverse = sphere.transform.Inverse()
 }
 
 // SetMaterial sets the spheres material.
@@ -93,11 +99,11 @@ func (sphere *Sphere) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
 func (sphere *Sphere) NormalAt(worldPoint *Tuple) *Tuple {
-	localPoint := sphere.transform.MultiplyMatrixByTuple(worldPoint)
+	localPoint := sphere.inverse.MultiplyMatrixByTuple(worldPoint)
 
 	localNormal := sphere.localNormalAt(localPoint)
 
-	worldNormal := sphere.transform.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal := sphere.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
 
 	worldNormal.w = 0.0
 	return worldNormal.Normalize()
@@ -123,24 +129,28 @@ func (sphere *Sphere) localIntersect(localRay *Ray) []*Intersection {
 
 // Intersect computes the intersection between a sphere and a ray
 func (sphere *Sphere) Intersect(worldRay *Ray) []*Intersection {
-	localRay := worldRay.Transform(sphere.transform)
+	localRay := worldRay.Transform(sphere.inverse)
 	return sphere.localIntersect(localRay)
 }
 
 // Plane Shape
 type Plane struct {
-	transform Matrix
-	material  *Material
-	parent    Shape
-	id        int
+	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
+	material         *Material
+	parent           Shape
+	id               int
 }
 
 // NewPlane creates a new default Plane centered at the origin with Identity matrix as transform and default material.
 func NewPlane() *Plane {
 	return &Plane{
-		transform: IdentityMatrix,
-		material:  DefaultMaterial(),
-		id:        rand.Int(),
+		transform:        IdentityMatrix,
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		material:         DefaultMaterial(),
+		id:               rand.Int(),
 	}
 }
 
@@ -167,13 +177,10 @@ func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
 func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
-
-	localPoint := plane.transform.MultiplyMatrixByTuple(worldPoint)
-
+	localPoint := plane.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := plane.localNormalAt(localPoint)
-
-	worldNormal := plane.transform.Transpose().MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0
+	worldNormal := plane.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 
 }
@@ -191,7 +198,7 @@ func (plane *Plane) localIntersect(localRay *Ray) []*Intersection {
 // Intersect calculates the local intersections between a ray and a plane.
 func (plane *Plane) Intersect(worldRay *Ray) []*Intersection {
 
-	localRay := worldRay.Transform(plane.transform)
+	localRay := worldRay.Transform(plane.inverse)
 	return plane.localIntersect(localRay)
 }
 
@@ -207,7 +214,8 @@ func (plane *Plane) Material() *Material {
 
 // SetTransform sets the Plane's transformation.
 func (plane *Plane) SetTransform(transform Matrix) {
-	plane.transform = transform.Inverse()
+	plane.transform = plane.transform.MultiplyMatrix(transform)
+	plane.inverse = plane.transform.Inverse()
 }
 
 // SetMaterial returns the material of a Plane.
@@ -217,18 +225,22 @@ func (plane *Plane) SetMaterial(material *Material) {
 
 // Cube struct.
 type Cube struct {
-	transform Matrix
-	material  *Material
-	parent    Shape
-	id        int
+	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
+	material         *Material
+	parent           Shape
+	id               int
 }
 
 // NewCube creates a new default NewCube centered at the origin with Identity matrix as transform and default material.
 func NewCube() *Cube {
 	return &Cube{
-		transform: IdentityMatrix,
-		material:  DefaultMaterial(),
-		id:        rand.Int(),
+		transform:        IdentityMatrix,
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		material:         DefaultMaterial(),
+		id:               rand.Int(),
 	}
 }
 
@@ -268,7 +280,7 @@ func (cube *Cube) SetParent(shape Shape) {
 // Intersect computes the local intersection between a cube and a ray.
 func (cube *Cube) Intersect(worldRay *Ray) []*Intersection {
 
-	ray := worldRay.Transform(cube.transform)
+	ray := worldRay.Transform(cube.inverse)
 	return cube.localIntersect(ray)
 
 }
@@ -315,11 +327,10 @@ func (cube *Cube) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cube *Cube) NormalAt(worldPoint *Tuple) *Tuple {
 
-	localPoint := cube.transform.MultiplyMatrixByTuple(worldPoint)
-
+	localPoint := cube.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := cube.localNormalAt(localPoint)
-	worldNormal := cube.transform.Transpose().MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0
+	worldNormal := cube.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
 
@@ -330,7 +341,8 @@ func (cube *Cube) SetMaterial(material *Material) {
 
 // SetTransform sets the Cube's transformation.
 func (cube *Cube) SetTransform(transform Matrix) {
-	cube.transform = transform.Inverse()
+	cube.transform = cube.transform.MultiplyMatrix(transform)
+	cube.inverse = cube.transform.Inverse()
 }
 
 // Transform returns the transformation.
@@ -341,6 +353,8 @@ func (cube *Cube) Transform() Matrix {
 // Cylinder struct.
 type Cylinder struct {
 	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
 	material         *Material
 	minimum, maximum float64
 	closed           bool
@@ -351,11 +365,13 @@ type Cylinder struct {
 // NewCylinder creates a new default Cylinder centered at the origin with Identity matrix as transform and default material.
 func NewCylinder() *Cylinder {
 	return &Cylinder{
-		transform: NewIdentityMatrix(),
-		material:  DefaultMaterial(),
-		minimum:   math.Inf(-1),
-		maximum:   math.Inf(1),
-		id:        rand.Int(),
+		transform:        NewIdentityMatrix(),
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		material:         DefaultMaterial(),
+		minimum:          math.Inf(-1),
+		maximum:          math.Inf(1),
+		id:               rand.Int(),
 	}
 }
 
@@ -377,7 +393,7 @@ func (cylinder *Cylinder) SetParent(shape Shape) {
 // Intersect calculates the local intersections between a ray and a cylinder.
 func (cylinder *Cylinder) Intersect(worldRay *Ray) []*Intersection {
 
-	localRay := worldRay.Transform(cylinder.transform)
+	localRay := worldRay.Transform(cylinder.inverse)
 	return cylinder.localIntersect(localRay)
 }
 
@@ -429,7 +445,8 @@ func (cylinder *Cylinder) Material() *Material {
 
 // SetTransform sets the spheres transformation.
 func (cylinder *Cylinder) SetTransform(transformation Matrix) {
-	cylinder.transform = transformation.Inverse()
+	cylinder.transform = cylinder.transform.MultiplyMatrix(transformation)
+	cylinder.inverse = cylinder.transform.Inverse()
 }
 
 // SetMaterial sets the spheres material.
@@ -461,11 +478,10 @@ func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
 
-	localPoint := cylinder.transform.MultiplyMatrixByTuple(worldPoint)
-
+	localPoint := cylinder.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := cylinder.localNormalAt(localPoint)
-	worldNormal := cylinder.transform.Transpose().MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0
+	worldNormal := cylinder.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
 
@@ -502,6 +518,8 @@ func (cylinder *Cylinder) intersectCaps(ray *Ray, xs Intersections) Intersection
 // Cone struct.
 type Cone struct {
 	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
 	material         *Material
 	minimum, maximum float64
 	closed           bool
@@ -512,11 +530,13 @@ type Cone struct {
 // NewCone creates a new default Cone centered at the origin with Identity matrix as transform and default material.
 func NewCone() *Cone {
 	return &Cone{
-		transform: NewIdentityMatrix(),
-		material:  DefaultMaterial(),
-		minimum:   math.Inf(-1),
-		maximum:   math.Inf(1),
-		id:        rand.Int(),
+		transform:        NewIdentityMatrix(),
+		inverse:          IdentityMatrix,
+		inverseTranspose: IdentityMatrix,
+		material:         DefaultMaterial(),
+		minimum:          math.Inf(-1),
+		maximum:          math.Inf(1),
+		id:               rand.Int(),
 	}
 }
 
@@ -537,7 +557,7 @@ func (cone *Cone) SetParent(shape Shape) {
 // Intersect calculates the local intersections between a ray and a Cone.
 func (cone *Cone) Intersect(worldRay *Ray) []*Intersection {
 
-	localRay := worldRay.Transform(cone.transform)
+	localRay := worldRay.Transform(cone.inverse)
 	return cone.localIntersect(localRay)
 }
 
@@ -600,7 +620,8 @@ func (cone *Cone) Material() *Material {
 
 // SetTransform sets the shape's transformation.
 func (cone *Cone) SetTransform(transformation Matrix) {
-	cone.transform = transformation.Inverse()
+	cone.transform = cone.transform.MultiplyMatrix(transformation)
+	cone.inverse = cone.transform.Inverse()
 }
 
 // SetMaterial sets the shape's material.
@@ -638,11 +659,10 @@ func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cone *Cone) NormalAt(worldPoint *Tuple) *Tuple {
 
-	localPoint := cone.transform.MultiplyMatrixByTuple(worldPoint)
-
+	localPoint := cone.inverse.MultiplyMatrixByTuple(worldPoint)
 	localNormal := cone.localNormalAt(localPoint)
-	worldNormal := cone.transform.Transpose().MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0
+	worldNormal := cone.inverse.Transpose().MultiplyMatrixByTuple(localNormal)
+	worldNormal.w = 0.0
 	return worldNormal.Normalize()
 }
 

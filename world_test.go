@@ -22,7 +22,7 @@ func TestWorldIntersections(t *testing.T) {
 	for i, v := range expected {
 		top := xs[i]
 		if top.t != v {
-			t.Errorf("WorldIntersections: expected hit %v to be %v", top.t, v)
+			t.Errorf("WorldIntersections: hit got %v, expected to be %v", top.t, v)
 		}
 	}
 }

@@ -51,9 +51,9 @@ func (cam *Camera) RayForPixel(x, y int) *Ray {
 	worldx := cam.halfWidth - xoffset
 	worldy := cam.halfHeight - yoffset
 
-	pixel := cam.transform.MultiplyMatrixByTuple(Point(worldx, worldy, -1))
+	pixel := cam.transform.Inverse().MultiplyMatrixByTuple(Point(worldx, worldy, -1))
 
-	origin := cam.transform.MultiplyMatrixByTuple(Point(0, 0, 0))
+	origin := cam.transform.Inverse().MultiplyMatrixByTuple(Point(0, 0, 0))
 
 	direction := pixel.Substract(origin).Normalize()
 
@@ -62,7 +62,7 @@ func (cam *Camera) RayForPixel(x, y int) *Ray {
 
 // SetTransform sets the camera’s transformation describing how the world is moved relative to the camera.
 func (cam *Camera) SetTransform(transform Matrix) {
-	cam.transform = transform.Inverse()
+	cam.transform = transform
 }
 
 // Render calculates the render of a given world on a canvas from the view of the camera.

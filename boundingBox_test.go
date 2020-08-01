@@ -265,3 +265,20 @@ func TestTransformBoundingBox(t *testing.T) {
 		}
 	}
 }
+
+func TestQueryBBTransformInParentSpace(t *testing.T) {
+
+	shape := NewSphere()
+	shape.SetTransform(Translation(1, -3, 5))
+	shape.SetTransform(Scaling(0.5, 2, 4))
+	box := ParentSpaceBounds(shape)
+
+	expectedMinPoint := Point(0.5, -5, 1)
+	if !(expectedMinPoint.Equals(box.min)) {
+		t.Errorf("TestQueryBBTransformInParentSpace min: got %v, expected: %v", box.min, expectedMinPoint)
+	}
+	expectedMaxPoint := Point(1.5, -1, 9)
+	if !(expectedMaxPoint.Equals(box.max)) {
+		t.Errorf("TestQueryBBTransformInParentSpace max: got %v, expected: %v", box.max, expectedMaxPoint)
+	}
+}

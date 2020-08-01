@@ -30,7 +30,7 @@ func NewEmptyBoundingBox() *BoundingBox {
 
 func ParentSpaceBounds(shape Shape) *BoundingBox {
 	BoundingBox := Bounds(shape)
-	return TransformBoundingBox(BoundingBox, shape.Transform().Inverse())
+	return TransformBoundingBox(BoundingBox, shape.Transform())
 }
 
 func (b *BoundingBox) ContainsPoint(p *Tuple) bool {
