@@ -1,6 +1,9 @@
 package main
 
-import "math"
+import (
+	"math"
+	"sort"
+)
 
 // World creates an struct containing slices of Shape and PointLight.
 type World struct {
@@ -35,6 +38,10 @@ func (world *World) Intersect(ray *Ray) Intersections {
 	}
 
 	xs := NewIntersections(intersections)
+
+	if len(xs) > 1 {
+		sort.Slice(xs, func(i, j int) bool { return xs[i].t < xs[j].t })
+	}
 
 	return xs
 }

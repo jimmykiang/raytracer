@@ -132,7 +132,7 @@ func (sphere *Sphere) localIntersect(localRay *Ray) []*Intersection {
 	discriminant := (b * b) - 4*a*c
 
 	if discriminant < 0 {
-		return []*Intersection{}
+		return Intersections{}
 	}
 	sqrtDisc := math.Sqrt(discriminant)
 	div := (2 * a)

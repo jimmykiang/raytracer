@@ -9,8 +9,8 @@ import (
 func sceneGroup() *Canvas {
 	start := time.Now()
 	lights := []*PointLight{
-		NewPointLight(Point(-10, 10, -10), NewColor(0, 1, 1)),
-		NewPointLight(Point(0, 5, 0), NewColor(1, 0.5, 0.5)),
+		NewPointLight(Point(-10, 10, -10), NewColor(1, 1, 1)),
+		NewPointLight(Point(0, 5, 0), NewColor(0.5, 0.5, 0.5)),
 	}
 	p1 := NewPlane()
 	p1.material.pattern = CheckersPattern(NewColor(0.5, 0.5, 0.5), NewColor(0, 0, 0))
@@ -30,10 +30,12 @@ func sceneGroup() *Canvas {
 
 	// g.SetMaterial(gMaterial)
 
-	g.SetTransform(Translation(0.3, 0.8, -0.4).
-		MultiplyMatrix(RotationX(-PI / 6)).
-		MultiplyMatrix(RotationZ(-PI / 6)),
+	g.SetTransform(Translation(5, 1, -0.4).
+		MultiplyMatrix(RotationZ(-PI / 6)).
+		MultiplyMatrix(RotationX(-PI / 2.5)),
 	)
+
+	// g.SetTransform(Translation(5, 0.8, -0.4))
 
 	// The large sphere in the middle is a unit sphere, translated upward slightly and colored green.
 
@@ -55,7 +57,7 @@ func sceneGroup() *Canvas {
 	world := NewWorld(lights, []Shape{p1, g})
 
 	camera := NewCamera(1000, 500, PI/3)
-	camera.SetTransform(ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)))
+	camera.SetTransform(ViewTransform(Point(1, 1.5, -5), Point(5, 1, 0), Vector(0, 1, 0)))
 
 	canvas := camera.Render(world, defaultRecursionDepth)
 	fmt.Println("Render time: ", time.Now().Sub(start))
@@ -69,21 +71,22 @@ func hexagonCorner() *Sphere {
 	s := NewSphere()
 
 	sMaterial := DefaultMaterial()
-	sMaterial.color = NewColor(0.2, 0.4, 1)
+	sMaterial.color = NewColor(0.4, 0.4, 0.8)
 	sMaterial.diffuse = 0.7
-	sMaterial.specular = 0.3
-	sMaterial.reflective = 1
-	sMaterial.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
-	sMaterial.pattern.SetTransform(RotationZ(PI / 6))
+	sMaterial.ambient = 0.3
+	// sMaterial.specular = 0.3
+	// sMaterial.reflective = 1
+	// sMaterial.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
+	// sMaterial.pattern.SetTransform(RotationZ(PI / 6))
 
-	sMaterial.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
-	sMaterial.pattern.SetTransform(RotationZ(PI / 6).
-		MultiplyMatrix(RotationY(-PI / 3)).
-		MultiplyMatrix(Scaling(0.03, 1, 1)),
-	)
-	sMaterial.refractiveIndex = 1.52
-	sMaterial.transparency = 1.0
-	sMaterial.shininess = 300
+	// sMaterial.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
+	// sMaterial.pattern.SetTransform(RotationZ(PI / 6).
+	// 	MultiplyMatrix(RotationY(-PI / 3)).
+	// 	MultiplyMatrix(Scaling(0.03, 1, 1)),
+	// )
+	// sMaterial.refractiveIndex = 1.52
+	// sMaterial.transparency = 1.0
+	// sMaterial.shininess = 300
 
 	s.SetMaterial(sMaterial)
 
@@ -100,21 +103,22 @@ func hexagonEdge() *Cylinder {
 	c.maximum = 1
 
 	cMaterial := DefaultMaterial()
-	cMaterial.color = NewColor(1, 0.2, 0.4)
-	cMaterial.diffuse = 0.2
-	cMaterial.specular = 0.8
-
-	cMaterial.pattern = PatternChain(
-		StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(1, 0, 0)),
-		CheckersPattern(NewColor(1, 0, 1), NewColor(0, 1, 0)),
-	)
-	cMaterial.pattern.SetTransform(RotationZ(PI / 6).
-		MultiplyMatrix(RotationY(-PI / 3)).
-		MultiplyMatrix(Scaling(0.03, 1, 1)))
-
-	cMaterial.color = NewColor(0.1, 1, 0.5)
+	cMaterial.color = NewColor(0.4, 0.4, 0.8)
 	cMaterial.diffuse = 0.7
-	cMaterial.specular = 0.3
+	cMaterial.ambient = 0.5
+	// cMaterial.specular = 0.8
+
+	// cMaterial.pattern = PatternChain(
+	// 	StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(1, 0, 0)),
+	// 	CheckersPattern(NewColor(1, 0, 1), NewColor(0, 1, 0)),
+	// )
+	// cMaterial.pattern.SetTransform(RotationZ(PI / 6).
+	// 	MultiplyMatrix(RotationY(-PI / 3)).
+	// 	MultiplyMatrix(Scaling(0.03, 1, 1)))
+
+	// cMaterial.color = NewColor(0.1, 1, 0.5)
+	// cMaterial.diffuse = 0.7
+	// cMaterial.specular = 0.3
 
 	c.SetMaterial(cMaterial)
 
