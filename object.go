@@ -113,14 +113,14 @@ func (sphere *Sphere) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
 func (sphere *Sphere) NormalAt(worldPoint *Tuple) *Tuple {
-	localPoint := sphere.inverse.MultiplyMatrixByTuple(worldPoint)
+	// localPoint := sphere.inverse.MultiplyMatrixByTuple(worldPoint)
+	// localNormal := sphere.localNormalAt(localPoint)
+	// worldNormal := sphere.inverseTranspose.MultiplyMatrixByTuple(localNormal)
+	// worldNormal.w = 0.0
+	// return worldNormal.Normalize()
 
-	localNormal := sphere.localNormalAt(localPoint)
-
-	worldNormal := sphere.inverseTranspose.MultiplyMatrixByTuple(localNormal)
-
-	worldNormal.w = 0.0
-	return worldNormal.Normalize()
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(sphere, worldPoint)
 }
 
 func (sphere *Sphere) localIntersect(localRay *Ray) []*Intersection {
@@ -191,12 +191,14 @@ func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
 func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
-	localPoint := plane.inverse.MultiplyMatrixByTuple(worldPoint)
-	localNormal := plane.localNormalAt(localPoint)
-	worldNormal := plane.inverseTranspose.MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0.0
-	return worldNormal.Normalize()
+	// localPoint := plane.inverse.MultiplyMatrixByTuple(worldPoint)
+	// localNormal := plane.localNormalAt(localPoint)
+	// worldNormal := plane.inverseTranspose.MultiplyMatrixByTuple(localNormal)
+	// worldNormal.w = 0.0
+	// return worldNormal.Normalize()
 
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(plane, worldPoint)
 }
 
 func (plane *Plane) localIntersect(localRay *Ray) []*Intersection {
@@ -352,11 +354,14 @@ func (cube *Cube) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cube *Cube) NormalAt(worldPoint *Tuple) *Tuple {
 
-	localPoint := cube.inverse.MultiplyMatrixByTuple(worldPoint)
-	localNormal := cube.localNormalAt(localPoint)
-	worldNormal := cube.inverseTranspose.MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0.0
-	return worldNormal.Normalize()
+	// localPoint := cube.inverse.MultiplyMatrixByTuple(worldPoint)
+	// localNormal := cube.localNormalAt(localPoint)
+	// worldNormal := cube.inverseTranspose.MultiplyMatrixByTuple(localNormal)
+	// worldNormal.w = 0.0
+	// return worldNormal.Normalize()
+
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(cube, worldPoint)
 }
 
 // SetMaterial returns the material of a Cube.
@@ -523,11 +528,14 @@ func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
 
-	localPoint := cylinder.inverse.MultiplyMatrixByTuple(worldPoint)
-	localNormal := cylinder.localNormalAt(localPoint)
-	worldNormal := cylinder.inverseTranspose.MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0.0
-	return worldNormal.Normalize()
+	// localPoint := cylinder.inverse.MultiplyMatrixByTuple(worldPoint)
+	// localNormal := cylinder.localNormalAt(localPoint)
+	// worldNormal := cylinder.inverseTranspose.MultiplyMatrixByTuple(localNormal)
+	// worldNormal.w = 0.0
+	// return worldNormal.Normalize()
+
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(cylinder, worldPoint)
 }
 
 // Checks to see if the intersection at `t` is within a radius of 1 (the radius of your cylinders) from the y axis.
@@ -713,11 +721,14 @@ func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (cone *Cone) NormalAt(worldPoint *Tuple) *Tuple {
 
-	localPoint := cone.inverse.MultiplyMatrixByTuple(worldPoint)
-	localNormal := cone.localNormalAt(localPoint)
-	worldNormal := cone.inverseTranspose.MultiplyMatrixByTuple(localNormal)
-	worldNormal.w = 0.0
-	return worldNormal.Normalize()
+	// localPoint := cone.inverse.MultiplyMatrixByTuple(worldPoint)
+	// localNormal := cone.localNormalAt(localPoint)
+	// worldNormal := cone.inverseTranspose.MultiplyMatrixByTuple(localNormal)
+	// worldNormal.w = 0.0
+	// return worldNormal.Normalize()
+
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(cone, worldPoint)
 }
 
 func (cone *Cone) intersectCaps(localRay *Ray, xs Intersections) Intersections {
