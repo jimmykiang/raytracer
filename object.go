@@ -761,3 +761,30 @@ func (cone *Cone) checkCap(localRay *Ray, t float64, minMaxY float64) bool {
 	z := localRay.origin.z + t*localRay.direction.z
 	return math.Pow(x, 2)+math.Pow(z, 2) <= math.Abs(minMaxY)
 }
+
+type Triangle struct {
+	p1       *Tuple
+	p2       *Tuple
+	p3       *Tuple
+	e1       *Tuple
+	e2       *Tuple
+	normal   *Tuple
+	material *Material
+}
+
+func NewTriangle(p1, p2, p3 *Tuple) *Triangle {
+
+	e1 := p2.Substract(p1)
+	e2 := p3.Substract(p1)
+	n := e2.CrossProduct(e1).Normalize()
+
+	return &Triangle{
+		p1:       p1,
+		p2:       p2,
+		p3:       p3,
+		e1:       e1,
+		e2:       e2,
+		normal:   n,
+		material: DefaultMaterial(),
+	}
+}

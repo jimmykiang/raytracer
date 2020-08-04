@@ -203,3 +203,35 @@ func TestConeNormal(t *testing.T) {
 		}
 	}
 }
+
+func TestConstructTriangle(t *testing.T) {
+	// Constructing a triangle.
+
+	p1 := Point(0, 1, 0)
+	p2 := Point(-1, 0, 0)
+	p3 := Point(1, 0, 0)
+	triangle := NewTriangle(p1, p2, p3)
+
+	expectedE1 := Vector(-1, -1, 0)
+	expectedE2 := Vector(1, -1, 0)
+	expectedNormal := Vector(0, 0, -1)
+
+	if !(triangle.p1.Equals(p1)) {
+		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.p1, p1)
+	}
+	if !(triangle.p2.Equals(p2)) {
+		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.p2, p2)
+	}
+	if !(triangle.p3.Equals(p3)) {
+		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.p3, p3)
+	}
+	if !(triangle.e1.Equals(expectedE1)) {
+		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.e1, expectedE1)
+	}
+	if !(triangle.e2.Equals(expectedE2)) {
+		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.e2, expectedE2)
+	}
+	if !(triangle.normal.Equals(expectedNormal)) {
+		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.normal, expectedNormal)
+	}
+}

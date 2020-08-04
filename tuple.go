@@ -103,7 +103,7 @@ func (t *Tuple) DotProduct(o *Tuple) float64 {
 
 // CrossProduct from 2 vectors (tuple with w == 0).
 func (t *Tuple) CrossProduct(o *Tuple) *Tuple {
-	return Vector(t.y*o.z-t.z*o.y, t.z*o.x-t.x*o.z, t.x*o.y-t.y*o.x)
+	return Vector((*t).y*o.z-t.z*o.y, t.z*o.x-t.x*o.z, t.x*o.y-t.y*o.x)
 }
 
 // Reflect returns a pointer to a reflection vector based off an incoming vector and a normal vector.

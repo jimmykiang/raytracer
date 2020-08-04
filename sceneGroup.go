@@ -72,7 +72,7 @@ func hexagonCorner() *Sphere {
 
 	sMaterial := DefaultMaterial()
 	sMaterial.color = NewColor(0.4, 0.4, 0.8)
-	sMaterial.diffuse = 0.7
+	sMaterial.diffuse = 1.2
 	sMaterial.ambient = 0.3
 	// sMaterial.specular = 0.3
 	// sMaterial.reflective = 1
@@ -106,7 +106,8 @@ func hexagonEdge() *Cylinder {
 	cMaterial.color = NewColor(0.4, 0.4, 0.8)
 	cMaterial.diffuse = 0.7
 	cMaterial.ambient = 0.5
-	// cMaterial.specular = 0.8
+	cMaterial.specular = 0.2
+	cMaterial.shininess = 0.9
 
 	// cMaterial.pattern = PatternChain(
 	// 	StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(1, 0, 0)),
