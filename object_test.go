@@ -235,3 +235,24 @@ func TestConstructTriangle(t *testing.T) {
 		t.Errorf("Constructing a triangle, got: %v and expected to be %v", triangle.normal, expectedNormal)
 	}
 }
+
+func TestTriangleNormal(t *testing.T) {
+	// Finding the normal on a triangle.
+
+	triangle := NewTriangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+	n1 := triangle.localNormalAt(Point(0, 0.5, 0))
+	n2 := triangle.localNormalAt(Point(-0.5, 0.75, 0))
+	n3 := triangle.localNormalAt(Point(0.5, 0.25, 0))
+
+	expectedNormal := triangle.normal
+
+	if !(n1.Equals(expectedNormal)) {
+		t.Errorf("Finding the normal on a triangle, got: %v and expected to be %v", n1, expectedNormal)
+	}
+	if !(n2.Equals(expectedNormal)) {
+		t.Errorf("Finding the normal on a triangle, got: %v and expected to be %v", n2, expectedNormal)
+	}
+	if !(n3.Equals(expectedNormal)) {
+		t.Errorf("Finding the normal on a triangle, got: %v and expected to be %v", n3, expectedNormal)
+	}
+}

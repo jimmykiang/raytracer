@@ -27,8 +27,8 @@ func NewGroup() *Group {
 	}
 }
 
-// getId returns the id of the group (shape).
-func (g *Group) getId() int {
+// GetID returns the id of the group (shape).
+func (g *Group) GetID() int {
 	return g.id
 }
 

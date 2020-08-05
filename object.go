@@ -19,7 +19,7 @@ type Shape interface {
 	localNormalAt(*Tuple) *Tuple
 	GetParent() Shape
 	SetParent(shape Shape)
-	getId() int
+	GetID() int
 }
 
 // Sphere object
@@ -58,8 +58,8 @@ func GlassSphere() *Sphere {
 	}
 }
 
-// getId returns the id of the shape.
-func (sphere *Sphere) getId() int {
+// GetID returns the id of the shape.
+func (sphere *Sphere) GetID() int {
 	return sphere.id
 }
 
@@ -85,11 +85,13 @@ func (sphere *Sphere) SetTransform(transformation Matrix) {
 	sphere.inverseTranspose = sphere.inverse.Transpose()
 }
 
+// GetInverse returns the cached inverse matrix of the current Shape.
 func (sphere *Sphere) GetInverse() Matrix {
 
 	return sphere.inverse
 }
 
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
 func (sphere *Sphere) GetInverseTranspose() Matrix {
 
 	return sphere.inverseTranspose
@@ -168,8 +170,8 @@ func NewPlane() *Plane {
 	}
 }
 
-// getId returns the id of the shape.
-func (plane *Plane) getId() int {
+// GetID returns the id of the shape.
+func (plane *Plane) GetID() int {
 	return plane.id
 }
 
@@ -223,11 +225,13 @@ func (plane *Plane) Transform() Matrix {
 	return plane.transform
 }
 
+// GetInverse returns the cached inverse matrix of the current Shape.
 func (plane *Plane) GetInverse() Matrix {
 
 	return plane.inverse
 }
 
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
 func (plane *Plane) GetInverseTranspose() Matrix {
 
 	return plane.inverseTranspose
@@ -289,8 +293,8 @@ func (cube *Cube) localIntersect(localRay *Ray) []*Intersection {
 		NewIntersection(tMax, cube)}
 }
 
-// getId returns the id of the shape.
-func (cube *Cube) getId() int {
+// GetID returns the id of the shape.
+func (cube *Cube) GetID() int {
 	return cube.id
 }
 
@@ -376,11 +380,13 @@ func (cube *Cube) SetTransform(transform Matrix) {
 	cube.inverseTranspose = cube.inverse.Transpose()
 }
 
+// GetInverse returns the cached inverse matrix of the current Shape.
 func (cube *Cube) GetInverse() Matrix {
 
 	return cube.inverse
 }
 
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
 func (cube *Cube) GetInverseTranspose() Matrix {
 
 	return cube.inverseTranspose
@@ -416,8 +422,8 @@ func NewCylinder() *Cylinder {
 	}
 }
 
-// getId returns the id of the shape.
-func (cylinder *Cylinder) getId() int {
+// GetID returns the id of the shape.
+func (cylinder *Cylinder) GetID() int {
 	return cylinder.id
 }
 
@@ -501,10 +507,12 @@ func (cylinder *Cylinder) Transform() Matrix {
 	return cylinder.transform
 }
 
+// GetInverse returns the cached inverse matrix of the current Shape.
 func (cylinder *Cylinder) GetInverse() Matrix {
 	return cylinder.inverse
 }
 
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
 func (cylinder *Cylinder) GetInverseTranspose() Matrix {
 	return cylinder.inverseTranspose
 }
@@ -593,11 +601,12 @@ func NewCone() *Cone {
 	}
 }
 
-// getId returns the id of the shape.
-func (cone *Cone) getId() int {
+// GetID returns the id of the shape.
+func (cone *Cone) GetID() int {
 	return cone.id
 }
 
+// GetParent returns the parent Shape of the current Shape.
 func (cone *Cone) GetParent() Shape {
 	return cone.parent
 }
@@ -688,10 +697,12 @@ func (cone *Cone) Transform() Matrix {
 	return cone.transform
 }
 
+// GetInverse returns the cached inverse matrix of the current Shape.
 func (cone *Cone) GetInverse() Matrix {
 	return cone.inverse
 }
 
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
 func (cone *Cone) GetInverseTranspose() Matrix {
 	return cone.inverseTranspose
 }
@@ -762,6 +773,7 @@ func (cone *Cone) checkCap(localRay *Ray, t float64, minMaxY float64) bool {
 	return math.Pow(x, 2)+math.Pow(z, 2) <= math.Abs(minMaxY)
 }
 
+// Triangle struct.
 type Triangle struct {
 	p1       *Tuple
 	p2       *Tuple
@@ -772,6 +784,7 @@ type Triangle struct {
 	material *Material
 }
 
+// NewTriangle returns a *Triangle with precomputed normal vector.
 func NewTriangle(p1, p2, p3 *Tuple) *Triangle {
 
 	e1 := p2.Substract(p1)
@@ -787,4 +800,10 @@ func NewTriangle(p1, p2, p3 *Tuple) *Triangle {
 		normal:   n,
 		material: DefaultMaterial(),
 	}
+}
+
+// localNormalAt will return the precomputed normal from the *Triangle.
+func (triangle *Triangle) localNormalAt(localPoint *Tuple) *Tuple {
+
+	return triangle.normal
 }

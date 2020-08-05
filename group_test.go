@@ -76,17 +76,17 @@ func TestIntersectGroup(t *testing.T) {
 	if !(len(xs) == 4) {
 		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", len(xs), 4)
 	}
-	if !(s2.getId() == xs[0].object.getId()) {
-		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	if !(s2.GetID() == xs[0].object.GetID()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.GetID(), s2.GetID())
 	}
-	if !(s2.getId() == xs[1].object.getId()) {
-		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	if !(s2.GetID() == xs[1].object.GetID()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.GetID(), s2.GetID())
 	}
-	if !(s1.getId() == xs[2].object.getId()) {
-		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	if !(s1.GetID() == xs[2].object.GetID()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.GetID(), s2.GetID())
 	}
-	if !(s1.getId() == xs[3].object.getId()) {
-		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.getId(), s2.getId())
+	if !(s1.GetID() == xs[3].object.GetID()) {
+		t.Errorf("Intersecting a ray with a nonempty group: got: %v, expected: %v", xs[0].object.GetID(), s2.GetID())
 	}
 
 	xs3 := s3.Intersect(r)
