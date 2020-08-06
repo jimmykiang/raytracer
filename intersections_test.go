@@ -401,4 +401,12 @@ func TestIntersectTriangleParallel(t *testing.T) {
 	if len(xs) != 0 {
 		t.Errorf("A ray misses the p1-p3 edge: got %v expected be xs= %v,", len(xs), 0)
 	}
+
+	// A ray misses the p1-p2 edge
+	ray = NewRay(Point(-1, 1, -2), Point(0, 0, 1))
+	xs = triangle.localIntersect(ray)
+
+	if len(xs) != 0 {
+		t.Errorf("A ray misses the p1-p2 edge: got %v expected be xs= %v,", len(xs), 0)
+	}
 }
