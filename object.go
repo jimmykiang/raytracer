@@ -824,6 +824,13 @@ func (triangle *Triangle) localIntersect(localRay *Ray) []*Intersection {
 		return []*Intersection{}
 	}
 
+	f := 1.0 / determinant
+	p1ToOrigin := localRay.origin.Substract(triangle.p1)
+	u := f * p1ToOrigin.DotProduct(dirCrossE2)
+	if u < 0 || u > 1 {
+		return []*Intersection{}
+	}
+
 	return []*Intersection{&Intersection{1, triangle}}
 }
 
