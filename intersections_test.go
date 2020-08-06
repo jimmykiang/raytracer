@@ -382,3 +382,15 @@ func TestConeCapsIntersection(t *testing.T) {
 		}
 	}
 }
+
+func TestIntersectTriangleParallel(t *testing.T) {
+	// Intersecting a ray parallel to the triangle.
+
+	triangle := NewTriangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
+	ray := NewRay(Point(0, -1, -2), Point(0, 1, 0))
+	xs := triangle.localIntersect(ray)
+
+	if len(xs) != 0 {
+		t.Errorf("Intersecting a ray parallel to the triangle: got %v expected be xs= %v,", len(xs), 0)
+	}
+}

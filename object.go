@@ -807,3 +807,75 @@ func (triangle *Triangle) localNormalAt(localPoint *Tuple) *Tuple {
 
 	return triangle.normal
 }
+
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
+func (triangle *Triangle) NormalAt(worldPoint *Tuple) *Tuple {
+
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(triangle, worldPoint)
+}
+
+// Intersect calculates the local intersections between a ray and a Triangle.
+func (triangle *Triangle) localIntersect(localRay *Ray) []*Intersection {
+
+	dirCrossE2 := localRay.direction.CrossProduct(triangle.e2)
+	determinant := triangle.e1.DotProduct(dirCrossE2)
+	if math.Abs(determinant) < EPSILON {
+		return []*Intersection{}
+	}
+
+	return []*Intersection{&Intersection{1, triangle}}
+}
+
+// GetID returns the id of the shape.
+func (triangle *Triangle) GetID() int {
+	panic("GetID() is not applicable to a Triangle shape.")
+}
+
+// Material returns the material of a Sphere.
+func (triangle *Triangle) Material() *Material {
+	return triangle.material
+}
+
+// SetTransform sets the shape's transformation.
+func (triangle *Triangle) SetTransform(transformation Matrix) {
+	panic("SetTransform() is not applicable to a Triangle shape.")
+}
+
+// SetMaterial sets the shape's material.
+func (triangle *Triangle) SetMaterial(material *Material) {
+	triangle.material = material
+}
+
+//Transform returns the transformation.
+func (triangle *Triangle) Transform() Matrix {
+	return IdentityMatrix
+}
+
+// GetInverse returns the cached inverse matrix of the current Shape.
+func (triangle *Triangle) GetInverse() Matrix {
+	return IdentityMatrix
+}
+
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
+func (triangle *Triangle) GetInverseTranspose() Matrix {
+	return IdentityMatrix
+}
+
+// GetParent gets the parent shape from this current shape.
+func (triangle *Triangle) GetParent() Shape {
+	return nil
+}
+
+// SetParent sets the parent shape from this current shape.
+func (triangle *Triangle) SetParent(shape Shape) {
+
+	panic("SetParent() is not applicable to a Triangle shape.")
+}
+
+// Intersect calculates the local intersections between a ray and a Triangle.
+func (triangle *Triangle) Intersect(worldRay *Ray) []*Intersection {
+
+	localRay := worldRay.Transform(triangle.GetInverse())
+	return triangle.localIntersect(localRay)
+}

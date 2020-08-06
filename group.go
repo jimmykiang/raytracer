@@ -16,6 +16,7 @@ type Group struct {
 	BoundingBox      *BoundingBox
 }
 
+// NewGroup returns a *Group that can contain children Shapes. A group will implement the Shape interface behaviour.
 func NewGroup() *Group {
 
 	return &Group{
@@ -32,6 +33,7 @@ func (g *Group) GetID() int {
 	return g.id
 }
 
+// AddChild will add the shape as a child to the group and establish its parent relationship from the shape itself.
 func (g *Group) AddChild(shapes ...Shape) {
 
 	for i := 0; i < len(shapes); i++ {
@@ -75,21 +77,25 @@ func (g *Group) Intersect(worldRay *Ray) []*Intersection {
 	return g.localIntersect(localGroupRay)
 }
 
+// SetTransform applies the transformation matrix to the Shape.
 func (g *Group) SetTransform(transformation Matrix) {
 	g.transform = g.transform.MultiplyMatrix(transformation)
 	g.inverse = g.transform.Inverse()
 	g.inverseTranspose = g.inverse.Transpose()
 }
 
+// Transform returns the transformation.
 func (g *Group) Transform() Matrix {
 	return g.transform
 }
 
+// GetInverse returns the cached inverse matrix of the current Shape.
 func (g *Group) GetInverse() Matrix {
 
 	return g.inverse
 }
 
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
 func (g *Group) GetInverseTranspose() Matrix {
 
 	return g.inverseTranspose
@@ -120,7 +126,7 @@ func NormalToWorld(shape Shape, normal *Tuple) *Tuple {
 	return normal
 }
 
-// Find the normal on a child object of a group, taking into account transformations
+// NormalAt will find the normal on a child object of a group, taking into account transformations
 // on both the child object and the parent(s).
 func NormalAt(s Shape, worldPoint *Tuple) *Tuple {
 
@@ -136,16 +142,19 @@ func NormalAt(s Shape, worldPoint *Tuple) *Tuple {
 	return NormalToWorld(s, objectNormal)
 }
 
+// GetParent returns the parent shape from this current shape.
 func (g *Group) GetParent() Shape {
 	return g.parent
 }
 
+// SetParent sets the parent shape from this current shape.
 func (g *Group) SetParent(shape Shape) {
 	g.parent = shape
 }
 
+// NormalAt is not applicable to a group. use the global NormalAt() instead.
 func (g *Group) NormalAt(*Tuple) *Tuple {
-	panic("not applicable to a group. Use NormalAt() instead")
+	panic("not applicable to a group. Use NormalAt() instead.")
 }
 func (g *Group) localNormalAt(*Tuple) *Tuple {
 	panic("not applicable to a group. normals are always computed by calling the concrete shape’s local_normal_at()")
@@ -157,4 +166,6 @@ func (g *Group) SetMaterial(material *Material) {
 		c.SetMaterial(material)
 	}
 }
+
+// Material not applicable to a group.
 func (g *Group) Material() *Material { panic("not applicable to a group.") }
