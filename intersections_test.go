@@ -391,7 +391,7 @@ func TestIntersectTriangleParallel(t *testing.T) {
 	xs := triangle.localIntersect(ray)
 
 	if len(xs) != 0 {
-		t.Errorf("Intersecting a ray parallel to the triangle: got %v expected be xs= %v,", len(xs), 0)
+		t.Errorf("Intersecting a ray parallel to the triangle: got %v expected be %v,", len(xs), 0)
 	}
 
 	// A ray misses the p1-p3 edge.
@@ -399,22 +399,30 @@ func TestIntersectTriangleParallel(t *testing.T) {
 	xs = triangle.localIntersect(ray)
 
 	if len(xs) != 0 {
-		t.Errorf("A ray misses the p1-p3 edge: got %v expected be xs= %v,", len(xs), 0)
+		t.Errorf("A ray misses the p1-p3 edge: got %v expected be %v,", len(xs), 0)
 	}
 
-	// A ray misses the p1-p2 edge
+	// A ray misses the p1-p2 edge.
 	ray = NewRay(Point(-1, 1, -2), Point(0, 0, 1))
 	xs = triangle.localIntersect(ray)
 
 	if len(xs) != 0 {
-		t.Errorf("A ray misses the p1-p2 edge: got %v expected be xs= %v,", len(xs), 0)
+		t.Errorf("A ray misses the p1-p2 edge: got %v expected be %v,", len(xs), 0)
 	}
 
-	// A ray misses the p2-p3 edge
+	// A ray misses the p2-p3 edge.
 	ray = NewRay(Point(0, -1, -2), Point(0, 0, 1))
 	xs = triangle.localIntersect(ray)
 
 	if len(xs) != 0 {
-		t.Errorf("A ray misses the p1-p2 edge: got %v expected be xs= %v,", len(xs), 0)
+		t.Errorf("A ray misses the p2-p3 edge: got %v expected be %v,", len(xs), 0)
+	}
+
+	// A ray strikes a triangle.
+	ray = NewRay(Point(0, 0.5, -2), Point(0, 0, 1))
+	xs = triangle.localIntersect(ray)
+
+	if !(len(xs) == 1 && xs[0].t == 2) {
+		t.Errorf("A ray strikes a triangle: got %v expected be %v,", xs[0].t, 2)
 	}
 }

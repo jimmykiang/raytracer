@@ -837,7 +837,13 @@ func (triangle *Triangle) localIntersect(localRay *Ray) []*Intersection {
 		return []*Intersection{}
 	}
 
-	return []*Intersection{&Intersection{1, triangle}}
+	t := f * triangle.e2.DotProduct(originCrossE1)
+	return []*Intersection{
+		&Intersection{
+			t:      t,
+			object: triangle,
+		},
+	}
 }
 
 // GetID returns the id of the shape.
