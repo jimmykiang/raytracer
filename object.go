@@ -886,10 +886,8 @@ func (triangle *Triangle) GetParent() Shape {
 	return nil
 }
 
-// SetParent sets the parent shape from this current shape.
+// SetParent does not apply for *Triangle since all trianges from a wavefront OBJ data corresponds to the same group.
 func (triangle *Triangle) SetParent(shape Shape) {
-
-	panic("SetParent() is not applicable to a Triangle shape.")
 }
 
 // Intersect calculates the local intersections between a ray and a Triangle.
