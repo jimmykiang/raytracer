@@ -111,3 +111,11 @@ func parseObjData(data string) *Obj {
 
 	return result
 }
+
+func (o *Obj) objToGroup() *Group {
+	g := NewGroup()
+	for _, v := range o.groups {
+		g.AddChild(v)
+	}
+	return g
+}
