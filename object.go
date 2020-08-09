@@ -886,7 +886,7 @@ func (triangle *Triangle) GetParent() Shape {
 	return nil
 }
 
-// SetParent does not apply for *Triangle since all trianges from a wavefront OBJ data corresponds to the same group.
+// SetParent does not apply for *Triangle since the groups are defined in the wavefront OBJ data.
 func (triangle *Triangle) SetParent(shape Shape) {
 }
 

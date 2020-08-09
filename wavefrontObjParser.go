@@ -82,6 +82,15 @@ func parseObjData(data string) *Obj {
 					result.groups[currentGroup].AddChild(triangle)
 				}
 
+			case "g":
+				fallthrough
+			case "o":
+				currentGroup = strings.Fields(strings.TrimSpace(line))[1]
+				if _, exists := result.groups[currentGroup]; !exists {
+
+					result.groups[currentGroup] = NewGroup()
+				}
+
 			default:
 				result.ignoredLines++
 			}
@@ -90,8 +99,15 @@ func parseObjData(data string) *Obj {
 		}
 	}
 
+	triangles := 0
+	for i := range result.groups {
+		triangles += len(result.groups[i].children)
+	}
+
 	fmt.Println("Wavefront OBJ loaded:")
-	fmt.Printf("Vertices: %d\n", len(result.vertices))
+	fmt.Printf("Groups:    %d\n", len(result.groups))
+	fmt.Printf("Vertices: %d\n", len(result.vertices)-1)
+	fmt.Printf("Triangles: %d\n", triangles)
 
 	return result
 }

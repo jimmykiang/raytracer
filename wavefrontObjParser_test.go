@@ -119,3 +119,41 @@ f 1 2 3 4 5`
 		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t2.p3, parser.vertices[5])
 	}
 }
+
+func TestTrianglesInGroups(t *testing.T) {
+	// Triangles in groups.
+	data := `
+v -1 1 0
+v -1 0 0
+v 1 0 0
+v 1 1 0
+g FirstGroup
+f 1 2 3
+g SecondGroup
+f 1 3 4`
+
+	parser := parseObjData(data)
+	g1 := parser.groups["FirstGroup"]
+	g2 := parser.groups["SecondGroup"]
+	t1 := g1.children[0].(*Triangle)
+	t2 := g2.children[0].(*Triangle)
+
+	if !(t1.p1.Equals(parser.vertices[1])) {
+		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t1.p1, parser.vertices[1])
+	}
+	if !(t1.p2.Equals(parser.vertices[2])) {
+		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t1.p2, parser.vertices[2])
+	}
+	if !(t1.p3.Equals(parser.vertices[3])) {
+		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t1.p3, parser.vertices[3])
+	}
+	if !(t2.p1.Equals(parser.vertices[1])) {
+		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t2.p1, parser.vertices[1])
+	}
+	if !(t2.p2.Equals(parser.vertices[3])) {
+		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t2.p2, parser.vertices[3])
+	}
+	if !(t2.p3.Equals(parser.vertices[4])) {
+		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t2.p3, parser.vertices[4])
+	}
+}
