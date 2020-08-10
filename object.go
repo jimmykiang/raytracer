@@ -896,3 +896,42 @@ func (triangle *Triangle) Intersect(worldRay *Ray) []*Intersection {
 	localRay := worldRay.Transform(triangle.GetInverse())
 	return triangle.localIntersect(localRay)
 }
+
+type smoothTriangle struct {
+	p1       *Tuple
+	p2       *Tuple
+	p3       *Tuple
+	normal   *Tuple
+	n1       *Tuple
+	n2       *Tuple
+	n3       *Tuple
+	material *Material
+}
+
+func newSmoothTriangle(p1 *Tuple, p2 *Tuple, p3 *Tuple, n1 *Tuple, n2 *Tuple, n3 *Tuple) *smoothTriangle {
+
+	e1 := p2.Substract(p1)
+	e2 := p3.Substract(p1)
+	n := e2.CrossProduct(e1).Normalize()
+
+	return &smoothTriangle{
+		p1:       p1,
+		p2:       p2,
+		p3:       p3,
+		normal:   n,
+		n1:       n1,
+		n2:       n2,
+		n3:       n3,
+		material: DefaultMaterial(),
+	}
+}
+
+func defaultSmoothTriangle() *smoothTriangle {
+	return newSmoothTriangle(
+		Point(0, 1, 0),
+		Point(-1, 0, 0),
+		Point(1, 0, 0),
+		Vector(0, 1, 0),
+		Vector(-1, 0, 0),
+		Vector(1, 0, 0))
+}

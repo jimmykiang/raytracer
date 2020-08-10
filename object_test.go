@@ -256,3 +256,34 @@ func TestTriangleNormal(t *testing.T) {
 		t.Errorf("Finding the normal on a triangle, got: %v and expected to be %v", n3, expectedNormal)
 	}
 }
+
+func TestSmoothTriangleSetup(t *testing.T) {
+	// Constructing a smooth triangle.
+	smoothTriangle := defaultSmoothTriangle()
+
+	expectedPoint1 := Point(0, 1, 0)
+	expectedPoint2 := Point(-1, 0, 0)
+	expectedPoint3 := Point(1, 0, 0)
+	expectedNormal1 := Vector(0, 1, 0)
+	expectedNormal2 := Vector(-1, 0, 0)
+	expectedNormal3 := Vector(1, 0, 0)
+
+	if !smoothTriangle.p1.Equals(expectedPoint1) {
+		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedPoint1)
+	}
+	if !smoothTriangle.p2.Equals(expectedPoint2) {
+		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedPoint2)
+	}
+	if !smoothTriangle.p3.Equals(expectedPoint3) {
+		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedPoint3)
+	}
+	if !smoothTriangle.n1.Equals(expectedNormal1) {
+		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedNormal1)
+	}
+	if !smoothTriangle.n2.Equals(expectedNormal2) {
+		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedNormal2)
+	}
+	if !smoothTriangle.n3.Equals(expectedNormal3) {
+		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedNormal3)
+	}
+}
