@@ -59,8 +59,8 @@ func TestIntersections(t *testing.T) {
 func TestHit(t *testing.T) {
 	// The hit, when all intersections have positive t.
 	s := NewSphere()
-	i1 := &Intersection{1, s}
-	i2 := &Intersection{2, s}
+	i1 := &Intersection{t: 1, object: s}
+	i2 := &Intersection{t: 2, object: s}
 	xs := NewIntersections([]*Intersection{i1, i2})
 	i := xs.Hit()
 	if i != i1 {
@@ -68,8 +68,8 @@ func TestHit(t *testing.T) {
 	}
 
 	// The hit, when some intersections have negative t.
-	i1 = &Intersection{-1, s}
-	i2 = &Intersection{2, s}
+	i1 = &Intersection{t: -1, object: s}
+	i2 = &Intersection{t: 2, object: s}
 	xs = NewIntersections([]*Intersection{i1, i2})
 	i = xs.Hit()
 	if i != i2 {
@@ -77,8 +77,8 @@ func TestHit(t *testing.T) {
 	}
 
 	// The hit, when all intersections have negative t.
-	i1 = &Intersection{-1, s}
-	i2 = &Intersection{-2, s}
+	i1 = &Intersection{t: -1, object: s}
+	i2 = &Intersection{t: -2, object: s}
 	xs = NewIntersections([]*Intersection{i1, i2})
 	i = xs.Hit()
 	if i != nil {
@@ -86,10 +86,10 @@ func TestHit(t *testing.T) {
 	}
 
 	// The hit is always the lowest nonnegative intersection.
-	i1 = &Intersection{5, s}
-	i2 = &Intersection{7, s}
-	i3 := &Intersection{-3, s}
-	i4 := &Intersection{2, s}
+	i1 = &Intersection{t: 5, object: s}
+	i2 = &Intersection{t: 7, object: s}
+	i3 := &Intersection{t: -3, object: s}
+	i4 := &Intersection{t: 2, object: s}
 	xs = NewIntersections([]*Intersection{i1, i2, i3, i4})
 	i = xs.Hit()
 	if i != i4 {

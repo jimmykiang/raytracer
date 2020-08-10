@@ -4,8 +4,8 @@ import "sort"
 
 // Intersection struct.
 type Intersection struct {
-	t      float64
-	object Shape
+	t, u, v float64
+	object  Shape
 }
 
 // Intersections contains a slice of Intersection pointers.
@@ -13,7 +13,20 @@ type Intersections []*Intersection
 
 // NewIntersection returns a reference of the intersection struct.
 func NewIntersection(t float64, object Shape) *Intersection {
-	return &Intersection{t, object}
+	return &Intersection{
+		t:      t,
+		object: object,
+	}
+}
+
+// NewIntersectionUV adds u and v Properties to the intersection struct.
+func NewIntersectionUV(t float64, s Shape, u, v float64) *Intersection {
+	return &Intersection{
+		t:      t,
+		object: s,
+		u:      u,
+		v:      v,
+	}
 }
 
 // NewIntersections returns an Intersections

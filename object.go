@@ -935,3 +935,73 @@ func defaultSmoothTriangle() *smoothTriangle {
 		Vector(-1, 0, 0),
 		Vector(1, 0, 0))
 }
+
+// GetID returns the id of the shape.
+func (smoothTriangle *smoothTriangle) GetID() int {
+	panic("GetID() is not applicable to a smoothTriangle shape.")
+}
+
+// localNormalAt will return the precomputed normal from the *smoothTriangle.
+func (smoothTriangle *smoothTriangle) localNormalAt(localPoint *Tuple) *Tuple {
+
+	return smoothTriangle.normal
+}
+
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
+func (smoothTriangle *smoothTriangle) NormalAt(worldPoint *Tuple) *Tuple {
+
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(smoothTriangle, worldPoint)
+}
+
+// Intersect calculates the local intersections between a ray and a smoothTriangle.
+func (smoothTriangle *smoothTriangle) localIntersect(localRay *Ray) []*Intersection {
+
+	return nil
+}
+
+// Material returns the material of a smoothTriangle.
+func (smoothTriangle *smoothTriangle) Material() *Material {
+	return smoothTriangle.material
+}
+
+// SetTransform sets the shape's transformation.
+func (smoothTriangle *smoothTriangle) SetTransform(transformation Matrix) {
+	panic("SetTransform() is not applicable to a Triangle shape.")
+}
+
+// SetMaterial sets the shape's material.
+func (smoothTriangle *smoothTriangle) SetMaterial(material *Material) {
+	smoothTriangle.material = material
+}
+
+//Transform returns the transformation.
+func (smoothTriangle *smoothTriangle) Transform() Matrix {
+	return IdentityMatrix
+}
+
+// GetInverse returns the cached inverse matrix of the current Shape.
+func (smoothTriangle *smoothTriangle) GetInverse() Matrix {
+	return IdentityMatrix
+}
+
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
+func (smoothTriangle *smoothTriangle) GetInverseTranspose() Matrix {
+	return IdentityMatrix
+}
+
+// GetParent gets the parent shape from this current shape.
+func (smoothTriangle *smoothTriangle) GetParent() Shape {
+	return nil
+}
+
+// SetParent does not apply for *Triangle since the groups are defined in the wavefront OBJ data.
+func (smoothTriangle *smoothTriangle) SetParent(shape Shape) {
+}
+
+// Intersect calculates the local intersections between a ray and a smoothTriangle.
+func (smoothTriangle *smoothTriangle) Intersect(worldRay *Ray) []*Intersection {
+
+	localRay := worldRay.Transform(smoothTriangle.GetInverse())
+	return smoothTriangle.localIntersect(localRay)
+}

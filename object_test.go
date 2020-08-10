@@ -287,3 +287,19 @@ func TestSmoothTriangleSetup(t *testing.T) {
 		t.Errorf("Constructing a smooth triangle: expected %v to be %v", smoothTriangle.p1, expectedNormal3)
 	}
 }
+
+func TestSmoothTriWithUV(t *testing.T) {
+	// An intersection can encapsulate `u` and `v`.
+	smoothTriangle := defaultSmoothTriangle()
+	i := NewIntersectionUV(3.5, smoothTriangle, 0.2, 0.4)
+
+	expectedU := 0.2
+	expectedV := 0.4
+
+	if !floatEqual(i.u, expectedU) {
+		t.Errorf("An intersection can encapsulate `u` and `v`: expected %v to be %v", i.u, expectedU)
+	}
+	if !floatEqual(i.v, expectedV) {
+		t.Errorf("An intersection can encapsulate `u` and `v`: expected %v to be %v", i.v, expectedV)
+	}
+}
