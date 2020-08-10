@@ -18,7 +18,7 @@ func objWorld() *Canvas {
 	p1.material.pattern.SetTransform((RotationY(PI / 6)))
 	p1.material.reflective = 0.5
 
-	objBytes, _ := ioutil.ReadFile("cow.obj")
+	objBytes, _ := ioutil.ReadFile("gopher.obj")
 	obj := parseObjData(string(objBytes)).objToGroup()
 
 	objMaterial := DefaultMaterial()
@@ -30,7 +30,13 @@ func objWorld() *Canvas {
 	objMaterial.shininess = 51.2
 	obj.SetMaterial(objMaterial)
 
-	obj.SetTransform(Translation(0, 4, 0))
+	// obj.SetTransform(Translation(0, 4, 0).
+	// 	MultiplyMatrix(RotationY(PI / 4)),
+	// )
+
+	obj.SetTransform(
+		RotationY(PI / 3),
+	)
 
 	world := NewWorld(lights, []Shape{p1, obj})
 
