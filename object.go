@@ -905,6 +905,8 @@ type smoothTriangle struct {
 	n1       *Tuple
 	n2       *Tuple
 	n3       *Tuple
+	e1       *Tuple
+	e2       *Tuple
 	material *Material
 }
 
@@ -922,6 +924,8 @@ func newSmoothTriangle(p1 *Tuple, p2 *Tuple, p3 *Tuple, n1 *Tuple, n2 *Tuple, n3
 		n1:       n1,
 		n2:       n2,
 		n3:       n3,
+		e1:       e1,
+		e2:       e2,
 		material: DefaultMaterial(),
 	}
 }
@@ -957,7 +961,34 @@ func (smoothTriangle *smoothTriangle) NormalAt(worldPoint *Tuple) *Tuple {
 // Intersect calculates the local intersections between a ray and a smoothTriangle.
 func (smoothTriangle *smoothTriangle) localIntersect(localRay *Ray) []*Intersection {
 
-	return nil
+	dirCrossE2 := localRay.direction.CrossProduct(smoothTriangle.e2)
+	determinant := smoothTriangle.e1.DotProduct(dirCrossE2)
+	if math.Abs(determinant) < EPSILON {
+		return []*Intersection{}
+	}
+
+	f := 1.0 / determinant
+	p1ToOrigin := localRay.origin.Substract(smoothTriangle.p1)
+	u := f * p1ToOrigin.DotProduct(dirCrossE2)
+	if u < 0 || u > 1 {
+		return []*Intersection{}
+	}
+
+	originCrossE1 := p1ToOrigin.CrossProduct(smoothTriangle.e1)
+	v := f * localRay.direction.DotProduct(originCrossE1)
+	if v < 0 || (u+v) > 1 {
+		return []*Intersection{}
+	}
+
+	t := f * smoothTriangle.e2.DotProduct(originCrossE1)
+	return []*Intersection{
+		&Intersection{
+			t:      t,
+			object: smoothTriangle,
+			u:      u,
+			v:      v,
+		},
+	}
 }
 
 // Material returns the material of a smoothTriangle.

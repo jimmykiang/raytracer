@@ -288,18 +288,35 @@ func TestSmoothTriangleSetup(t *testing.T) {
 	}
 }
 
-func TestSmoothTriWithUV(t *testing.T) {
+func TestSmoothTriangleWithUV(t *testing.T) {
 	// An intersection can encapsulate `u` and `v`.
 	smoothTriangle := defaultSmoothTriangle()
-	i := NewIntersectionUV(3.5, smoothTriangle, 0.2, 0.4)
+	xs := NewIntersectionUV(3.5, smoothTriangle, 0.2, 0.4)
 
 	expectedU := 0.2
 	expectedV := 0.4
 
-	if !floatEqual(i.u, expectedU) {
-		t.Errorf("An intersection can encapsulate `u` and `v`: expected %v to be %v", i.u, expectedU)
+	if !floatEqual(xs.u, expectedU) {
+		t.Errorf("An intersection can encapsulate `u` and `v`: expected %v to be %v", xs.u, expectedU)
 	}
-	if !floatEqual(i.v, expectedV) {
-		t.Errorf("An intersection can encapsulate `u` and `v`: expected %v to be %v", i.v, expectedV)
+	if !floatEqual(xs.v, expectedV) {
+		t.Errorf("An intersection can encapsulate `u` and `v`: expected %v to be %v", xs.v, expectedV)
+	}
+}
+
+func TestIntersectWithTriStoresUV(t *testing.T) {
+	// An intersection with a smooth triangle stores u/v.
+	smoothTriangle := defaultSmoothTriangle()
+	r := NewRay(Point(-0.2, 0.3, -2), Vector(0, 0, 1))
+	xs := smoothTriangle.localIntersect(r)
+
+	expectedU := 0.45
+	expectedV := 0.25
+
+	if !floatEqual(xs[0].u, expectedU) {
+		t.Errorf("An intersection with a smooth triangle stores u/v: expected %v to be %v", xs[0].u, expectedU)
+	}
+	if !floatEqual(xs[0].v, expectedV) {
+		t.Errorf("An intersection with a smooth triangle stores u/v: expected %v to be %v", xs[0].v, expectedV)
 	}
 }
