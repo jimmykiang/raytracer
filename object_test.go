@@ -333,3 +333,19 @@ func TestInterpolatedNormal(t *testing.T) {
 		t.Errorf("A smooth triangle uses u/v to interpolate the normal: expected %v to be %v", n, expectedVector)
 	}
 }
+
+func TestPrepareNormalOnSmoothTri(t *testing.T) {
+	// Preparing the normal on a smooth triangle.
+	smoothTriangle := defaultSmoothTriangle()
+	i := NewIntersectionUV(1.0, smoothTriangle, 0.45, 0.25)
+	r := NewRay(Point(-0.2, 0.3, -2), Vector(0, 0, 1))
+	xs := []*Intersection{i}
+	comps := PrepareComputations(i, r, xs)
+
+	expectedVector := Vector(-0.5547, 0.83205, 0)
+
+	if !comps.normalv.Equals(expectedVector) {
+		t.Errorf("Preparing the normal on a smooth triangle: expected %v to be %v",
+			comps.normalv, expectedVector)
+	}
+}
