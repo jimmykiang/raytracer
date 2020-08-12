@@ -9,21 +9,21 @@ func TestSphereNormal(t *testing.T) {
 
 	// The normal on a sphere at a point on the x axis.
 	s := NewSphere()
-	n := s.localNormalAt(Point(1, 0, 0))
+	n := s.localNormalAt(Point(1, 0, 0), nil)
 	expected := Vector(1, 0, 0)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
 	}
 
 	// The normal on a sphere at a point on the y axis.
-	n = s.localNormalAt(Point(0, 1, 0))
+	n = s.localNormalAt(Point(0, 1, 0), nil)
 	expected = Vector(0, 1, 0)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
 	}
 
 	// The normal on a sphere at a point on the z axis.
-	n = s.localNormalAt(Point(0, 0, 1))
+	n = s.localNormalAt(Point(0, 0, 1), nil)
 	expected = Vector(0, 0, 1)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
@@ -31,7 +31,7 @@ func TestSphereNormal(t *testing.T) {
 
 	// The normal on a sphere at a nonaxial point.
 	v := math.Sqrt(3) / 3
-	n = s.localNormalAt(Point(v, v, v))
+	n = s.localNormalAt(Point(v, v, v), nil)
 	expected = Vector(v, v, v)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
@@ -39,7 +39,7 @@ func TestSphereNormal(t *testing.T) {
 
 	// Computing the normal on a translated sphere.
 	s.SetTransform(Translation(0, 1, 0))
-	n = s.NormalAt(Point(0, 1.70711, -0.70711))
+	n = s.NormalAt(Point(0, 1.70711, -0.70711), nil)
 	expected = Vector(0, 0.70711, -0.70711)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
@@ -49,7 +49,7 @@ func TestSphereNormal(t *testing.T) {
 	s = NewSphere()
 	transformMatrix := Scaling(1, 0.5, 1).MultiplyMatrix(RotationZ(PI / 5))
 	s.SetTransform(transformMatrix)
-	n = s.NormalAt(Point(0, v, -v))
+	n = s.NormalAt(Point(0, v, -v), nil)
 	expected = Vector(0, 0.97014, -0.24254)
 	if !n.Equals(expected) {
 		t.Errorf("SphereNormal: expected %v to be %v", n, expected)
@@ -59,9 +59,9 @@ func TestSphereNormal(t *testing.T) {
 // The normal of a plane is constant everywhere
 func TestPlaneNormal(t *testing.T) {
 	p := NewPlane()
-	n1 := p.localNormalAt(Point(0, 0, 0))
-	n2 := p.localNormalAt(Point(10, 0, -10))
-	n3 := p.localNormalAt(Point(-5, 0, 150))
+	n1 := p.localNormalAt(Point(0, 0, 0), nil)
+	n2 := p.localNormalAt(Point(10, 0, -10), nil)
+	n3 := p.localNormalAt(Point(-5, 0, 150), nil)
 	expected := Vector(0, 1, 0)
 
 	if !n1.Equals(expected) {
@@ -93,7 +93,7 @@ func TestCubeNormal(t *testing.T) {
 	}
 
 	for _, v := range expectedNormals {
-		n := c.localNormalAt(v.point)
+		n := c.localNormalAt(v.point, nil)
 
 		if !n.Equals(v.normal) {
 			t.Errorf("The normal on the surface of a cube, got: %v and expected to be %v", n, v.normal)
@@ -118,7 +118,7 @@ func TestCylinderNormal(t *testing.T) {
 	}
 
 	for _, v := range expectedNormals {
-		n := c.localNormalAt(v.point)
+		n := c.localNormalAt(v.point, nil)
 
 		if !n.Equals(v.normal) {
 			t.Errorf("Normal vector on a cylinder, got: %v and expected to be %v", n, v.normal)
@@ -172,7 +172,7 @@ func TestCylinderEndCapsNormal(t *testing.T) {
 	}
 
 	for _, v := range expectedNormals {
-		n := c.localNormalAt(v.point)
+		n := c.localNormalAt(v.point, nil)
 
 		if !n.Equals(v.normal) {
 			t.Errorf("The normal vector on a cylinder's end caps, got: %v and expected to be %v", n, v.normal)
@@ -196,7 +196,7 @@ func TestConeNormal(t *testing.T) {
 	}
 
 	for _, v := range expectedNormals {
-		n := c.localNormalAt(v.point)
+		n := c.localNormalAt(v.point, nil)
 
 		if !n.Equals(v.normal) {
 			t.Errorf("Computing the normal vector on a cone, got: %v and expected to be %v", n, v.normal)
@@ -240,9 +240,9 @@ func TestTriangleNormal(t *testing.T) {
 	// Finding the normal on a triangle.
 
 	triangle := NewTriangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0))
-	n1 := triangle.localNormalAt(Point(0, 0.5, 0))
-	n2 := triangle.localNormalAt(Point(-0.5, 0.75, 0))
-	n3 := triangle.localNormalAt(Point(0.5, 0.25, 0))
+	n1 := triangle.localNormalAt(Point(0, 0.5, 0), nil)
+	n2 := triangle.localNormalAt(Point(-0.5, 0.75, 0), nil)
+	n3 := triangle.localNormalAt(Point(0.5, 0.25, 0), nil)
 
 	expectedNormal := triangle.normal
 
@@ -318,5 +318,18 @@ func TestIntersectWithTriStoresUV(t *testing.T) {
 	}
 	if !floatEqual(xs[0].v, expectedV) {
 		t.Errorf("An intersection with a smooth triangle stores u/v: expected %v to be %v", xs[0].v, expectedV)
+	}
+}
+
+func TestInterpolatedNormal(t *testing.T) {
+	// A smooth triangle uses u/v to interpolate the normal.
+	smoothTriangle := defaultSmoothTriangle()
+	i := NewIntersectionUV(1, smoothTriangle, 0.45, 0.25)
+	n := NormalAt(smoothTriangle, Point(0, 0, 0), i)
+
+	expectedVector := Vector(-0.5547, 0.83205, 0)
+
+	if !n.Equals(expectedVector) {
+		t.Errorf("A smooth triangle uses u/v to interpolate the normal: expected %v to be %v", n, expectedVector)
 	}
 }

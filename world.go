@@ -64,7 +64,7 @@ func PrepareComputations(hit *Intersection, ray *Ray, xs Intersections) *Computa
 		object:  hit.object,
 		point:   point,
 		eyev:    ray.direction.Negate(),
-		normalv: hit.object.NormalAt(point),
+		normalv: hit.object.NormalAt(point, hit),
 		inside:  false,
 	}
 	if comps.normalv.DotProduct(comps.eyev) < 0 {

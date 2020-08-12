@@ -164,7 +164,7 @@ func TestNormalOnChildObject(t *testing.T) {
 	s.SetTransform(Translation(5, 0, 0))
 	g2.AddChild(s)
 
-	v := NormalAt(s, Point(1.7321, 1.1547, -5.5774))
+	v := NormalAt(s, Point(1.7321, 1.1547, -5.5774), nil)
 
 	expectedVector := Vector(0.28570368184140726, 0.42854315178114105, -0.8571605294481017)
 	if !(expectedVector.Equals(v)) {

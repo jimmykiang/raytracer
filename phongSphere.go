@@ -40,7 +40,7 @@ func PhongSphere() *Canvas {
 				if hit != nil {
 
 					point := r.Position(hit.t)
-					normal := hit.object.NormalAt(point)
+					normal := hit.object.NormalAt(point, xs[0])
 					eye := r.direction.Negate()
 
 					color := Lighting(hit.object.Material(), hit.object, light, point, eye, normal, false)

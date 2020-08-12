@@ -15,8 +15,8 @@ type Shape interface {
 	Material() *Material
 	Intersect(*Ray) []*Intersection
 	localIntersect(*Ray) []*Intersection
-	NormalAt(*Tuple) *Tuple
-	localNormalAt(*Tuple) *Tuple
+	NormalAt(*Tuple, *Intersection) *Tuple
+	localNormalAt(*Tuple, *Intersection) *Tuple
 	GetParent() Shape
 	SetParent(shape Shape)
 	GetID() int
@@ -107,14 +107,14 @@ func (sphere *Sphere) Transform() Matrix {
 	return sphere.transform
 }
 
-func (sphere *Sphere) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+func (sphere *Sphere) localNormalAt(localPoint *Tuple, intersection *Intersection) (localNormal *Tuple) {
 
 	localNormal = localPoint.Substract(sphere.origin)
 	return
 }
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
-func (sphere *Sphere) NormalAt(worldPoint *Tuple) *Tuple {
+func (sphere *Sphere) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 	// localPoint := sphere.inverse.MultiplyMatrixByTuple(worldPoint)
 	// localNormal := sphere.localNormalAt(localPoint)
 	// worldNormal := sphere.inverseTranspose.MultiplyMatrixByTuple(localNormal)
@@ -122,7 +122,7 @@ func (sphere *Sphere) NormalAt(worldPoint *Tuple) *Tuple {
 	// return worldNormal.Normalize()
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(sphere, worldPoint)
+	return NormalAt(sphere, worldPoint, intersection)
 }
 
 func (sphere *Sphere) localIntersect(localRay *Ray) []*Intersection {
@@ -185,14 +185,14 @@ func (plane *Plane) SetParent(shape Shape) {
 	plane.parent = shape
 }
 
-func (plane *Plane) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+func (plane *Plane) localNormalAt(localPoint *Tuple, intersection *Intersection) (localNormal *Tuple) {
 
 	localNormal = Vector(0, 1, 0)
 	return
 }
 
 // NormalAt calculates the normal(vector perpendicular to the surface) at a given point.
-func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
+func (plane *Plane) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 	// localPoint := plane.inverse.MultiplyMatrixByTuple(worldPoint)
 	// localNormal := plane.localNormalAt(localPoint)
 	// worldNormal := plane.inverseTranspose.MultiplyMatrixByTuple(localNormal)
@@ -200,7 +200,7 @@ func (plane *Plane) NormalAt(worldPoint *Tuple) *Tuple {
 	// return worldNormal.Normalize()
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(plane, worldPoint)
+	return NormalAt(plane, worldPoint, intersection)
 }
 
 func (plane *Plane) localIntersect(localRay *Ray) []*Intersection {
@@ -338,7 +338,7 @@ func (cube *Cube) Material() *Material {
 	return cube.material
 }
 
-func (cube *Cube) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
+func (cube *Cube) localNormalAt(localPoint *Tuple, intersection *Intersection) (localNormal *Tuple) {
 
 	maxc := max(math.Abs(localPoint.x), math.Abs(localPoint.y), math.Abs(localPoint.z))
 
@@ -356,7 +356,7 @@ func (cube *Cube) localNormalAt(localPoint *Tuple) (localNormal *Tuple) {
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
-func (cube *Cube) NormalAt(worldPoint *Tuple) *Tuple {
+func (cube *Cube) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// localPoint := cube.inverse.MultiplyMatrixByTuple(worldPoint)
 	// localNormal := cube.localNormalAt(localPoint)
@@ -365,7 +365,7 @@ func (cube *Cube) NormalAt(worldPoint *Tuple) *Tuple {
 	// return worldNormal.Normalize()
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(cube, worldPoint)
+	return NormalAt(cube, worldPoint, intersection)
 }
 
 // SetMaterial returns the material of a Cube.
@@ -517,7 +517,7 @@ func (cylinder *Cylinder) GetInverseTranspose() Matrix {
 	return cylinder.inverseTranspose
 }
 
-func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
+func (cylinder *Cylinder) localNormalAt(localPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// Compute the square of the distance from the y axis.
 	dist := math.Pow(localPoint.x, 2) + math.Pow(localPoint.z, 2)
@@ -534,7 +534,7 @@ func (cylinder *Cylinder) localNormalAt(localPoint *Tuple) *Tuple {
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
-func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
+func (cylinder *Cylinder) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// localPoint := cylinder.inverse.MultiplyMatrixByTuple(worldPoint)
 	// localNormal := cylinder.localNormalAt(localPoint)
@@ -543,7 +543,7 @@ func (cylinder *Cylinder) NormalAt(worldPoint *Tuple) *Tuple {
 	// return worldNormal.Normalize()
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(cylinder, worldPoint)
+	return NormalAt(cylinder, worldPoint, intersection)
 }
 
 // Checks to see if the intersection at `t` is within a radius of 1 (the radius of your cylinders) from the y axis.
@@ -707,7 +707,7 @@ func (cone *Cone) GetInverseTranspose() Matrix {
 	return cone.inverseTranspose
 }
 
-func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {
+func (cone *Cone) localNormalAt(localPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// Compute the square of the distance from the y axis.
 	dist := math.Pow(localPoint.x, 2) + math.Pow(localPoint.z, 2)
@@ -730,7 +730,7 @@ func (cone *Cone) localNormalAt(localPoint *Tuple) *Tuple {
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
-func (cone *Cone) NormalAt(worldPoint *Tuple) *Tuple {
+func (cone *Cone) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// localPoint := cone.inverse.MultiplyMatrixByTuple(worldPoint)
 	// localNormal := cone.localNormalAt(localPoint)
@@ -739,7 +739,7 @@ func (cone *Cone) NormalAt(worldPoint *Tuple) *Tuple {
 	// return worldNormal.Normalize()
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(cone, worldPoint)
+	return NormalAt(cone, worldPoint, intersection)
 }
 
 func (cone *Cone) intersectCaps(localRay *Ray, xs Intersections) Intersections {
@@ -803,16 +803,16 @@ func NewTriangle(p1, p2, p3 *Tuple) *Triangle {
 }
 
 // localNormalAt will return the precomputed normal from the *Triangle.
-func (triangle *Triangle) localNormalAt(localPoint *Tuple) *Tuple {
+func (triangle *Triangle) localNormalAt(localPoint *Tuple, intersection *Intersection) *Tuple {
 
 	return triangle.normal
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
-func (triangle *Triangle) NormalAt(worldPoint *Tuple) *Tuple {
+func (triangle *Triangle) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(triangle, worldPoint)
+	return NormalAt(triangle, worldPoint, intersection)
 }
 
 // Intersect calculates the local intersections between a ray and a Triangle.
@@ -946,16 +946,18 @@ func (smoothTriangle *smoothTriangle) GetID() int {
 }
 
 // localNormalAt will return the precomputed normal from the *smoothTriangle.
-func (smoothTriangle *smoothTriangle) localNormalAt(localPoint *Tuple) *Tuple {
+func (smoothTriangle *smoothTriangle) localNormalAt(localPoint *Tuple, intersection *Intersection) *Tuple {
 
-	return smoothTriangle.normal
+	return smoothTriangle.n2.Multiply(intersection.u).
+		Add(smoothTriangle.n3.Multiply(intersection.v)).
+		Add(smoothTriangle.n1.Multiply(1 - intersection.u - intersection.v))
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
-func (smoothTriangle *smoothTriangle) NormalAt(worldPoint *Tuple) *Tuple {
+func (smoothTriangle *smoothTriangle) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(smoothTriangle, worldPoint)
+	return NormalAt(smoothTriangle, worldPoint, intersection)
 }
 
 // Intersect calculates the local intersections between a ray and a smoothTriangle.

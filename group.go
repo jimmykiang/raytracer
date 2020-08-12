@@ -128,14 +128,14 @@ func NormalToWorld(shape Shape, normal *Tuple) *Tuple {
 
 // NormalAt will find the normal on a child object of a group, taking into account transformations
 // on both the child object and the parent(s).
-func NormalAt(s Shape, worldPoint *Tuple) *Tuple {
+func NormalAt(s Shape, worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 	// Transform point from world to object space, including recursively traversing any parent object
 	// transforms.
 	localPoint := WorldToObject(s, worldPoint)
 
 	// Normal in local space given the shape's implementation.
-	objectNormal := s.localNormalAt(localPoint)
+	objectNormal := s.localNormalAt(localPoint, intersection)
 
 	// Convert normal from object space back into world space, again recursively applying any
 	// parent transforms.
@@ -153,10 +153,10 @@ func (g *Group) SetParent(shape Shape) {
 }
 
 // NormalAt is not applicable to a group. use the global NormalAt() instead.
-func (g *Group) NormalAt(*Tuple) *Tuple {
+func (g *Group) NormalAt(*Tuple, *Intersection) *Tuple {
 	panic("not applicable to a group. Use NormalAt() instead.")
 }
-func (g *Group) localNormalAt(*Tuple) *Tuple {
+func (g *Group) localNormalAt(*Tuple, *Intersection) *Tuple {
 	panic("not applicable to a group. normals are always computed by calling the concrete shape’s local_normal_at()")
 }
 
