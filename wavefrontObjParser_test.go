@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestParseGibberish(t *testing.T) {
 	// Ignoring unrecognized lines.
@@ -178,5 +181,45 @@ vn 1 2 3`
 		if !(parser.normals[i+1].Equals(expectedNormals[i])) {
 			t.Errorf("Vertex normal records, got: %v and expected to be %v", parser.normals[i+1], expectedNormals[i])
 		}
+	}
+}
+
+func TestFacesWithNormals(t *testing.T) {
+	// Faces with normals.
+	data := `
+v 0 1 0
+v -1 0 0
+v 1 0 0
+vn -1 0 0
+vn 1 0 0
+vn 0 1 0
+f 1//3 2//1 3//2
+f 1/0/3 2/102/1 3/14/2`
+	parser := parseObjData(data)
+
+	g := parser.defaultGroup()
+	t1 := g.children[0].(*smoothTriangle)
+	t2 := g.children[1].(*smoothTriangle)
+
+	if !(t1.p1.Equals(parser.vertices[1])) {
+		t.Errorf("Faces with normals, got: %v and expected to be %v", t1.p1, parser.vertices[1])
+	}
+	if !(t1.p2.Equals(parser.vertices[2])) {
+		t.Errorf("Faces with normals, got: %v and expected to be %v", t1.p2, parser.vertices[2])
+	}
+	if !(t1.p3.Equals(parser.vertices[3])) {
+		t.Errorf("Faces with normals, got: %v and expected to be %v", t1.p3, parser.vertices[3])
+	}
+	if !(t1.n1.Equals(parser.normals[3])) {
+		t.Errorf("Faces with normals, got: %v and expected to be %v", t1.n1, parser.normals[3])
+	}
+	if !(t1.n2.Equals(parser.normals[1])) {
+		t.Errorf("Faces with normals, got: %v and expected to be %v", t1.n2, parser.normals[1])
+	}
+	if !(t1.n3.Equals(parser.normals[2])) {
+		t.Errorf("Faces with normals, got: %v and expected to be %v", t1.n3, parser.normals[2])
+	}
+	if !(reflect.DeepEqual(t1, t2)) {
+		t.Errorf("Faces with normals, t1 is not equal to t2")
 	}
 }

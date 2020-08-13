@@ -40,7 +40,7 @@ func parseObjData(data string) *Obj {
 	lines := strings.Split(data, "\n")
 
 	var x, y, z float64
-	var index1, index2, index3 int
+	var index1, index2, index3, normalIndex1, normalIndex2, normalIndex3 int
 	var err error
 	currentGroup := "defaultGroup"
 	result.groups[currentGroup] = NewGroup()
@@ -67,22 +67,58 @@ func parseObjData(data string) *Obj {
 				result.vertices = append(result.vertices, Point(x, y, z))
 
 			case "f":
+				if len(result.normals) == 1 {
+					for i := 2; i < len(tokenSlice)-1; i++ {
+						if index1, err = strconv.Atoi(tokenSlice[1]); err != nil {
+							panic(err)
+						}
+						if index2, err = strconv.Atoi(tokenSlice[i]); err != nil {
+							panic(err)
+						}
+						if index3, err = strconv.Atoi(tokenSlice[i+1]); err != nil {
+							panic(err)
+						}
+						triangle := NewTriangle(
+							result.vertices[index1],
+							result.vertices[index2],
+							result.vertices[index3])
+						result.groups[currentGroup].AddChild(triangle)
+					}
+				} else {
+					for i := 2; i < len(tokenSlice)-1; i++ {
+						subparts1 := strings.Split(tokenSlice[1], "/")
+						subparts2 := strings.Split(tokenSlice[i], "/")
+						subparts3 := strings.Split(tokenSlice[i+1], "/")
 
-				for i := 2; i < len(tokenSlice)-1; i++ {
-					if index1, err = strconv.Atoi(tokenSlice[1]); err != nil {
-						panic(err)
+						if index1, err = strconv.Atoi(subparts1[0]); err != nil {
+							panic(err)
+						}
+						if index2, err = strconv.Atoi(subparts2[0]); err != nil {
+							panic(err)
+						}
+						if index3, err = strconv.Atoi(subparts3[0]); err != nil {
+							panic(err)
+						}
+
+						if normalIndex1, err = strconv.Atoi(subparts1[2]); err != nil {
+							panic(err)
+						}
+						if normalIndex2, err = strconv.Atoi(subparts2[2]); err != nil {
+							panic(err)
+						}
+						if normalIndex3, err = strconv.Atoi(subparts3[2]); err != nil {
+							panic(err)
+						}
+
+						smoothTriangle := newSmoothTriangle(
+							result.vertices[index1],
+							result.vertices[index2],
+							result.vertices[index3],
+							result.normals[normalIndex1],
+							result.normals[normalIndex2],
+							result.normals[normalIndex3])
+						result.groups[currentGroup].AddChild(smoothTriangle)
 					}
-					if index2, err = strconv.Atoi(tokenSlice[i]); err != nil {
-						panic(err)
-					}
-					if index3, err = strconv.Atoi(tokenSlice[i+1]); err != nil {
-						panic(err)
-					}
-					triangle := NewTriangle(
-						result.vertices[index1],
-						result.vertices[index2],
-						result.vertices[index3])
-					result.groups[currentGroup].AddChild(triangle)
 				}
 
 			case "vn":

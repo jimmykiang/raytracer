@@ -781,6 +781,9 @@ type Triangle struct {
 	e1       *Tuple
 	e2       *Tuple
 	normal   *Tuple
+	n1       *Tuple
+	n2       *Tuple
+	n3       *Tuple
 	material *Material
 }
 
