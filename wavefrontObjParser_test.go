@@ -157,3 +157,26 @@ f 1 3 4`
 		t.Errorf("Triangulating polygons, got: %v and expected to be %v", t2.p3, parser.vertices[4])
 	}
 }
+
+func TestNormalData(t *testing.T) {
+	// Vertex normal records.
+	data := `
+vn 0 0 1
+vn 0.707 0 -0.707
+vn 1 2 3`
+
+	parser := parseObjData(data)
+
+	expectedNormals := []*Tuple{
+		Vector(0, 0, 1),
+		Vector(0.707, 0, -0.707),
+		Vector(1, 2, 3),
+	}
+
+	// parser will refer to the normals by their index, starting with 1.
+	for i := range expectedNormals {
+		if !(parser.normals[i+1].Equals(expectedNormals[i])) {
+			t.Errorf("Vertex normal records, got: %v and expected to be %v", parser.normals[i+1], expectedNormals[i])
+		}
+	}
+}

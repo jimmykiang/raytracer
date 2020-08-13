@@ -9,6 +9,7 @@ import (
 // Obj contains the information processed from the wavefront OBJ file.
 type Obj struct {
 	vertices     []*Tuple
+	normals      []*Tuple
 	ignoredLines int
 	groups       map[string]*Group
 }
@@ -31,6 +32,7 @@ func parseObjData(data string) *Obj {
 
 	result := &Obj{
 		vertices:     make([]*Tuple, 0),
+		normals:      make([]*Tuple, 0),
 		ignoredLines: 0,
 		groups:       make(map[string]*Group),
 	}
@@ -46,6 +48,7 @@ func parseObjData(data string) *Obj {
 	// It is significant that the vertices slice is 1-based, and not 0-based,
 	// refer to these vertices by their index, starting with 1.
 	result.vertices = append(result.vertices, Point(0, 0, 0))
+	result.normals = append(result.normals, Vector(0, 0, 0))
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
 			tokenSlice := strings.Fields(strings.TrimSpace(line))
@@ -82,6 +85,18 @@ func parseObjData(data string) *Obj {
 					result.groups[currentGroup].AddChild(triangle)
 				}
 
+			case "vn":
+				if x, err = strconv.ParseFloat(tokenSlice[1], 64); err != nil {
+					panic(err)
+				}
+				if y, err = strconv.ParseFloat(tokenSlice[2], 64); err != nil {
+					panic(err)
+				}
+				if z, err = strconv.ParseFloat(tokenSlice[3], 64); err != nil {
+					panic(err)
+				}
+				result.normals = append(result.normals, Vector(x, y, z))
+
 			case "g":
 				fallthrough
 			case "o":
@@ -108,6 +123,7 @@ func parseObjData(data string) *Obj {
 	fmt.Printf("Groups:    %d\n", len(result.groups))
 	fmt.Printf("Vertices: %d\n", len(result.vertices)-1)
 	fmt.Printf("Triangles: %d\n", triangles)
+	fmt.Printf("Normals:   %d\n", len(result.normals))
 
 	return result
 }
