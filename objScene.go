@@ -10,7 +10,7 @@ import (
 func objWorld() *Canvas {
 	start := time.Now()
 	lights := []*PointLight{
-		NewPointLight(Point(-10, 10, -10), NewColor(0, 1, 1)),
+		NewPointLight(Point(0, 10, -15), NewColor(0, 1, 1)),
 		NewPointLight(Point(0, 10, 0), NewColor(1, 0.5, 0.5)),
 	}
 	p1 := NewPlane()
@@ -19,24 +19,24 @@ func objWorld() *Canvas {
 	p1.material.reflective = 0.5
 
 	// objBytes, _ := ioutil.ReadFile("gopher.obj")
-	objBytes, _ := ioutil.ReadFile("cow.obj")
+	objBytes, _ := ioutil.ReadFile("MKIII.obj")
 	obj := parseObjData(string(objBytes)).objToGroup()
 
 	objMaterial := DefaultMaterial()
 
 	objMaterial.color = NewColor(0.77, 0.62, 0.24)
-	objMaterial.pattern = CheckersPattern(NewColor(0.8, 0.8, 0.8), NewColor(0.2, 0.2, 0.2))
-	objMaterial.pattern.SetTransform((RotationX(PI / 6)).
-		MultiplyMatrix(Scaling(0.3, 0.3, 0.3)),
-	)
+	// objMaterial.pattern = CheckersPattern(NewColor(0.8, 0.8, 0.8), NewColor(0.2, 0.2, 0.2))
+	// objMaterial.pattern.SetTransform((RotationX(PI / 6)).
+	// 	MultiplyMatrix(Scaling(0.3, 0.3, 0.3)),
+	// )
 	objMaterial.ambient = 0.25
 	objMaterial.diffuse = 0.7
 	objMaterial.specular = 0.6
 	objMaterial.shininess = 51.2
 	obj.SetMaterial(objMaterial)
 
-	obj.SetTransform(Translation(0, 3, 0).
-		MultiplyMatrix(RotationY(PI / 3)),
+	obj.SetTransform(Translation(5, 1, -12).
+		MultiplyMatrix(RotationY(0)),
 	)
 
 	// obj.SetTransform(
