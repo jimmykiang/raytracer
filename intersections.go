@@ -51,3 +51,12 @@ func (xs Intersections) Hit() *Intersection {
 func (xs *Intersections) Count() int {
 	return len(*xs)
 }
+
+// IntersectionAllowed evaluates the Rules for a CSG operations.
+func IntersectionAllowed(op string, lhit, inl, inr bool) bool {
+	if op == "union" {
+		return (lhit && !inr) || (!lhit && !inl)
+	}
+
+	return false
+}

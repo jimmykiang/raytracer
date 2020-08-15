@@ -426,3 +426,30 @@ func TestIntersectTriangleParallel(t *testing.T) {
 		t.Errorf("A ray strikes a triangle: got %v expected be %v,", xs[0].t, 2)
 	}
 }
+
+func TestIntersectionAllowedUnionCSG(t *testing.T) {
+	// Evaluating the Rule for a CSG Union Operation.
+	testStruct := []struct {
+		op     string
+		lhit   bool
+		inl    bool
+		inr    bool
+		result bool
+	}{
+		{"union", true, true, true, false},
+		{"union", true, true, false, true},
+		{"union", true, false, true, false},
+		{"union", true, false, false, true},
+		{"union", false, true, true, false},
+		{"union", false, true, false, false},
+		{"union", false, false, true, true},
+		{"union", false, false, false, true},
+	}
+
+	for _, test := range testStruct {
+		if !(IntersectionAllowed(test.op, test.lhit, test.inl, test.inr) == test.result) {
+			t.Errorf("Evaluating the Rule for a CSG Union Operation: got %v expected be %v,",
+				IntersectionAllowed(test.op, test.lhit, test.inl, test.inr), test.result)
+		}
+	}
+}
