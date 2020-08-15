@@ -545,3 +545,40 @@ func TestFilterCSGIntersections(t *testing.T) {
 		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
 	}
 }
+
+func TestRayMissesCSG(t *testing.T) {
+	// A ray misses a CSG object.
+
+	c := NewCSG("union", NewSphere(), NewCube())
+	r := NewRay(Point(0, 2, -5), Vector(0, 0, 1))
+	xs := c.localIntersect(r)
+	if !(len(xs) == 0) {
+		t.Errorf("A ray misses a CSG object: got %v expected be %v,", len(xs), 0)
+	}
+}
+
+func TestRayHitsCSG(t *testing.T) {
+	//A ray hits a CSG object.
+	s1 := NewSphere()
+	s2 := NewSphere()
+	s2.SetTransform(Translation(0, 0, 0.5))
+	c := NewCSG("union", s1, s2)
+	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	xs := c.localIntersect(r)
+
+	if !(len(xs) == 2) {
+		t.Errorf("A ray hits a CSG object: got %v expected be %v,", len(xs), 2)
+	}
+	if !(xs[0].t == 4) {
+		t.Errorf("A ray hits a CSG object: got %v expected be %v,", xs[0].t, 4)
+	}
+	if !(xs[0].object.GetID() == s1.GetID()) {
+		t.Errorf("A ray hits a CSG object: got %v expected be %v,", xs[0].object.GetID(), s1.GetID())
+	}
+	if !(xs[1].t == 6.5) {
+		t.Errorf("A ray hits a CSG object: got %v expected be %v,", xs[1].t, 6.5)
+	}
+	if !(xs[1].object.GetID() == s2.GetID()) {
+		t.Errorf("A ray hits a CSG object: got %v expected be %v,", xs[1].object.GetID(), s2.GetID())
+	}
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"math"
 	"math/rand"
+	"sort"
 )
 
 // Shape interface defining any object in the scene.
@@ -1079,20 +1080,29 @@ func (csg *CSG) GetID() int {
 // localNormalAt will return the precomputed normal from the *CSG.
 func (csg *CSG) localNormalAt(localPoint *Tuple, intersection *Intersection) *Tuple {
 
-	return Vector(0, 0, 0)
+	panic("not applicable to CSG.")
 }
 
 // NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
 func (csg *CSG) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
-	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
-	return NormalAt(csg, worldPoint, intersection)
+	panic("not applicable to CSG.")
 }
 
 // Intersect calculates the local intersections between a ray and a CSG.
 func (csg *CSG) localIntersect(localRay *Ray) []*Intersection {
 
-	return []*Intersection{}
+	leftXs := csg.left.Intersect(localRay)
+	rightXs := csg.right.Intersect(localRay)
+	xs := append(leftXs, rightXs...)
+
+	sort.Slice(
+		xs,
+		func(i, j int) bool {
+			return xs[i].t < xs[j].t
+		},
+	)
+	return FilterIntersections(csg, xs)
 }
 
 // Material returns the material of a CSG.
@@ -1102,7 +1112,9 @@ func (csg *CSG) Material() *Material {
 
 // SetTransform sets the shape's transformation.
 func (csg *CSG) SetTransform(transformation Matrix) {
-
+	csg.transform = csg.transform.MultiplyMatrix(transformation)
+	csg.inverse = csg.transform.Inverse()
+	csg.inverseTranspose = csg.inverse.Transpose()
 }
 
 // SetMaterial sets the shape's material.
@@ -1137,7 +1149,5 @@ func (csg *CSG) SetParent(shape Shape) {
 
 // Intersect calculates the local intersections between a ray and a CSG.
 func (csg *CSG) Intersect(worldRay *Ray) []*Intersection {
-
-	localRay := worldRay.Transform(csg.GetInverse())
-	return csg.localIntersect(localRay)
+	panic("not applicable to CSG.")
 }
