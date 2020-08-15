@@ -1149,5 +1149,7 @@ func (csg *CSG) SetParent(shape Shape) {
 
 // Intersect calculates the local intersections between a ray and a CSG.
 func (csg *CSG) Intersect(worldRay *Ray) []*Intersection {
-	panic("not applicable to CSG.")
+
+	localRay := worldRay.Transform(csg.GetInverse())
+	return csg.localIntersect(localRay)
 }
