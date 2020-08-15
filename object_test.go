@@ -349,3 +349,31 @@ func TestPrepareNormalOnSmoothTri(t *testing.T) {
 			comps.normalv, expectedVector)
 	}
 }
+
+func TestCreateCSG(t *testing.T) {
+	// CSG is created with an operation and two shapes.
+	s1 := NewSphere()
+	c1 := NewCube()
+	csg := NewCSG("union", s1, c1)
+
+	if !(csg.operation == "union") {
+		t.Errorf("CSG is created with an operation and two shapes, got: %v and expected to be %v",
+			csg.operation, "union")
+	}
+	if !(csg.left == s1) {
+		t.Errorf("CSG is created with an operation and two shapes, got: %v and expected to be %v",
+			csg.left, s1)
+	}
+	if !(csg.right == c1) {
+		t.Errorf("CSG is created with an operation and two shapes, got: %v and expected to be %v",
+			csg.right, c1)
+	}
+	if !(s1.GetParent() == csg) {
+		t.Errorf("CSG is created with an operation and two shapes, got: %v and expected to be %v",
+			s1.GetParent(), csg)
+	}
+	if !(s1.GetParent() == csg) {
+		t.Errorf("CSG is created with an operation and two shapes, got: %v and expected to be %v",
+			s1.GetParent(), csg)
+	}
+}

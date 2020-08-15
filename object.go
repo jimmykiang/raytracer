@@ -1041,3 +1041,101 @@ func (smoothTriangle *smoothTriangle) Intersect(worldRay *Ray) []*Intersection {
 	localRay := worldRay.Transform(smoothTriangle.GetInverse())
 	return smoothTriangle.localIntersect(localRay)
 }
+
+type CSG struct {
+	id               int
+	transform        Matrix
+	inverse          Matrix
+	inverseTranspose Matrix
+	left             Shape
+	right            Shape
+	operation        string
+	parent           Shape
+	material         *Material
+}
+
+func NewCSG(operation string, left, right Shape) *CSG {
+	c := &CSG{
+		id:        rand.Int(),
+		transform: IdentityMatrix,
+		inverse:   IdentityMatrix,
+		left:      left,
+		right:     right,
+		operation: operation,
+		material:  DefaultMaterial(),
+	}
+	left.SetParent(c)
+	right.SetParent(c)
+	return c
+}
+
+// GetID returns the id of the shape.
+func (csg *CSG) GetID() int {
+	panic("GetID() is not applicable to a smoothTriangle shape.")
+}
+
+// localNormalAt will return the precomputed normal from the *CSG.
+func (csg *CSG) localNormalAt(localPoint *Tuple, intersection *Intersection) *Tuple {
+
+	return Vector(0, 0, 0)
+}
+
+// NormalAt calculates the local normal (vector perpendicular to the surface) at a given point of the object.
+func (csg *CSG) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
+
+	// Use group NormalAt which take into account transformations on both the child object and the parent(s).
+	return NormalAt(csg, worldPoint, intersection)
+}
+
+// Intersect calculates the local intersections between a ray and a CSG.
+func (csg *CSG) localIntersect(localRay *Ray) []*Intersection {
+
+	return []*Intersection{}
+}
+
+// Material returns the material of a CSG.
+func (csg *CSG) Material() *Material {
+	return csg.material
+}
+
+// SetTransform sets the shape's transformation.
+func (csg *CSG) SetTransform(transformation Matrix) {
+
+}
+
+// SetMaterial sets the shape's material.
+func (csg *CSG) SetMaterial(material *Material) {
+	csg.material = material
+}
+
+//Transform returns the transformation.
+func (csg *CSG) Transform() Matrix {
+	return csg.transform
+}
+
+// GetInverse returns the cached inverse matrix of the current Shape.
+func (csg *CSG) GetInverse() Matrix {
+	return csg.inverse
+}
+
+// GetInverseTranspose returns the cached inverseTranspose matrix of the current Shape.
+func (csg *CSG) GetInverseTranspose() Matrix {
+	return csg.inverseTranspose
+}
+
+// GetParent gets the parent shape from this current shape.
+func (csg *CSG) GetParent() Shape {
+	return csg.parent
+}
+
+// SetParent does not apply for *CSG.
+func (csg *CSG) SetParent(shape Shape) {
+	csg.parent = shape
+}
+
+// Intersect calculates the local intersections between a ray and a CSG.
+func (csg *CSG) Intersect(worldRay *Ray) []*Intersection {
+
+	localRay := worldRay.Transform(csg.GetInverse())
+	return csg.localIntersect(localRay)
+}
