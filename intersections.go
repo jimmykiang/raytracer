@@ -58,6 +58,8 @@ func IntersectionAllowed(op string, lhit, inl, inr bool) bool {
 		return (lhit && !inr) || (!lhit && !inl)
 	} else if op == "intersection" {
 		return (lhit && inr) || (!lhit && inl)
+	} else if op == "difference" {
+		return (lhit && !inr) || (!lhit && inl)
 	}
 
 	return false

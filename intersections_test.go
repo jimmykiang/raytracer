@@ -480,3 +480,30 @@ func TestIntersectionAllowedIntersectionCSG(t *testing.T) {
 		}
 	}
 }
+
+func TestIntersectionAllowedDifferenceCSG(t *testing.T) {
+	// Evaluating the Rule for a CSG Difference Operation.
+	testStruct := []struct {
+		op     string
+		lhit   bool
+		inl    bool
+		inr    bool
+		result bool
+	}{
+		{"difference", true, true, true, false},
+		{"difference", true, true, false, true},
+		{"difference", true, false, true, false},
+		{"difference", true, false, false, true},
+		{"difference", false, true, true, true},
+		{"difference", false, true, false, true},
+		{"difference", false, false, true, false},
+		{"difference", false, false, false, false},
+	}
+
+	for _, test := range testStruct {
+		if !(IntersectionAllowed(test.op, test.lhit, test.inl, test.inr) == test.result) {
+			t.Errorf("Evaluating the Rule for a CSG Difference Operation: got %v expected be %v,",
+				IntersectionAllowed(test.op, test.lhit, test.inl, test.inr), test.result)
+		}
+	}
+}
