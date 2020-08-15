@@ -1042,6 +1042,7 @@ func (smoothTriangle *smoothTriangle) Intersect(worldRay *Ray) []*Intersection {
 	return smoothTriangle.localIntersect(localRay)
 }
 
+// CSG represents a constructive solid geometry structure.
 type CSG struct {
 	id               int
 	transform        Matrix
@@ -1054,6 +1055,7 @@ type CSG struct {
 	material         *Material
 }
 
+// NewCSG returns a new *CSG with default values.
 func NewCSG(operation string, left, right Shape) *CSG {
 	c := &CSG{
 		id:        rand.Int(),

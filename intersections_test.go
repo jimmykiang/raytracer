@@ -507,3 +507,41 @@ func TestIntersectionAllowedDifferenceCSG(t *testing.T) {
 		}
 	}
 }
+
+func TestFilterCSGIntersections(t *testing.T) {
+	// Filtering a list of intersections.
+	s1 := NewSphere()
+	s2 := NewCube()
+	xs := []*Intersection{
+		NewIntersection(1, s1),
+		NewIntersection(2, s2),
+		NewIntersection(3, s1),
+		NewIntersection(4, s2),
+	}
+	c1 := NewCSG("union", s1, s2)
+	c2 := NewCSG("intersection", s1, s2)
+	c3 := NewCSG("difference", s1, s2)
+
+	rXs1 := FilterIntersections(c1, xs)
+	rXs2 := FilterIntersections(c2, xs)
+	rXs3 := FilterIntersections(c3, xs)
+
+	if len(xs) != 2 && rXs1[0] != xs[0] {
+		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
+	}
+	if len(xs) != 2 && rXs1[1] != xs[3] {
+		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
+	}
+	if len(xs) != 2 && rXs2[0] != xs[1] {
+		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
+	}
+	if len(xs) != 2 && rXs2[1] != xs[2] {
+		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
+	}
+	if len(xs) != 2 && rXs3[0] != xs[0] {
+		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
+	}
+	if len(xs) != 2 && rXs3[1] != xs[1] {
+		t.Errorf("Filtering a list of intersections: got %v expected be %v,", rXs1[0], xs[0])
+	}
+}

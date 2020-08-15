@@ -64,3 +64,49 @@ func IntersectionAllowed(op string, lhit, inl, inr bool) bool {
 
 	return false
 }
+
+// FilterIntersections will produce a subset of only those intersections that
+// conform to the operation of the current CSG object.
+func FilterIntersections(csg *CSG, xs []*Intersection) []*Intersection {
+	// begin outside of both children
+	inl := false
+	inr := false
+	// prepare a list to receive the filtered intersections
+	result := make([]*Intersection, 0)
+
+	for i, v := range xs {
+		// if i.object is part of the "left" child, then lhit is true
+		lhit := includes(csg.left, v.object)
+
+		if IntersectionAllowed(csg.operation, lhit, inl, inr) {
+			result = append(result, xs[i])
+		}
+
+		// depending on which object was hit, toggle either inl or inr
+		if lhit {
+			inl = !inl
+		} else {
+			inr = !inr
+		}
+	}
+	return result
+}
+
+func includes(left Shape, object Shape) bool {
+	switch t := left.(type) {
+	case *Group:
+		for _, child := range t.children {
+			if child.GetID() == object.GetID() {
+				return true
+			}
+			return includes(child, object)
+		}
+		return false
+	case *CSG:
+		a := includes(t.left, object)
+		b := includes(t.right, object)
+		return a || b
+	default:
+		return left.GetID() == object.GetID()
+	}
+}
