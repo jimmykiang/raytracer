@@ -56,6 +56,8 @@ func (xs *Intersections) Count() int {
 func IntersectionAllowed(op string, lhit, inl, inr bool) bool {
 	if op == "union" {
 		return (lhit && !inr) || (!lhit && !inl)
+	} else if op == "intersection" {
+		return (lhit && inr) || (!lhit && inl)
 	}
 
 	return false
