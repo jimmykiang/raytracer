@@ -525,3 +525,22 @@ func TestIntersectRayWithCSGMissesBox(t *testing.T) {
 			right.savedRay.direction.z, 0)
 	}
 }
+
+func TestIntersectRayWithCSGHitsBox(t *testing.T) {
+	// Intersecting ray+csg tests children if box is hit.
+	left := NewSphere()
+	right := NewSphere()
+	csg := NewCSG("difference", left, right)
+	csg.Bounds()
+	r := NewRay(Point(0, 0, -5), Point(0, 0, 1))
+	csg.Intersect(r)
+
+	if !(left.savedRay.direction.z == 1) {
+		t.Errorf("Intersecting ray+csg tests children if box is hit: got %v, expected: %v",
+			left.savedRay.direction.z, 1)
+	}
+	if !(right.savedRay.direction.z == 1) {
+		t.Errorf("Intersecting ray+csg tests children if box is hit: got %v, expected: %v",
+			right.savedRay.direction.z, 1)
+	}
+}
