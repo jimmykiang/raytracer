@@ -1180,3 +1180,8 @@ func (csg *CSG) Intersect(worldRay *Ray) []*Intersection {
 	localRay := worldRay.Transform(csg.GetInverse())
 	return csg.localIntersect(localRay)
 }
+
+// Bounds calculates de boundingBox of the CSG taking in considerantion of the group's children.
+func (csg *CSG) Bounds() {
+	csg.BoundingBox = Bounds(csg)
+}

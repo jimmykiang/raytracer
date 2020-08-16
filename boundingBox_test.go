@@ -490,3 +490,38 @@ func TestIntersectRayGroupWithHit(t *testing.T) {
 			s.savedRay.origin.z, 1)
 	}
 }
+
+func TestIntersectRayWithCSGMissesBox(t *testing.T) {
+	// Intersecting ray+csg doesn't test children if box is missed.
+	left := NewSphere()
+	right := NewSphere()
+	csg := NewCSG("difference", left, right)
+	csg.Bounds()
+	r := NewRay(Point(0, 0, -5), Point(0, 1, 0))
+	csg.Intersect(r)
+
+	if !(left.savedRay.direction.x == 0) {
+		t.Errorf("Intersecting ray+csg doesn't test children if box is missed: got %v, expected: %v",
+			left.savedRay.direction.x, 0)
+	}
+	if !(right.savedRay.direction.x == 0) {
+		t.Errorf("Intersecting ray+csg doesn't test children if box is missed: got %v, expected: %v",
+			right.savedRay.direction.x, 0)
+	}
+	if !(left.savedRay.direction.y == 0) {
+		t.Errorf("Intersecting ray+csg doesn't test children if box is missed: got %v, expected: %v",
+			left.savedRay.direction.y, 0)
+	}
+	if !(right.savedRay.direction.y == 0) {
+		t.Errorf("Intersecting ray+csg doesn't test children if box is missed: got %v, expected: %v",
+			right.savedRay.direction.y, 0)
+	}
+	if !(left.savedRay.direction.z == 0) {
+		t.Errorf("Intersecting ray+csg doesn't test children if box is missed: got %v, expected: %v",
+			left.savedRay.direction.z, 0)
+	}
+	if !(right.savedRay.direction.z == 0) {
+		t.Errorf("Intersecting ray+csg doesn't test children if box is missed: got %v, expected: %v",
+			right.savedRay.direction.z, 0)
+	}
+}
