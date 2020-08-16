@@ -14,6 +14,7 @@ type Group struct {
 	id               int
 	parent           Shape
 	BoundingBox      *BoundingBox
+	savedRay         *Ray
 }
 
 // NewGroup returns a *Group that can contain children Shapes. A group will implement the Shape interface behaviour.
@@ -24,6 +25,7 @@ func NewGroup() *Group {
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
 		children:         make([]Shape, 0),
+		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		id:               rand.Int(),
 	}
 }
@@ -169,3 +171,8 @@ func (g *Group) SetMaterial(material *Material) {
 
 // Material not applicable to a group.
 func (g *Group) Material() *Material { panic("not applicable to a group.") }
+
+// Bounds calculates de boundingBox of the group taking in considerantion of the group's children.
+func (g *Group) Bounds() {
+	g.BoundingBox = Bounds(g)
+}

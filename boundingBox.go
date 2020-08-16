@@ -154,6 +154,7 @@ func (b *BoundingBox) Merge(b2 *BoundingBox) {
 	b.Add(b2.max)
 }
 
+// IntersectRayWithBox test the intersection between a ray and a cubeshaped AABB at the origin.
 func IntersectRayWithBox(ray *Ray, boundingBox *BoundingBox) bool {
 
 	xtmin, xtmax := checkAxisForBB(ray.origin.x, ray.direction.x, boundingBox.min.x, boundingBox.max.x)
@@ -176,10 +177,8 @@ func checkAxisForBB(origin, direction, minBB, maxBB float64) (min float64, max f
 		tmax = tmaxNumerator * math.Inf(1)
 	}
 	if tmin > tmax {
-		// swap
-		temp := tmin
-		tmin = tmax
-		tmax = temp
+
+		tmin, tmax = tmax, tmin
 	}
 	return tmin, tmax
 }

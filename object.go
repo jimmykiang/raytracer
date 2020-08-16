@@ -31,6 +31,7 @@ type Sphere struct {
 	inverseTranspose Matrix
 	material         *Material
 	parent           Shape
+	savedRay         *Ray
 	id               int
 }
 
@@ -41,6 +42,7 @@ func NewSphere() *Sphere {
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
 		material:         DefaultMaterial(),
+		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		id:               rand.Int(),
 	}
 }
@@ -156,6 +158,7 @@ type Plane struct {
 	inverse          Matrix
 	inverseTranspose Matrix
 	material         *Material
+	savedRay         *Ray
 	parent           Shape
 	id               int
 }
@@ -167,6 +170,7 @@ func NewPlane() *Plane {
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
 		material:         DefaultMaterial(),
+		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		id:               rand.Int(),
 	}
 }
@@ -261,6 +265,7 @@ type Cube struct {
 	inverse          Matrix
 	inverseTranspose Matrix
 	material         *Material
+	savedRay         *Ray
 	parent           Shape
 	id               int
 }
@@ -272,6 +277,7 @@ func NewCube() *Cube {
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
 		material:         DefaultMaterial(),
+		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		id:               rand.Int(),
 	}
 }
@@ -404,6 +410,7 @@ type Cylinder struct {
 	inverse          Matrix
 	inverseTranspose Matrix
 	material         *Material
+	savedRay         *Ray
 	minimum, maximum float64
 	closed           bool
 	parent           Shape
@@ -417,6 +424,7 @@ func NewCylinder() *Cylinder {
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
 		material:         DefaultMaterial(),
+		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		minimum:          math.Inf(-1),
 		maximum:          math.Inf(1),
 		id:               rand.Int(),
@@ -583,6 +591,7 @@ type Cone struct {
 	inverse          Matrix
 	inverseTranspose Matrix
 	material         *Material
+	savedRay         *Ray
 	minimum, maximum float64
 	closed           bool
 	parent           Shape
@@ -596,6 +605,7 @@ func NewCone() *Cone {
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
 		material:         DefaultMaterial(),
+		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		minimum:          math.Inf(-1),
 		maximum:          math.Inf(1),
 		id:               rand.Int(),
@@ -1054,18 +1064,22 @@ type CSG struct {
 	operation        string
 	parent           Shape
 	material         *Material
+	savedRayLeft     *Ray
+	savedRayRight    *Ray
 }
 
 // NewCSG returns a new *CSG with default values.
 func NewCSG(operation string, left, right Shape) *CSG {
 	c := &CSG{
-		id:        rand.Int(),
-		transform: IdentityMatrix,
-		inverse:   IdentityMatrix,
-		left:      left,
-		right:     right,
-		operation: operation,
-		material:  DefaultMaterial(),
+		id:            rand.Int(),
+		transform:     IdentityMatrix,
+		inverse:       IdentityMatrix,
+		left:          left,
+		right:         right,
+		operation:     operation,
+		material:      DefaultMaterial(),
+		savedRayLeft:  NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
+		savedRayRight: NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 	}
 	left.SetParent(c)
 	right.SetParent(c)
