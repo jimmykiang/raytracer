@@ -6,6 +6,7 @@ import (
 )
 
 func TestNewEmptyBoundingBox(t *testing.T) {
+	// Creating an empty bounding box.
 	box := NewEmptyBoundingBox()
 
 	expectedMinPoint := Point(math.Inf(1), math.Inf(1), math.Inf(1))
@@ -38,6 +39,7 @@ func TestNewBoundingBoxWithVolume(t *testing.T) {
 }
 
 func TestAddPointToBoundingBox(t *testing.T) {
+	// Adding points to an empty bounding box.
 	box := NewEmptyBoundingBox()
 	p1 := Point(-5, 2, 0)
 	p2 := Point(7, 0, -3)
@@ -55,6 +57,7 @@ func TestAddPointToBoundingBox(t *testing.T) {
 }
 
 func TestBoundsOfSphere(t *testing.T) {
+	// A sphere has a bounding box.
 	s := NewSphere()
 	box := Bounds(s)
 
@@ -69,6 +72,7 @@ func TestBoundsOfSphere(t *testing.T) {
 }
 
 func TestBoundsOfPlane(t *testing.T) {
+	// A plane has a bounding box.
 	p := NewPlane()
 	box := Bounds(p)
 
@@ -87,6 +91,7 @@ func TestBoundsOfPlane(t *testing.T) {
 }
 
 func TestBoundsOfCube(t *testing.T) {
+	// A cube has a bounding box.
 	c := NewCube()
 	box := Bounds(c)
 
@@ -101,6 +106,7 @@ func TestBoundsOfCube(t *testing.T) {
 }
 
 func TestBoundsOfInfiniteCylinder(t *testing.T) {
+	// An unbounded cylinder has a bounding box.
 	c := NewCylinder()
 	box := Bounds(c)
 
@@ -119,6 +125,7 @@ func TestBoundsOfInfiniteCylinder(t *testing.T) {
 }
 
 func TestBoundsOfFiniteCylinder(t *testing.T) {
+	// A bounded cylinder has a bounding box.
 	c := NewCylinder()
 	c.minimum = -5
 	c.maximum = 3
@@ -135,6 +142,7 @@ func TestBoundsOfFiniteCylinder(t *testing.T) {
 }
 
 func TestBoundsOfInfiniteCone(t *testing.T) {
+	// An unbounded cone has a bounding box.
 	c := NewCone()
 	box := Bounds(c)
 
@@ -153,6 +161,7 @@ func TestBoundsOfInfiniteCone(t *testing.T) {
 }
 
 func TestBoundsOfFiniteCone(t *testing.T) {
+	// A bounded cone has a bounding box.
 	c := NewCone()
 	c.minimum = -5
 	c.maximum = 3
@@ -163,6 +172,24 @@ func TestBoundsOfFiniteCone(t *testing.T) {
 		t.Errorf("TestBoundsOfFiniteCone min: got %v, expected: %v", box.min, expectedMinPoint)
 	}
 	expectedMaxPoint := Point(5, 3, 5)
+	if !(expectedMaxPoint.Equals(box.max)) {
+		t.Errorf("TestBoundsOfFiniteCone max: got %v, expected: %v", box.max, expectedMaxPoint)
+	}
+}
+
+func TestBoundsOfTriangle(t *testing.T) {
+	// A triangle has a bounding box.
+	p1 := Point(-3, 7, 2)
+	p2 := Point(6, 2, -4)
+	p3 := Point(2, -1, -1)
+	shape := NewTriangle(p1, p2, p3)
+	box := Bounds(shape)
+
+	expectedMinPoint := Point(-3, -1, -4)
+	if !(expectedMinPoint.Equals(box.min)) {
+		t.Errorf("TestBoundsOfFiniteCone min: got %v, expected: %v", box.min, expectedMinPoint)
+	}
+	expectedMaxPoint := Point(6, 7, 2)
 	if !(expectedMaxPoint.Equals(box.max)) {
 		t.Errorf("TestBoundsOfFiniteCone max: got %v, expected: %v", box.max, expectedMaxPoint)
 	}

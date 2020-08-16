@@ -2,11 +2,13 @@ package main
 
 import "math"
 
+// BoundingBox struct.
 type BoundingBox struct {
 	min *Tuple
 	max *Tuple
 }
 
+// NewBoundingBoxFloat receives min and max xyz values to returns a *BoundingBox.
 func NewBoundingBoxFloat(x1, y1, z1, x2, y2, z2 float64) *BoundingBox {
 	return &BoundingBox{
 		min: Point(x1, y1, z1),
@@ -14,6 +16,7 @@ func NewBoundingBoxFloat(x1, y1, z1, x2, y2, z2 float64) *BoundingBox {
 	}
 }
 
+// NewBoundingBox receives min and max point values to returns a *BoundingBox.
 func NewBoundingBox(pointA *Tuple, pointB *Tuple) *BoundingBox {
 	return &BoundingBox{
 		min: pointA,
@@ -21,6 +24,7 @@ func NewBoundingBox(pointA *Tuple, pointB *Tuple) *BoundingBox {
 	}
 }
 
+// NewEmptyBoundingBox returns a default empty *BoundingBox.
 func NewEmptyBoundingBox() *BoundingBox {
 	return &BoundingBox{
 		min: Point(math.Inf(1), math.Inf(1), math.Inf(1)),
@@ -65,6 +69,7 @@ func TransformBoundingBox(bbox *BoundingBox, m1 Matrix) *BoundingBox {
 	return out
 }
 
+// Add operation to resize a *BoundingBox.
 func (b *BoundingBox) Add(p *Tuple) {
 	if b.min.x > p.x {
 		b.min.x = p.x
@@ -87,7 +92,7 @@ func (b *BoundingBox) Add(p *Tuple) {
 	}
 }
 
-// Bounds returns the bounds for a given shape.
+// Bounds returns the bounding box in object space for a given shape.
 // For groups it will convert the bounds of all the group’s children into “group space,”
 // and then combines them into a single bounding box.
 func Bounds(shape Shape) *BoundingBox {
@@ -116,6 +121,12 @@ func Bounds(shape Shape) *BoundingBox {
 		}
 
 		return NewBoundingBoxFloat(-limit, val.minimum, -limit, limit, val.maximum, limit)
+	case *Triangle:
+		BoundingBox := NewEmptyBoundingBox()
+		BoundingBox.Add(val.p1)
+		BoundingBox.Add(val.p2)
+		BoundingBox.Add(val.p3)
+		return BoundingBox
 
 	default:
 		return NewBoundingBoxFloat(-1, -1, -1, 1, 1, 1)
