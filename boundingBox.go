@@ -32,6 +32,7 @@ func NewEmptyBoundingBox() *BoundingBox {
 	}
 }
 
+// ParentSpaceBounds transforms the shape's bounding box by the shape's transformation matrix.
 func ParentSpaceBounds(shape Shape) *BoundingBox {
 	BoundingBox := Bounds(shape)
 	return TransformBoundingBox(BoundingBox, shape.Transform())
@@ -42,10 +43,14 @@ func (b *BoundingBox) ContainsPoint(p *Tuple) bool {
 		b.max.x >= p.x && b.max.y >= p.y && b.max.z >= p.z
 }
 
+// ContainsBox contains a point if each of the point's components lie between the corresponding
+// min and max components.
 func (b *BoundingBox) ContainsBox(b2 *BoundingBox) bool {
 	return b.ContainsPoint(b2.min) && b.ContainsPoint(b2.max)
 }
 
+// TransformBoundingBox transforms the points at all eight corners of the
+// cube, and then find a new bounding box that contains all eight transformed points.
 func TransformBoundingBox(bbox *BoundingBox, m1 Matrix) *BoundingBox {
 	p1 := bbox.min
 	p2 := Point(bbox.min.x, bbox.min.y, bbox.max.z)
@@ -104,6 +109,11 @@ func Bounds(shape Shape) *BoundingBox {
 			box.Merge(cbox)
 		}
 		return box
+	case *CSG:
+		box := NewEmptyBoundingBox()
+		box.Merge(ParentSpaceBounds(val.left))
+		box.Merge(ParentSpaceBounds(val.right))
+		return box
 	case *Cube:
 		return NewBoundingBoxFloat(-1, -1, -1, 1, 1, 1)
 	case *Sphere:
@@ -119,9 +129,14 @@ func Bounds(shape Shape) *BoundingBox {
 		if xzMax > limit {
 			limit = xzMax
 		}
-
 		return NewBoundingBoxFloat(-limit, val.minimum, -limit, limit, val.maximum, limit)
 	case *Triangle:
+		BoundingBox := NewEmptyBoundingBox()
+		BoundingBox.Add(val.p1)
+		BoundingBox.Add(val.p2)
+		BoundingBox.Add(val.p3)
+		return BoundingBox
+	case *smoothTriangle:
 		BoundingBox := NewEmptyBoundingBox()
 		BoundingBox.Add(val.p1)
 		BoundingBox.Add(val.p2)
@@ -133,6 +148,7 @@ func Bounds(shape Shape) *BoundingBox {
 	}
 }
 
+// Merge will cause the BoundingBox to resize until it contains both points.
 func (b *BoundingBox) Merge(b2 *BoundingBox) {
 	b.Add(b2.min)
 	b.Add(b2.max)

@@ -196,7 +196,7 @@ func TestBoundsOfTriangle(t *testing.T) {
 }
 
 func TestBoundingBoxMerge(t *testing.T) {
-
+	// Adding one bounding box to another.
 	b1 := NewBoundingBoxFloat(-5, -2, 0, 7, 4, 4)
 	b2 := NewBoundingBoxFloat(8, -7, -2, 14, 2, 8)
 	b1.Merge(b2)
@@ -212,7 +212,7 @@ func TestBoundingBoxMerge(t *testing.T) {
 }
 
 func TestBoundingBoxContainsPoint(t *testing.T) {
-
+	// Checking to see if a box contains a given point.
 	BoundingBox := NewBoundingBoxFloat(5, -2, 0, 11, 4, 7)
 
 	tests := []struct {
@@ -241,7 +241,7 @@ func TestBoundingBoxContainsPoint(t *testing.T) {
 }
 
 func TestBoxContainsBox(t *testing.T) {
-
+	// Checking to see if a box contains a given box.
 	BoundingBox := NewBoundingBoxFloat(5, -2, 0, 11, 4, 7)
 
 	tests := []struct {
@@ -265,9 +265,8 @@ func TestBoxContainsBox(t *testing.T) {
 }
 
 func TestTransformBoundingBox(t *testing.T) {
-
+	// Transforming a bounding box.
 	box := NewBoundingBoxFloat(-1, -1, -1, 1, 1, 1)
-	// m1 := Multiply(RotateX(math.Pi/4), RotateY(math.Pi/4))
 
 	m1 := RotationX(math.Pi / 4).MultiplyMatrix(RotationY(math.Pi / 4))
 
@@ -295,6 +294,7 @@ func TestTransformBoundingBox(t *testing.T) {
 
 func TestQueryBBTransformInParentSpace(t *testing.T) {
 
+	// Querying a shape's bounding box in its parent's space.
 	shape := NewSphere()
 	shape.SetTransform(Translation(1, -3, 5))
 	shape.SetTransform(Scaling(0.5, 2, 4))
@@ -311,7 +311,7 @@ func TestQueryBBTransformInParentSpace(t *testing.T) {
 }
 
 func TestGroupBoundingBoxContainsAllItsChildren(t *testing.T) {
-
+	// A group has a bounding box that contains its children.
 	s := NewSphere()
 	s.SetTransform(Translation(2, 5, -3))
 	s.SetTransform(Scaling(2, 2, 2))
@@ -331,6 +331,24 @@ func TestGroupBoundingBoxContainsAllItsChildren(t *testing.T) {
 		t.Errorf("TestQueryBBTransformInParentSpace min: got %v, expected: %v", box.min, expectedMinPoint)
 	}
 	expectedMaxPoint := Point(4, 7, 4.5)
+	if !(expectedMaxPoint.Equals(box.max)) {
+		t.Errorf("TestQueryBBTransformInParentSpace max: got %v, expected: %v", box.max, expectedMaxPoint)
+	}
+}
+
+func TestCSGBoundingBoxContainsAllItsChildren(t *testing.T) {
+	// A CSG shape has a bounding box that contains its children.
+	left := NewSphere()
+	right := NewSphere()
+	right.SetTransform(Translation(2, 3, 4))
+	csg := NewCSG("difference", left, right)
+	box := Bounds(csg)
+
+	expectedMinPoint := Point(-1, -1, -1)
+	if !(expectedMinPoint.Equals(box.min)) {
+		t.Errorf("TestQueryBBTransformInParentSpace min: got %v, expected: %v", box.min, expectedMinPoint)
+	}
+	expectedMaxPoint := Point(3, 4, 5)
 	if !(expectedMaxPoint.Equals(box.max)) {
 		t.Errorf("TestQueryBBTransformInParentSpace max: got %v, expected: %v", box.max, expectedMaxPoint)
 	}
