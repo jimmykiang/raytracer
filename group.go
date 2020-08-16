@@ -49,7 +49,7 @@ func (g *Group) localIntersect(r *Ray) []*Intersection {
 	if g.BoundingBox != nil && !IntersectRayWithBox(r, g.BoundingBox) {
 		return nil
 	}
-
+	g.savedRay = r
 	// intersections := []*Intersection{}
 	intersections := Intersections{}
 	for i := range g.children {

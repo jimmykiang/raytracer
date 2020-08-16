@@ -129,6 +129,7 @@ func (sphere *Sphere) NormalAt(worldPoint *Tuple, intersection *Intersection) *T
 }
 
 func (sphere *Sphere) localIntersect(localRay *Ray) []*Intersection {
+	sphere.savedRay = localRay
 	sphereToRay := localRay.origin.Substract(sphere.origin)
 	a := localRay.direction.DotProduct(localRay.direction)
 	b := 2 * localRay.direction.DotProduct(sphereToRay)
@@ -209,7 +210,7 @@ func (plane *Plane) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tup
 }
 
 func (plane *Plane) localIntersect(localRay *Ray) []*Intersection {
-
+	plane.savedRay = localRay
 	if math.Abs(localRay.direction.y) < EPSILON {
 		return []*Intersection{}
 	}
@@ -284,6 +285,7 @@ func NewCube() *Cube {
 
 func (cube *Cube) localIntersect(localRay *Ray) []*Intersection {
 
+	cube.savedRay = localRay
 	xTMin, xTMax := checkAxis(localRay.origin.x, localRay.direction.x)
 	yTMin, yTMax := checkAxis(localRay.origin.y, localRay.direction.y)
 	zTMin, zTMax := checkAxis(localRay.origin.z, localRay.direction.z)
@@ -455,6 +457,7 @@ func (cylinder *Cylinder) Intersect(worldRay *Ray) []*Intersection {
 
 func (cylinder *Cylinder) localIntersect(localRay *Ray) []*Intersection {
 
+	cylinder.savedRay = localRay
 	a := math.Pow(localRay.direction.x, 2) + math.Pow(localRay.direction.z, 2)
 
 	// localRay is parallel to the y axis.
@@ -636,6 +639,7 @@ func (cone *Cone) Intersect(worldRay *Ray) []*Intersection {
 
 func (cone *Cone) localIntersect(localRay *Ray) []*Intersection {
 
+	cone.savedRay = localRay
 	xs := Intersections{}
 
 	a := math.Pow(localRay.direction.x, 2) -
@@ -1064,6 +1068,7 @@ type CSG struct {
 	operation        string
 	parent           Shape
 	material         *Material
+	BoundingBox      *BoundingBox
 	savedRayLeft     *Ray
 	savedRayRight    *Ray
 }
@@ -1080,6 +1085,7 @@ func NewCSG(operation string, left, right Shape) *CSG {
 		material:      DefaultMaterial(),
 		savedRayLeft:  NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		savedRayRight: NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
+		BoundingBox:   NewEmptyBoundingBox(),
 	}
 	left.SetParent(c)
 	right.SetParent(c)
@@ -1105,6 +1111,13 @@ func (csg *CSG) NormalAt(worldPoint *Tuple, intersection *Intersection) *Tuple {
 
 // Intersect calculates the local intersections between a ray and a CSG.
 func (csg *CSG) localIntersect(localRay *Ray) []*Intersection {
+
+	if !IntersectRayWithBox(localRay, csg.BoundingBox) {
+		return nil
+	}
+
+	csg.savedRayLeft = localRay
+	csg.savedRayRight = localRay
 
 	leftXs := csg.left.Intersect(localRay)
 	rightXs := csg.right.Intersect(localRay)

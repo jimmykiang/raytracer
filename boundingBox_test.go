@@ -438,9 +438,9 @@ func TestIntersectRayGroupWithMiss(t *testing.T) {
 		t.Errorf("Intersecting ray+group doesn't test children if box is missed: got %v, expected: %v",
 			s.savedRay.origin.y, 0)
 	}
-	if !(s.savedRay.origin.y == 0) {
+	if !(s.savedRay.origin.z == 0) {
 		t.Errorf("Intersecting ray+group doesn't test children if box is missed: got %v, expected: %v",
-			s.savedRay.origin.y, 0)
+			s.savedRay.origin.z, 0)
 	}
 	if !(s.savedRay.direction.x == 0) {
 		t.Errorf("Intersecting ray+group doesn't test children if box is missed: got %v, expected: %v",
@@ -453,5 +453,40 @@ func TestIntersectRayGroupWithMiss(t *testing.T) {
 	if !(s.savedRay.direction.z == 0) {
 		t.Errorf("Intersecting ray+group doesn't test children if box is missed: got %v, expected: %v",
 			s.savedRay.origin.z, 0)
+	}
+}
+
+func TestIntersectRayGroupWithHit(t *testing.T) {
+	// Intersecting ray+group tests children if box is hit.
+	s := NewSphere()
+	g := NewGroup()
+	g.AddChild(s)
+	g.Bounds()
+	r := NewRay(Point(0, 0, -5), Vector(0, 0, 1))
+	g.Intersect(r)
+
+	if !(s.savedRay.origin.x == 0) {
+		t.Errorf("Intersecting ray+group tests children if box is hit: got %v, expected: %v",
+			s.savedRay.origin.x, 0)
+	}
+	if !(s.savedRay.origin.y == 0) {
+		t.Errorf("Intersecting ray+group tests children if box is hit: got %v, expected: %v",
+			s.savedRay.origin.y, 0)
+	}
+	if !(s.savedRay.origin.z == -5) {
+		t.Errorf("Intersecting ray+group tests children if box is hit: got %v, expected: %v",
+			s.savedRay.origin.y, -5)
+	}
+	if !(s.savedRay.direction.x == 0) {
+		t.Errorf("Intersecting ray+group tests children if box is hit: got %v, expected: %v",
+			s.savedRay.origin.x, 0)
+	}
+	if !(s.savedRay.direction.y == 0) {
+		t.Errorf("Intersecting ray+group tests children if box is hit: got %v, expected: %v",
+			s.savedRay.origin.y, 0)
+	}
+	if !(s.savedRay.direction.z == 1) {
+		t.Errorf("Intersecting ray+group tests children if box is hit: got %v, expected: %v",
+			s.savedRay.origin.z, 1)
 	}
 }
