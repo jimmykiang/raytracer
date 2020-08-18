@@ -42,3 +42,33 @@ func SplitBounds(b1 *BoundingBox) (*BoundingBox, *BoundingBox) {
 
 	return left, right
 }
+
+// PartitionChildren will further separate the group's children shapes,
+// if a children lays in the middle of the boundingBox partition, then it will remain in the original group.
+func PartitionChildren(g *Group) (*Group, *Group) {
+	left := NewGroup()
+	right := NewGroup()
+	bbound := Bounds(g)
+	leftBounds, rightBounds := SplitBounds(bbound)
+
+	remain := make([]Shape, 0)
+	for i := range g.children {
+		childBound := ParentSpaceBounds(g.children[i])
+		if leftBounds.ContainsBox(childBound) {
+			left.AddChild(g.children[i])
+		} else if rightBounds.ContainsBox(childBound) {
+			right.AddChild(g.children[i])
+		} else {
+			remain = append(remain, g.children[i])
+		}
+	}
+	// copy over the remaining ones
+	g.children = g.children[:0]
+	g.children = append(g.children, remain...)
+
+	// we should really automate bounds-recalc whenever a group is mutated...
+	g.Bounds()
+	left.Bounds()
+	right.Bounds()
+	return left, right
+}

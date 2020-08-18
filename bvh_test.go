@@ -96,3 +96,41 @@ func TestSplitZWideBoundingBox(t *testing.T) {
 		t.Errorf("Splitting an x-wide box: got %v, expected: %v", right.max, expectedRightMaxPoint)
 	}
 }
+
+func TestPartitionChildrenOfGroup(t *testing.T) {
+	// Partitioning a group's children.
+
+	s1 := NewSphere()
+	s1.SetTransform(Translation(-2, 0, 0))
+	s2 := NewSphere()
+	s2.SetTransform(Translation(2, 0, 0))
+	s3 := NewSphere()
+
+	g := NewGroup()
+	g.AddChild(s1)
+	g.AddChild(s2)
+	g.AddChild(s3)
+	g.Bounds()
+
+	left, right := PartitionChildren(g)
+
+	if !(len(g.children) == 1) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", len(g.children), 1)
+	}
+	if !(len(left.children) == 1) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", len(left.children), 1)
+	}
+	if !(len(right.children) == 1) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", len(right.children), 1)
+	}
+	if !(g.children[0].GetID() == s3.GetID()) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", g.children[0].GetID(), s3.GetID())
+	}
+	if !(left.children[0].GetID() == s1.GetID()) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", left.children[0].GetID(), s1.GetID())
+	}
+	if !(right.children[0].GetID() == s2.GetID()) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", right.children[0].GetID(), s2.GetID())
+	}
+
+}
