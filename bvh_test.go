@@ -166,3 +166,37 @@ func TestSubDividePrimitiveDoesNothing(t *testing.T) {
 		t.Errorf("Subdividing a primitive does nothing: got %v, expected: %v", reflect.TypeOf(s), reflect.TypeOf(NewSphere()))
 	}
 }
+
+func TestSubdivideGroupPartitionChildren(t *testing.T) {
+	// Subdividing a group partitions its children.
+	s1 := NewSphere()
+	s1.SetTransform(Translation(-2, -2, 0))
+	s2 := NewSphere()
+	s2.SetTransform(Translation(-2, 2, 0))
+	s3 := NewSphere()
+	s3.SetTransform(Scaling(4, 4, 4))
+
+	g := NewGroup()
+	g.AddChild(s1)
+	g.AddChild(s2)
+	g.AddChild(s3)
+
+	Divide(g, 1)
+
+	if !(g.children[0].GetID() == s3.GetID()) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v",
+			g.children[0].GetID(), s3.GetID())
+	}
+
+	subGroup := g.children[1].(*Group)
+
+	if !(len(subGroup.children) == 2) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", len(subGroup.children), 2)
+	}
+	if !(subGroup.children[0].(*Group).children[0].GetID() == s1.GetID()) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[0].(*Group).children[0].GetID(), s1.GetID())
+	}
+	if !(subGroup.children[1].(*Group).children[0].GetID() == s2.GetID()) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[1].(*Group).children[0].GetID(), s2.GetID())
+	}
+}

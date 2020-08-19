@@ -77,6 +77,7 @@ func PartitionChildren(g *Group) (*Group, *Group) {
 
 var subGroupCounter int = 0
 
+// MakeSubGroup() creates a new subgroup and then adds each element of list to it.
 func MakeSubGroup(g *Group, shapes ...Shape) {
 
 	subGroupCounter++
