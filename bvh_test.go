@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestSplitPerfectCube(t *testing.T) {
 	// Splitting a perfect cube.
@@ -150,5 +153,16 @@ func TestCreateSubGroupFromListOfChildren(t *testing.T) {
 	}
 	if !(subGroup.children[1].GetID() == s2.GetID()) {
 		t.Errorf("Partitioning a group's children: got %v, expected: %v", subGroup.children[1].GetID(), s2.GetID())
+	}
+}
+
+func TestSubDividePrimitiveDoesNothing(t *testing.T) {
+	// Subdividing a primitive does nothing.
+	s := NewSphere()
+	Divide(s, 1)
+
+	if !(reflect.TypeOf(s) == reflect.TypeOf(NewSphere())) {
+
+		t.Errorf("Subdividing a primitive does nothing: got %v, expected: %v", reflect.TypeOf(s), reflect.TypeOf(NewSphere()))
 	}
 }

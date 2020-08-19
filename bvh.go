@@ -87,3 +87,29 @@ func MakeSubGroup(g *Group, shapes ...Shape) {
 	}
 	g.AddChild(subgroup)
 }
+
+func Divide(s Shape, threshold int) {
+	switch g := s.(type) {
+	case *Group:
+		if threshold <= len(g.children) {
+			// split members of group into left, right or remain
+			left, right := PartitionChildren(g)
+
+			// if left or right contains any shapes, create a new subgroup containing those shapes
+			// and add that subgroup to the passed group
+			if len(left.children) > 0 {
+				MakeSubGroup(g, left.children...)
+			}
+			if len(right.children) > 0 {
+				MakeSubGroup(g, right.children...)
+			}
+		}
+
+		// Now, iterate over all children and recursivley call divide on them.
+		for i := range g.children {
+			Divide(g.children[i], threshold)
+		}
+	default:
+		// Do nothing
+	}
+}
