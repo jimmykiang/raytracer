@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // SplitBounds splits the passed bounding box perpendicular of its longest axis.
 func SplitBounds(b1 *BoundingBox) (*BoundingBox, *BoundingBox) {
 	// find the box's largest dimension
@@ -71,4 +73,17 @@ func PartitionChildren(g *Group) (*Group, *Group) {
 	left.Bounds()
 	right.Bounds()
 	return left, right
+}
+
+var subGroupCounter int = 0
+
+func MakeSubGroup(g *Group, shapes ...Shape) {
+
+	subGroupCounter++
+	subgroup := NewGroup()
+	subgroup.label = fmt.Sprintf("Subgroup %v", subGroupCounter)
+	for i := range shapes {
+		subgroup.AddChild(shapes[i])
+	}
+	g.AddChild(subgroup)
 }

@@ -132,5 +132,23 @@ func TestPartitionChildrenOfGroup(t *testing.T) {
 	if !(right.children[0].GetID() == s2.GetID()) {
 		t.Errorf("Partitioning a group's children: got %v, expected: %v", right.children[0].GetID(), s2.GetID())
 	}
+}
 
+func TestCreateSubGroupFromListOfChildren(t *testing.T) {
+	// Creating a sub-group from a list of children.
+	s1 := NewSphere()
+	s2 := NewSphere()
+	g := NewGroup()
+	MakeSubGroup(g, s1, s2)
+
+	if !(len(g.children) == 1) {
+		t.Errorf("Creating a sub-group from a list of children: got %v, expected: %v", len(g.children), 1)
+	}
+	subGroup := g.children[0].(*Group)
+	if !(subGroup.children[0].GetID() == s1.GetID()) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", subGroup.children[0].GetID(), s1.GetID())
+	}
+	if !(subGroup.children[1].GetID() == s2.GetID()) {
+		t.Errorf("Partitioning a group's children: got %v, expected: %v", subGroup.children[1].GetID(), s2.GetID())
+	}
 }

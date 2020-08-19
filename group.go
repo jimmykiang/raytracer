@@ -12,6 +12,7 @@ type Group struct {
 	inverseTranspose Matrix
 	children         []Shape
 	id               int
+	label            string
 	parent           Shape
 	BoundingBox      *BoundingBox
 	savedRay         *Ray
