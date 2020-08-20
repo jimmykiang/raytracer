@@ -91,6 +91,10 @@ func MakeSubGroup(g *Group, shapes ...Shape) {
 
 func Divide(s Shape, threshold int) {
 	switch g := s.(type) {
+	case *CSG:
+		Divide(g.left, threshold)
+		Divide(g.right, threshold)
+
 	case *Group:
 		if threshold <= len(g.children) {
 			// split members of group into left, right or remain

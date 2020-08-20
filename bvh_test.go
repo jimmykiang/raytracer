@@ -235,3 +235,37 @@ func TestSubdivideGroupWithTooFewChildren(t *testing.T) {
 		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[1].(*Group).children[1].GetID(), s3.GetID())
 	}
 }
+
+func TestSubdivideCSGShape(t *testing.T) {
+	// Subdividing a CSG shape subdivides its children.
+	s1 := NewSphere()
+	s1.SetTransform(Translation(-1.5, 0, 0))
+	s2 := NewSphere()
+	s2.SetTransform(Translation(1.5, 0, 0))
+	s3 := NewSphere()
+	s3.SetTransform(Translation(0, 0, -1.5))
+	s4 := NewSphere()
+	s4.SetTransform(Translation(0, 0, 1.5))
+
+	left := NewGroup()
+	left.AddChild(s1, s2)
+
+	right := NewGroup()
+	right.AddChild(s3, s4)
+
+	csg := NewCSG("difference", left, right)
+	Divide(csg, 1)
+
+	if !(left.children[0].(*Group).children[0].GetID() == s1.GetID()) {
+		t.Errorf("Subdividing a CSG shape subdivides its children: got %v, expected: %v", left.children[0].(*Group).children[0].GetID(), s1.GetID())
+	}
+	if !(left.children[1].(*Group).children[0].GetID() == s2.GetID()) {
+		t.Errorf("Subdividing a CSG shape subdivides its children: got %v, expected: %v", left.children[1].(*Group).children[0].GetID(), s2.GetID())
+	}
+	if !(right.children[0].(*Group).children[0].GetID() == s3.GetID()) {
+		t.Errorf("Subdividing a CSG shape subdivides its children: got %v, expected: %v", right.children[0].(*Group).children[0].GetID(), s3.GetID())
+	}
+	if !(right.children[1].(*Group).children[0].GetID() == s4.GetID()) {
+		t.Errorf("Subdividing a CSG shape subdivides its children: got %v, expected: %v", right.children[1].(*Group).children[0].GetID(), s4.GetID())
+	}
+}
