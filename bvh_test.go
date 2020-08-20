@@ -200,3 +200,38 @@ func TestSubdivideGroupPartitionChildren(t *testing.T) {
 		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[1].(*Group).children[0].GetID(), s2.GetID())
 	}
 }
+
+func TestSubdivideGroupWithTooFewChildren(t *testing.T) {
+
+	// Subdividing a group with too few children.
+	s1 := NewSphere()
+	s1.SetTransform(Translation(-2, 0, 0))
+	s2 := NewSphere()
+	s2.SetTransform(Translation(2, 1, 0))
+	s3 := NewSphere()
+	s3.SetTransform(Translation(2, -1, 0))
+	subGroup := NewGroup()
+	subGroup.AddChild(s1, s2, s3)
+
+	s4 := NewSphere()
+	g := NewGroup()
+	g.AddChild(subGroup, s4)
+
+	Divide(g, 3)
+
+	if !(g.children[0] == subGroup) {
+		t.Errorf("Subdividing a group with too few children: got %v, expected: %v", g.children[0], subGroup)
+	}
+	if !(g.children[1] == s4) {
+		t.Errorf("Subdividing a group with too few children: got %v, expected: %v", g.children[1], s4)
+	}
+	if !(subGroup.children[0].(*Group).children[0].GetID() == s1.GetID()) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[0].(*Group).children[0].GetID(), s1.GetID())
+	}
+	if !(subGroup.children[1].(*Group).children[0].GetID() == s2.GetID()) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[1].(*Group).children[0].GetID(), s2.GetID())
+	}
+	if !(subGroup.children[1].(*Group).children[1].GetID() == s3.GetID()) {
+		t.Errorf("Subdividing a group partitions its children: got %v, expected: %v", subGroup.children[1].(*Group).children[1].GetID(), s3.GetID())
+	}
+}
