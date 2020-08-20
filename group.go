@@ -25,6 +25,7 @@ func NewGroup() *Group {
 		transform:        IdentityMatrix,
 		inverse:          IdentityMatrix,
 		inverseTranspose: IdentityMatrix,
+		BoundingBox:      NewEmptyBoundingBox(),
 		children:         make([]Shape, 0),
 		savedRay:         NewRay(Point(0, 0, 0), Vector(0, 0, 0)),
 		id:               rand.Int(),
@@ -42,6 +43,9 @@ func (g *Group) AddChild(shapes ...Shape) {
 	for i := 0; i < len(shapes); i++ {
 		g.children = append(g.children, shapes[i])
 		shapes[i].SetParent(g)
+
+		// adjust boundingBox for additional shape.
+		g.BoundingBox.Merge(Bounds(shapes[i]))
 	}
 }
 

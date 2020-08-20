@@ -77,7 +77,7 @@ func PartitionChildren(g *Group) (*Group, *Group) {
 
 var subGroupCounter int = 0
 
-// MakeSubGroup() creates a new subgroup and then adds each element of list to it.
+// MakeSubGroup creates a new subgroup and then adds each element of list to it.
 func MakeSubGroup(g *Group, shapes ...Shape) {
 
 	subGroupCounter++
@@ -89,6 +89,7 @@ func MakeSubGroup(g *Group, shapes ...Shape) {
 	g.AddChild(subgroup)
 }
 
+// Divide will partition and sort the group's children into subgroups.
 func Divide(s Shape, threshold int) {
 	switch g := s.(type) {
 	case *CSG:
