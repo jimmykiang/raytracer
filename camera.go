@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"sync"
 )
@@ -136,13 +137,26 @@ func (cam *Camera) RenderWithThreadPool(world *World, recursionDepth int) *Canva
 	}
 	close(jobs)
 
+	yComplete := 0
 	for a := 0; a < resultSize; a++ {
 
 		resultStruct := <-results
+
+		countYCanvasProcessed(&yComplete, resultStruct)
+
 		image.WritePixel((*resultStruct).x, (*resultStruct).y, (*resultStruct).color)
 	}
 
 	wg.Wait()
 
 	return image
+}
+
+func countYCanvasProcessed(yComplete *int, resultStruct *renderResult) {
+
+	if resultStruct.y > *yComplete {
+
+		*yComplete = resultStruct.y
+		fmt.Println("Y line processed: ", *yComplete)
+	}
 }

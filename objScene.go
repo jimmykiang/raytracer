@@ -40,7 +40,7 @@ func objWorld() *Canvas {
 	)
 
 	// Apply boundingBox to the group.
-	obj.Bounds()
+	// obj.Bounds()
 	// Apply boundingVolumeHierarchy to the group.
 	Divide(obj, 1)
 
