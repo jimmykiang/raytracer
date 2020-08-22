@@ -86,3 +86,18 @@ func patternAt(textureMap *TextureMap, point *Tuple) *Color {
 	u, v := textureMap.uvMap(point)
 	return uvPatternAt(textureMap.uvPattern, u, v)
 }
+
+// uvSphericalCheckersFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
+// only the 2 first colors from the parameter slice are processed.
+func uvSphericalCheckersFunc(colors []*Color, p *Tuple) *Color {
+
+	checkers := uvCheckers(16, 8, colors[0], colors[1])
+	pattern := textureMap(checkers, sphericalMap)
+	return patternAt(pattern, p)
+}
+
+// uvSphericalCheckersPattern returns the appropiate *Pattern struct.
+func uvSphericalCheckersPattern(colors ...*Color) *Pattern {
+
+	return NewPattern([][]*Color{colors}, uvSphericalCheckersFunc)
+}

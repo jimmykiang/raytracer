@@ -24,10 +24,14 @@ func sceneUV() *Canvas {
 		MultiplyMatrix(RotationX(PI / 6)))
 
 	middle.material = DefaultMaterial()
-	middle.material.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
-	middle.material.pattern.SetTransform(RotationZ(PI / 6).
-		MultiplyMatrix(RotationY(-PI / 3)).
-		MultiplyMatrix(Scaling(0.03, 1, 1)))
+	// middle.material.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
+	middle.material.pattern = uvSphericalCheckersPattern(NewColor(0, 0, 0), NewColor(1, 1, 1))
+
+	// middle.material.pattern.SetTransform(RotationZ(PI / 6).
+	// 	MultiplyMatrix(RotationY(-PI / 3)).
+	// 	MultiplyMatrix(Scaling(0.03, 1, 1)))
+
+	middle.material.pattern.SetTransform(RotationZ(PI / 6))
 
 	middle.material.color = NewColor(0.1, 1, 0.5)
 	middle.material.diffuse = 0.7

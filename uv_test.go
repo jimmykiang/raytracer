@@ -93,7 +93,7 @@ func TestTextureMapPatterWithSphericalMap(t *testing.T) {
 
 	for _, val := range expectedTest {
 
-		if !(val.expectedColor == patternAt(pattern, val.point)) {
+		if !(patternAt(pattern, val.point) == val.expectedColor) {
 			t.Errorf("Using a texture map pattern with a spherical map, got: %v and expected to be %v",
 				patternAt(pattern, val.point), val.expectedColor)
 		}
