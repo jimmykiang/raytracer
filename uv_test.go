@@ -66,3 +66,36 @@ func TestSphericalMappingOn3DPoint(t *testing.T) {
 		}
 	}
 }
+
+func TestTextureMapPatterWithSphericalMap(t *testing.T) {
+	// Using a texture map pattern with a spherical map.
+
+	checkers := uvCheckers(16, 8, Black, White)
+	pattern := textureMap(checkers, sphericalMap)
+
+	type testStruct struct {
+		expectedColor *Color
+		point         *Tuple
+	}
+
+	expectedTest := []testStruct{
+		{point: Point(0.4315, 0.4670, 0.7719), expectedColor: White},
+		{point: Point(-0.9654, 0.2552, -0.0534), expectedColor: Black},
+		{point: Point(0.1039, 0.7090, 0.6975), expectedColor: White},
+		{point: Point(-0.4986, -0.7856, -0.3663), expectedColor: Black},
+		{point: Point(-0.0317, -0.9395, 0.3411), expectedColor: Black},
+		{point: Point(0.4809, -0.7721, 0.4154), expectedColor: Black},
+		{point: Point(0.0285, -0.9612, -0.2745), expectedColor: Black},
+		{point: Point(-0.5734, -0.2162, -0.7903), expectedColor: White},
+		{point: Point(0.7688, -0.1470, 0.6223), expectedColor: Black},
+		{point: Point(-0.7652, 0.2175, 0.6060), expectedColor: Black},
+	}
+
+	for _, val := range expectedTest {
+
+		if !(val.expectedColor == patternAt(pattern, val.point)) {
+			t.Errorf("Using a texture map pattern with a spherical map, got: %v and expected to be %v",
+				patternAt(pattern, val.point), val.expectedColor)
+		}
+	}
+}

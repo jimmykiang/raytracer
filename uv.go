@@ -21,6 +21,8 @@ func uvCheckers(width, height float64, colorA, colorB *Color) *UVCheckers {
 	}
 }
 
+// uvPatternAt will return the pattern's color at the given u and v coordinates,
+// where both u and v are floating point numbers between 0 and 1 , inclusive.
 func uvPatternAt(uvCheckers *UVCheckers, u, v float64) *Color {
 
 	u2 := int(math.Floor(u * uvCheckers.width))
@@ -32,6 +34,7 @@ func uvPatternAt(uvCheckers *UVCheckers, u, v float64) *Color {
 	return uvCheckers.colorB
 }
 
+// sphericalMap maps a 3D point (x, y, z) on the surface of sphere to a 2D point (u, v) on the flattened surface.
 func sphericalMap(point *Tuple) (u, v float64) {
 
 	// Compute the azimuthal angle (-π < theta <= π).
@@ -61,4 +64,25 @@ func sphericalMap(point *Tuple) (u, v float64) {
 	v = 1 - phi/PI
 
 	return
+}
+
+// TextureMap encapsulates the given uv_pattern (like uv_checkers() ) and uv_map (like spherical_map() ).
+type TextureMap struct {
+	uvPattern *UVCheckers
+	uvMap     func(point *Tuple) (u, v float64)
+}
+
+// textureMap returns a *TextureMap struct.
+func textureMap(uvPattern *UVCheckers, uvMap func(point *Tuple) (u, v float64)) *TextureMap {
+
+	return &TextureMap{
+		uvPattern: uvPattern,
+		uvMap:     uvMap,
+	}
+}
+
+func patternAt(textureMap *TextureMap, point *Tuple) *Color {
+
+	u, v := textureMap.uvMap(point)
+	return uvPatternAt(textureMap.uvPattern, u, v)
 }
