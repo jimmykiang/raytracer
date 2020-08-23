@@ -13,8 +13,9 @@ func sceneUV() *Canvas {
 		NewPointLight(Point(0, 10, 0), NewColor(1, 0.5, 0.5)),
 	}
 	p1 := NewPlane()
-	p1.material.pattern = CheckersPattern(NewColor(1, 0, 1), NewColor(0, 1, 0))
-	p1.material.pattern.SetTransform((RotationY(PI / 6)))
+	p1.material.pattern = uvPlanarCheckersPattern(NewColor(1, 0, 1), NewColor(0, 1, 0))
+	p1.material.pattern.SetTransform((RotationY(PI / 6).
+		MultiplyMatrix(Scaling(3.1, 3.1, 3.1))))
 
 	// The large sphere in the middle is a unit sphere.
 

@@ -102,6 +102,7 @@ func uvSphericalCheckersPattern(colors ...*Color) *Pattern {
 	return NewPattern([][]*Color{colors}, uvSphericalCheckersFunc)
 }
 
+// planarMap returns the u,v coordinates for a flattened surface.
 func planarMap(point *Tuple) (u, v float64) {
 
 	// Working Implementation different from:
@@ -126,4 +127,19 @@ func planarMap(point *Tuple) (u, v float64) {
 	}
 
 	return
+}
+
+// uvPlanarCheckersFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
+// only the 2 first colors from the parameter slice are processed.
+func uvPlanarCheckersFunc(colors []*Color, p *Tuple) *Color {
+
+	checkers := uvCheckers(16, 8, colors[0], colors[1])
+	pattern := textureMap(checkers, planarMap)
+	return patternAt(pattern, p)
+}
+
+// uvPlanarCheckersPattern returns the appropiate *Pattern struct.
+func uvPlanarCheckersPattern(colors ...*Color) *Pattern {
+
+	return NewPattern([][]*Color{colors}, uvPlanarCheckersFunc)
 }
