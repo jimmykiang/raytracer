@@ -101,3 +101,29 @@ func uvSphericalCheckersPattern(colors ...*Color) *Pattern {
 
 	return NewPattern([][]*Color{colors}, uvSphericalCheckersFunc)
 }
+
+func planarMap(point *Tuple) (u, v float64) {
+
+	// Working Implementation different from:
+	/*
+	   function planar_map(p)
+	    let u ← p.x mod 1
+	    let v ← p.z mod 1
+	    return (u, v)
+	   end function
+	*/
+
+	if point.x < 0 {
+		u = math.Abs(math.Floor(point.x)) + point.x
+	} else {
+		u = point.x - math.Floor(point.x)
+	}
+
+	if point.z < 0 {
+		v = math.Abs(math.Floor(point.z)) + point.z
+	} else {
+		v = point.z - math.Floor(point.z)
+	}
+
+	return
+}

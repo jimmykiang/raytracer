@@ -99,3 +99,36 @@ func TestTextureMapPatterWithSphericalMap(t *testing.T) {
 		}
 	}
 }
+
+func TestPlannarMappingOn3DPoint(t *testing.T) {
+	// Using a planar mapping on a 3D point.
+
+	type testStruct struct {
+		expectedU float64
+		expectedV float64
+		point     *Tuple
+	}
+
+	expectedTest := []testStruct{
+		{point: Point(0.25, 0, 0.5), expectedU: 0.25, expectedV: 0.5},
+		{point: Point(0.25, 0, -0.25), expectedU: 0.25, expectedV: 0.75},
+		{point: Point(0.25, 0.5, -0.25), expectedU: 0.25, expectedV: 0.75},
+		{point: Point(1.25, 0, 0.5), expectedU: 0.25, expectedV: 0.5},
+		{point: Point(0.25, 0, -1.75), expectedU: 0.25, expectedV: 0.25},
+		{point: Point(1, 0, -1), expectedU: 0, expectedV: 0},
+		{point: Point(0, 0, 0), expectedU: 0, expectedV: 0},
+	}
+
+	for _, val := range expectedTest {
+
+		u, v := planarMap(val.point)
+		if !(u == val.expectedU) {
+			t.Errorf("Using a planar mapping on a 3D point, got: %v and expected to be %v",
+				u, val.expectedU)
+		}
+		if !(v == val.expectedV) {
+			t.Errorf("Using a planar mapping on a 3D point, got: %v and expected to be %v",
+				v, val.expectedV)
+		}
+	}
+}
