@@ -167,3 +167,18 @@ func cylindricalMap(point *Tuple) (u, v float64) {
 
 	return
 }
+
+// uvCylindricalCheckersFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
+// only the 2 first colors from the parameter slice are processed.
+func uvCylindricalCheckersFunc(colors []*Color, p *Tuple) *Color {
+
+	checkers := uvCheckers(16, 8, colors[0], colors[1])
+	pattern := textureMap(checkers, cylindricalMap)
+	return patternAt(pattern, p)
+}
+
+// uvCylindricalCheckersPattern returns the appropiate *Pattern struct.
+func uvCylindricalCheckersPattern(colors ...*Color) *Pattern {
+
+	return NewPattern([][]*Color{colors}, uvCylindricalCheckersFunc)
+}

@@ -38,7 +38,24 @@ func sceneUV() *Canvas {
 	middle.material.diffuse = 0.7
 	middle.material.specular = 0.3
 
-	world := NewWorld(lights, []Shape{p1, middle})
+	right := NewCylinder()
+	right.material.pattern = uvCylindricalCheckersPattern(NewColor(0, 0, 0), NewColor(1, 1, 1))
+	right.material.pattern.SetTransform(Scaling(1, 1, 1))
+
+	right.SetTransform(Translation(2, 1, 3).
+		MultiplyMatrix(RotationX(-PI / 4)))
+
+	right.closed = true
+	right.minimum = 1
+	right.maximum = 1.5
+
+	g := NewGroup()
+	g.AddChild(middle, right)
+
+	// g.Bounds()
+	Divide(g, 1)
+
+	world := NewWorld(lights, []Shape{p1, g})
 
 	camera := NewCamera(1000, 500, PI/3)
 	camera.SetTransform(ViewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)))
