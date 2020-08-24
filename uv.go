@@ -143,3 +143,27 @@ func uvPlanarCheckersPattern(colors ...*Color) *Pattern {
 
 	return NewPattern([][]*Color{colors}, uvPlanarCheckersFunc)
 }
+
+// cylindricalMap maps a 3D point (x, y, z) on the surface of cylindricalMap to a 2D point (u, v) on the flattened surface.
+func cylindricalMap(point *Tuple) (u, v float64) {
+
+	// Compute the azimuthal angle (-π < theta <= π) same as with spherical_map().
+	theta := math.Atan2(point.x, point.z)
+	// -0.5 < raw_u <= 0.5
+	rawU := theta / (2 * PI)
+	// 0 <= u < 1
+	// here's also where we fix the direction of u. Subtract it from 1,
+	// so that it increases counterclockwise as viewed from above.
+	u = 1 - (rawU + 0.5)
+
+	// let v go from 0 to 1 between whole units of y
+	// original: let v ← p.y mod 1
+
+	if point.y < 0 {
+		v = math.Abs(math.Floor(point.y)) + point.y
+	} else {
+		v = point.y - math.Floor(point.y)
+	}
+
+	return
+}
