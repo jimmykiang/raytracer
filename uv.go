@@ -10,6 +10,19 @@ type UVCheckers struct {
 	height float64
 }
 
+type patternType interface {
+	isPattern() bool
+}
+
+func (pattern *UVCheckers) isPattern() bool {
+
+	return true
+}
+func (pattern *UVAlignCheck) isPattern() bool {
+
+	return true
+}
+
 // uvCheckers will return a data structure that encapsulates the function's parameters.
 func uvCheckers(width, height float64, colorA, colorB *Color) *UVCheckers {
 
@@ -22,16 +35,43 @@ func uvCheckers(width, height float64, colorA, colorB *Color) *UVCheckers {
 }
 
 // uvPatternAt will return the pattern's color at the given u and v coordinates,
-// where both u and v are floating point numbers between 0 and 1 , inclusive.
-func uvPatternAt(uvCheckers *UVCheckers, u, v float64) *Color {
+// where both u and v are floating point numbers between 0 and 1, inclusive.
+func uvPatternAt(pattern patternType, u, v float64) *Color {
 
-	u2 := int(math.Floor(u * uvCheckers.width))
-	v2 := int(math.Floor(v * uvCheckers.height))
+	switch p := pattern.(type) {
 
-	if (u2+v2)%2 == 0 {
-		return uvCheckers.colorA
+	case *UVCheckers:
+		u2 := int(math.Floor(u * p.width))
+		v2 := int(math.Floor(v * p.height))
+
+		if (u2+v2)%2 == 0 {
+			return p.colorA
+		}
+		return p.colorB
+
+	case *UVAlignCheck:
+		// remember: v=0 at the bottom, v=1 at the top
+		if v > 0.8 {
+
+			if u < 0.2 {
+				return p.ul
+			}
+			if u > 0.8 {
+				return p.ur
+			}
+		} else if v < 0.2 {
+			if u < 0.2 {
+				return p.bl
+			}
+			if u > 0.8 {
+				return p.br
+			}
+		}
+		return p.main
+
+	default:
+		return nil
 	}
-	return uvCheckers.colorB
 }
 
 // sphericalMap maps a 3D point (x, y, z) on the surface of sphere to a 2D point (u, v) on the flattened surface.
@@ -181,4 +221,19 @@ func uvCylindricalCheckersFunc(colors []*Color, p *Tuple) *Color {
 func uvCylindricalCheckersPattern(colors ...*Color) *Pattern {
 
 	return NewPattern([][]*Color{colors}, uvCylindricalCheckersFunc)
+}
+
+// UVAlignCheck defines a struct for an align pattern.
+type UVAlignCheck struct {
+	main *Color
+	ul   *Color
+	ur   *Color
+	bl   *Color
+	br   *Color
+}
+
+// uvAlignCheck returns a *UVAlignCheck.
+func uvAlignCheck(main, ul, ur, bl, br *Color) *UVAlignCheck {
+
+	return &UVAlignCheck{main, ul, ur, bl, br}
 }

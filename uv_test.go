@@ -168,3 +168,38 @@ func TestTextureMapPatterWithCylindricalMap(t *testing.T) {
 		}
 	}
 }
+
+func TestAlignCheckPattern(t *testing.T) {
+	// Layout of the "align check" pattern.
+
+	main := NewColor(1, 1, 1)
+	ul := NewColor(1, 0, 0)
+	ur := NewColor(1, 1, 0)
+	bl := NewColor(0, 1, 0)
+	br := NewColor(0, 1, 1)
+
+	pattern := uvAlignCheck(main, ul, ur, bl, br)
+
+	type testStruct struct {
+		expectedU float64
+		expectedV float64
+		color     *Color
+	}
+
+	expectedTest := []testStruct{
+		{color: main, expectedU: 0.5, expectedV: 0.5},
+		{color: ul, expectedU: 0.1, expectedV: 0.9},
+		{color: ur, expectedU: 0.9, expectedV: 0.9},
+		{color: bl, expectedU: 0.1, expectedV: 0.1},
+		{color: br, expectedU: 0.9, expectedV: 0.1},
+	}
+
+	for _, val := range expectedTest {
+
+		c := uvPatternAt(pattern, val.expectedU, val.expectedV)
+		if !(c == val.color) {
+			t.Errorf("Layout of the align check pattern, got: %v and expected to be %v",
+				c, val.color)
+		}
+	}
+}
