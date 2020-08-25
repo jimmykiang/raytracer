@@ -6,6 +6,18 @@ var White = NewColor(1, 1, 1)
 // Black color.
 var Black = NewColor(0, 0, 0)
 
+// Red color.
+var Red = NewColor(1, 0, 0)
+
+// Yellow color.
+var Yellow = NewColor(1, 1, 0)
+
+// Green color.
+var Green = NewColor(0, 1, 0)
+
+// Cyan color.
+var Cyan = NewColor(0, 1, 1)
+
 // Color represents R,G,B values between 0 and 1.
 type Color struct {
 	r, g, b float64

@@ -108,13 +108,12 @@ func sphericalMap(point *Tuple) (u, v float64) {
 
 // TextureMap encapsulates the given uv_pattern (like uv_checkers() ) and uv_map (like spherical_map() ).
 type TextureMap struct {
-	uvPattern *UVCheckers
+	uvPattern patternType
 	uvMap     func(point *Tuple) (u, v float64)
 }
 
 // textureMap returns a *TextureMap struct.
-func textureMap(uvPattern *UVCheckers, uvMap func(point *Tuple) (u, v float64)) *TextureMap {
-
+func textureMap(uvPattern patternType, uvMap func(point *Tuple) (u, v float64)) *TextureMap {
 	return &TextureMap{
 		uvPattern: uvPattern,
 		uvMap:     uvMap,
@@ -236,4 +235,21 @@ type UVAlignCheck struct {
 func uvAlignCheck(main, ul, ur, bl, br *Color) *UVAlignCheck {
 
 	return &UVAlignCheck{main, ul, ur, bl, br}
+}
+
+// uvAlignCheckFunc adapts the patternType method and textureMap to be set as a func to the *Pattern struct.
+// only the 2 first colors from the parameter slice are processed.
+func uvAlignCheckFunc(_ []*Color, p *Tuple) *Color {
+
+	// Predefined colors for UVAlignCheck.
+	alignCheck := uvAlignCheck(White, Red, Yellow, Green, Cyan)
+	pattern := textureMap(alignCheck, planarMap)
+	return patternAt(pattern, p)
+}
+
+// uvCylindricalCheckersPattern returns the appropiate *Pattern struct.
+func uvAlignCheckPattern() *Pattern {
+
+	// Predefined colors for UVAlignCheck.
+	return NewPattern([][]*Color{{White}, {Red}, {Yellow}, {Green}, {Cyan}}, uvAlignCheckFunc)
 }
