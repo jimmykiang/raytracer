@@ -203,3 +203,30 @@ func TestAlignCheckPattern(t *testing.T) {
 		}
 	}
 }
+
+func TestIdentifyFaceOfCubeFromPoint(t *testing.T) {
+	// Identifying the face of a cube from a point.
+
+	type testStruct struct {
+		point *Tuple
+		face  string
+	}
+
+	expectedTest := []testStruct{
+		{point: Point(-1, 0.5, -0.25), face: "left"},
+		{point: Point(1.1, -0.75, 0.8), face: "right"},
+		{point: Point(0.1, 0.6, 0.9), face: "front"},
+		{point: Point(-0.7, 0, -2), face: "back"},
+		{point: Point(0.5, 1, 0.9), face: "up"},
+		{point: Point(-0.2, -1.3, 1.1), face: "down"},
+	}
+
+	for _, val := range expectedTest {
+
+		face := faceFromPoint(val.point)
+		if !(face == val.face) {
+			t.Errorf("Identifying the face of a cube from a point, got: %v and expected to be %v",
+				face, val.face)
+		}
+	}
+}

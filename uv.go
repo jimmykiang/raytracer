@@ -253,3 +253,31 @@ func uvAlignCheckPattern() *Pattern {
 	// Predefined colors for UVAlignCheck.
 	return NewPattern([][]*Color{{White}, {Red}, {Yellow}, {Green}, {Cyan}}, uvAlignCheckFunc)
 }
+
+func faceFromPoint(point *Tuple) string {
+
+	absX := math.Abs(point.x)
+	absY := math.Abs(point.y)
+	absZ := math.Abs(point.z)
+	coord := max(absX, absY, absZ)
+
+	if coord == point.x {
+		return "right"
+
+	} else if coord == -point.x {
+		return "left"
+
+	} else if coord == point.y {
+		return "up"
+
+	} else if coord == -point.y {
+		return "down"
+
+	} else if coord == point.z {
+		return "front"
+
+	} else {
+
+		return "back"
+	}
+}
