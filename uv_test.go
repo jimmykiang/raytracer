@@ -230,3 +230,31 @@ func TestIdentifyFaceOfCubeFromPoint(t *testing.T) {
 		}
 	}
 }
+
+func TestUVMappingFrontFaceCube(t *testing.T) {
+	// UV mapping the front face of a cube.
+
+	type testStruct struct {
+		expectedU float64
+		expectedV float64
+		point     *Tuple
+	}
+
+	expectedTest := []testStruct{
+		{point: Point(-0.5, 0.5, 1), expectedU: 0.25, expectedV: 0.75},
+		{point: Point(0.5, -0.5, 1), expectedU: 0.75, expectedV: 0.25},
+	}
+
+	for _, val := range expectedTest {
+
+		u, v := cubeUVFront(val.point)
+		if !(u == val.expectedU) {
+			t.Errorf("UV mapping the front face of a cube, got: %v and expected to be %v",
+				u, val.expectedU)
+		}
+		if !(v == val.expectedV) {
+			t.Errorf("UV mapping the front face of a cube, got: %v and expected to be %v",
+				v, val.expectedV)
+		}
+	}
+}
