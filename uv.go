@@ -297,3 +297,11 @@ func cubeUVBack(point *Tuple) (u, v float64) {
 
 	return
 }
+
+func cubeUVLeft(point *Tuple) (u, v float64) {
+
+	u = math.Mod((point.z+1), 2) / 2
+	v = math.Mod((point.y+1), 2) / 2
+
+	return
+}
