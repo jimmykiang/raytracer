@@ -391,3 +391,18 @@ func cubeMap(point *Tuple) *TextureMap {
 		uvMap:     uvMap,
 	}
 }
+
+// cubeMapCheckFunc adapts the patternType method and textureMap to be set as a func to the *Pattern struct.
+// only the 2 first colors from the parameter slice are processed.
+func uvCubeMapAlignFunc(_ []*Color, p *Tuple) *Color {
+
+	pattern := cubeMap(p)
+	return patternAt(pattern, p)
+}
+
+// cubeMapCheckPattern returns the appropiate *Pattern struct.
+func uvCubeMapAlignPattern() *Pattern {
+
+	// Predefined colors for uvCubeMapAlignFunc.
+	return NewPattern([][]*Color{{White}, {Red}}, uvCubeMapAlignFunc)
+}

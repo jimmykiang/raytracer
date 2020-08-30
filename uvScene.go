@@ -22,7 +22,7 @@ func sceneUV() *Canvas {
 
 	middle := NewSphere()
 	middle.SetTransform(Scaling(1.1, 1.1, 1.1).
-		MultiplyMatrix(Translation(-0.5, 1, 0.5)).
+		MultiplyMatrix(Translation(0, 1, 0.5)).
 		MultiplyMatrix(RotationX(PI / 6)))
 
 	middle.material = DefaultMaterial()
@@ -50,8 +50,15 @@ func sceneUV() *Canvas {
 	right.minimum = 1
 	right.maximum = 1.5
 
+	left := NewCube()
+	left.material.pattern = uvCubeMapAlignPattern()
+	left.SetTransform(Translation(-2.5, 1.5, 3).
+		MultiplyMatrix(RotationX(-PI / 4)).
+		MultiplyMatrix(RotationY(PI / 4)),
+	)
+
 	g := NewGroup()
-	g.AddChild(middle, right)
+	g.AddChild(middle, right, left)
 
 	// g.Bounds()
 	Divide(g, 1)
