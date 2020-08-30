@@ -12,11 +12,20 @@ var Red = NewColor(1, 0, 0)
 // Yellow color.
 var Yellow = NewColor(1, 1, 0)
 
+// Brown color.
+var Brown = NewColor(1, 0.5, 0)
+
 // Green color.
 var Green = NewColor(0, 1, 0)
 
 // Cyan color.
 var Cyan = NewColor(0, 1, 1)
+
+// Blue color.
+var Blue = NewColor(0, 0, 1)
+
+// Purple color.
+var Purple = NewColor(1, 0, 1)
 
 // Color represents R,G,B values between 0 and 1.
 type Color struct {

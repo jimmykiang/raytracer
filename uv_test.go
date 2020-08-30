@@ -398,3 +398,66 @@ func TestUVMappingLowerFaceCube(t *testing.T) {
 		}
 	}
 }
+
+func TestFindColorsOnMappedCube(t *testing.T) {
+	// Finding the colors on a mapped cube.
+
+	// left := uvAlignCheck(Yellow, Cyan, Red, Blue, Brown)
+	// front := uvAlignCheck(Cyan, Red, Yellow, Brown, Green)
+	// right := uvAlignCheck(Red, Yellow, Purple, Green, White)
+	// back := uvAlignCheck(Green, Purple, Cyan, White, Blue)
+	// up := uvAlignCheck(Brown, Cyan, Purple, Red, Yellow)
+	// down := uvAlignCheck(Purple, Brown, Green, Blue, White)
+
+	type testStruct struct {
+		expectedColor *Color
+		point         *Tuple
+	}
+
+	expectedTest := []testStruct{
+		// Left.
+		{point: Point(-1, 0, 0), expectedColor: Yellow},
+		{point: Point(-1, 0.9, -0.9), expectedColor: Cyan},
+		{point: Point(-1, 0.9, 0.9), expectedColor: Red},
+		{point: Point(-1, -0.9, -0.9), expectedColor: Blue},
+		{point: Point(-1, -0.9, 0.9), expectedColor: Brown},
+		// Front.
+		{point: Point(0, 0, 1), expectedColor: Cyan},
+		{point: Point(-0.9, 0.9, 1), expectedColor: Red},
+		{point: Point(0.9, 0.9, 1), expectedColor: Yellow},
+		{point: Point(-0.9, -0.9, 1), expectedColor: Brown},
+		{point: Point(0.9, -0.9, 1), expectedColor: Green},
+		// Right.
+		{point: Point(1, 0, 0), expectedColor: Red},
+		{point: Point(1, 0.9, 0.9), expectedColor: Yellow},
+		{point: Point(1, 0.9, -0.9), expectedColor: Purple},
+		{point: Point(1, -0.9, 0.9), expectedColor: Green},
+		{point: Point(1, -0.9, -0.9), expectedColor: White},
+		// Back.
+		{point: Point(0, 0, -1), expectedColor: Green},
+		{point: Point(0.9, 0.9, -1), expectedColor: Purple},
+		{point: Point(-0.9, 0.9, -1), expectedColor: Cyan},
+		{point: Point(0.9, -0.9, -1), expectedColor: White},
+		{point: Point(-0.9, -0.9, -1), expectedColor: Blue},
+		// Up.
+		{point: Point(0, 1, 0), expectedColor: Brown},
+		{point: Point(-0.9, 1, -0.9), expectedColor: Cyan},
+		{point: Point(0.9, 1, -0.9), expectedColor: Purple},
+		{point: Point(-0.9, 1, 0.9), expectedColor: Red},
+		{point: Point(0.9, 1, 0.9), expectedColor: Yellow},
+		// Down.
+		{point: Point(0, -1, 0), expectedColor: Purple},
+		{point: Point(-0.9, -1, 0.9), expectedColor: Brown},
+		{point: Point(0.9, -1, 0.9), expectedColor: Green},
+		{point: Point(-0.9, -1, -0.9), expectedColor: Blue},
+		{point: Point(0.9, -1, -0.9), expectedColor: White},
+	}
+
+	for _, val := range expectedTest {
+
+		if !(patternAt(cubeMap(val.point), val.point) == val.expectedColor) {
+			t.Errorf("Using a texture map pattern with a spherical map, got: %v and expected to be %v",
+				patternAt(cubeMap(val.point), val.point), val.expectedColor)
+		}
+	}
+}

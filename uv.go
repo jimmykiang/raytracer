@@ -329,3 +329,65 @@ func cubeUVDown(point *Tuple) (u, v float64) {
 
 	return
 }
+
+// CubeMap encapsulates a collection of six uv_pattern instances, one for each face.
+type CubeMap struct {
+	faces map[string]*UVAlignCheck
+}
+
+// newCubeMap returns a new *CubeMap struct.
+func newCubeMap() *CubeMap {
+	cubePattern := &CubeMap{
+
+		faces: make(map[string]*UVAlignCheck),
+	}
+
+	cubePattern.faces["left"] = uvAlignCheck(Yellow, Cyan, Red, Blue, Brown)
+	cubePattern.faces["front"] = uvAlignCheck(Cyan, Red, Yellow, Brown, Green)
+	cubePattern.faces["right"] = uvAlignCheck(Red, Yellow, Purple, Green, White)
+	cubePattern.faces["back"] = uvAlignCheck(Green, Purple, Cyan, White, Blue)
+	cubePattern.faces["up"] = uvAlignCheck(Brown, Cyan, Purple, Red, Yellow)
+	cubePattern.faces["down"] = uvAlignCheck(Purple, Brown, Green, Blue, White)
+
+	return cubePattern
+}
+
+func init() {
+	cubeMapObj = newCubeMap()
+}
+
+var cubeMapObj *CubeMap
+
+// cubeMap returns a *TextureMap struct suited for mapping cubes.
+func cubeMap(point *Tuple) *TextureMap {
+
+	var uvMap func(point *Tuple) (u, v float64)
+	var uvPattern *UVAlignCheck
+
+	switch faceFromPoint(point) {
+
+	case "left":
+		uvMap = cubeUVLeft
+		uvPattern = cubeMapObj.faces["left"]
+	case "right":
+		uvMap = cubeUVRight
+		uvPattern = cubeMapObj.faces["right"]
+	case "front":
+		uvMap = cubeUVFront
+		uvPattern = cubeMapObj.faces["front"]
+	case "back":
+		uvMap = cubeUVBack
+		uvPattern = cubeMapObj.faces["back"]
+	case "up":
+		uvMap = cubeUVUp
+		uvPattern = cubeMapObj.faces["up"]
+	case "down":
+		uvMap = cubeUVDown
+		uvPattern = cubeMapObj.faces["down"]
+	}
+
+	return &TextureMap{
+		uvPattern: uvPattern,
+		uvMap:     uvMap,
+	}
+}
