@@ -313,3 +313,11 @@ func cubeUVRight(point *Tuple) (u, v float64) {
 
 	return
 }
+
+func cubeUVUp(point *Tuple) (u, v float64) {
+
+	u = math.Mod((point.x+1), 2) / 2
+	v = math.Mod((1-point.z), 2) / 2
+
+	return
+}
