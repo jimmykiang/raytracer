@@ -370,3 +370,31 @@ func TestUVMappingUpperFaceCube(t *testing.T) {
 		}
 	}
 }
+
+func TestUVMappingLowerFaceCube(t *testing.T) {
+	// UV mapping the lower face of a cube.
+
+	type testStruct struct {
+		expectedU float64
+		expectedV float64
+		point     *Tuple
+	}
+
+	expectedTest := []testStruct{
+		{point: Point(-0.5, -1, 0.5), expectedU: 0.25, expectedV: 0.75},
+		{point: Point(0.5, -1, -0.5), expectedU: 0.75, expectedV: 0.25},
+	}
+
+	for _, val := range expectedTest {
+
+		u, v := cubeUVDown(val.point)
+		if !(u == val.expectedU) {
+			t.Errorf("UV mapping the lower face of a cube, got: %v and expected to be %v",
+				u, val.expectedU)
+		}
+		if !(v == val.expectedV) {
+			t.Errorf("UV mapping the lower face of a cube, got: %v and expected to be %v",
+				v, val.expectedV)
+		}
+	}
+}
