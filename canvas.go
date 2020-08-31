@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -113,6 +114,10 @@ func (canvas *Canvas) ToPPM() string {
 
 func canvasFromPPM(data string) (*Canvas, error) {
 
+	var canvas *Canvas
+	var width, height int
+	var err error
+
 	lines := strings.Split(data, "\n")
 
 	if strings.TrimSpace(lines[0]) != "" {
@@ -121,5 +126,20 @@ func canvasFromPPM(data string) (*Canvas, error) {
 			return nil, errors.New("Incorrect magic number at line 1: expected P3")
 		}
 	}
-	return nil, nil
+	if strings.TrimSpace(lines[1]) != "" {
+		tokenSlice := strings.Fields(strings.TrimSpace(lines[1]))
+
+		if width, err = strconv.Atoi(tokenSlice[0]); err != nil {
+
+			return nil, err
+		}
+		if height, err = strconv.Atoi(tokenSlice[1]); err != nil {
+
+			return nil, err
+		}
+
+		canvas = NewCanvas(width, height)
+
+	}
+	return canvas, nil
 }

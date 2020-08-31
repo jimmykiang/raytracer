@@ -134,8 +134,37 @@ func TestReadfileWithWrongMagicNumber(t *testing.T) {
 	expectedError := "Incorrect magic number at line 1: expected P3"
 	_, err := canvasFromPPM(ppm)
 
-	if !(err != nil) {
+	if err == nil {
 		t.Errorf("Reading a file with the wrong magic number: result %v should contain %v",
 			err, expectedError)
+	}
+}
+
+func TestReadPPMReturnsCanvasRightSize(t *testing.T) {
+	// Reading a PPM returns a canvas of the right size.
+
+	ppm :=
+		`P3
+10 2
+255
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0`
+
+	canvas, err := canvasFromPPM(ppm)
+
+	if !(err == nil) {
+		t.Errorf("Reading a PPM returns a canvas of the right size: result %v should contain %v",
+			err, nil)
+	}
+
+	if !(canvas.width == 10) {
+		t.Errorf("Reading a PPM returns a canvas of the right size: result %v should contain %v",
+			canvas, canvas.width == 10)
+	}
+	if !(canvas.height == 2) {
+		t.Errorf("Reading a PPM returns a canvas of the right size: result %v should contain %v",
+			canvas, canvas.height == 2)
 	}
 }
