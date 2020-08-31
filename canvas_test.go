@@ -121,3 +121,21 @@ func TestTerminateByNewLineCharacter(t *testing.T) {
 		t.Errorf("TestTerminateByNewLineCharacter: result %v should contain %v", newlineIndex, expectedIndex)
 	}
 }
+
+func TestReadfileWithWrongMagicNumber(t *testing.T) {
+	// Reading a file with the wrong magic number.
+
+	ppm :=
+		`P32
+1 1
+255
+0 0 0`
+
+	expectedError := "Incorrect magic number at line 1: expected P3"
+	_, err := canvasFromPPM(ppm)
+
+	if !(err != nil) {
+		t.Errorf("Reading a file with the wrong magic number: result %v should contain %v",
+			err, expectedError)
+	}
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -108,4 +109,17 @@ func (canvas *Canvas) ToPPM() string {
 	}
 
 	return resultString.String()
+}
+
+func canvasFromPPM(data string) (*Canvas, error) {
+
+	lines := strings.Split(data, "\n")
+
+	if strings.TrimSpace(lines[0]) != "" {
+		if lines[0] != "P3" {
+
+			return nil, errors.New("Incorrect magic number at line 1: expected P3")
+		}
+	}
+	return nil, nil
 }
