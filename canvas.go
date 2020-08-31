@@ -116,7 +116,11 @@ func canvasFromPPM(data string) (*Canvas, error) {
 
 	var canvas *Canvas
 	var width, height int
+	var scale int
 	var err error
+	var stringRed, stringGreen, stringBlue string
+	var r, g, b int
+	x, y := 0, 0
 
 	lines := strings.Split(data, "\n")
 
@@ -141,5 +145,56 @@ func canvasFromPPM(data string) (*Canvas, error) {
 		canvas = NewCanvas(width, height)
 
 	}
+
+	if strings.TrimSpace(lines[2]) != "" {
+
+		if scale, err = strconv.Atoi(strings.TrimSpace(lines[2])); err != nil {
+
+			return nil, err
+		}
+	}
+
+	for i := 3; i < len(lines); i++ {
+		if strings.TrimSpace(lines[i]) != "" {
+			tokenSlice := strings.Fields(strings.TrimSpace(lines[i]))
+
+			// Pop Front/Shift
+			// x, a = a[0], a[1:]
+			for len(tokenSlice) >= 3 {
+
+				stringRed, tokenSlice = tokenSlice[0], tokenSlice[1:]
+				stringGreen, tokenSlice = tokenSlice[0], tokenSlice[1:]
+				stringBlue, tokenSlice = tokenSlice[0], tokenSlice[1:]
+
+				if r, err = strconv.Atoi(stringRed); err != nil {
+
+					return nil, err
+				}
+				if g, err = strconv.Atoi(stringGreen); err != nil {
+
+					return nil, err
+				}
+				if b, err = strconv.Atoi(stringBlue); err != nil {
+
+					return nil, err
+				}
+
+				canvas.WritePixel(x, y,
+					NewColor(float64(r)/float64(scale),
+						float64(g)/float64(scale),
+						float64(b)/float64(scale),
+					),
+				)
+
+				// move to next canvas pixel
+				x++
+				if x >= width {
+					x = 0
+					y++
+				}
+			}
+		}
+	}
+
 	return canvas, nil
 }

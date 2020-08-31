@@ -168,3 +168,52 @@ func TestReadPPMReturnsCanvasRightSize(t *testing.T) {
 			canvas, canvas.height == 2)
 	}
 }
+
+func TestReadPixelDataFromPPM(t *testing.T) {
+	// Reading pixel data from a PPM file.
+
+	ppm :=
+		`P3
+4 3
+255
+255 127 0 0 127 255 127 255 0 255 255 255
+0 0 0 255 0 0 0 255 0 0 0 255
+255 255 0 0 255 255 255 0 255 127 127 127`
+
+	canvas, err := canvasFromPPM(ppm)
+
+	type testStruct struct {
+		x             int
+		y             int
+		expectedColor *Color
+	}
+
+	expectedTest := []testStruct{
+
+		{x: 0, y: 0, expectedColor: NewColor(1, 0.498039, 0)},
+		{x: 1, y: 0, expectedColor: NewColor(0, 0.498039, 1)},
+		{x: 2, y: 0, expectedColor: NewColor(0.498039, 1, 0)},
+		{x: 3, y: 0, expectedColor: NewColor(1, 1, 1)},
+		{x: 0, y: 1, expectedColor: NewColor(0, 0, 0)},
+		{x: 1, y: 1, expectedColor: NewColor(1, 0, 0)},
+		{x: 2, y: 1, expectedColor: NewColor(0, 1, 0)},
+		{x: 3, y: 1, expectedColor: NewColor(0, 0, 1)},
+		{x: 0, y: 2, expectedColor: NewColor(1, 1, 0)},
+		{x: 1, y: 2, expectedColor: NewColor(0, 1, 1)},
+		{x: 2, y: 2, expectedColor: NewColor(1, 0, 1)},
+		{x: 3, y: 2, expectedColor: NewColor(0.498039, 0.498039, 0.498039)},
+	}
+
+	if !(err == nil) {
+		t.Errorf("Reading pixel data from a PPM file: result %v should contain %v",
+			err, nil)
+	}
+
+	for _, val := range expectedTest {
+
+		if !((canvas).PixelAt(val.x, val.y).Equals(val.expectedColor)) {
+			t.Errorf("Reading pixel data from a PPM file, got: %v and expected to be %v",
+				(canvas).PixelAt(val.x, val.y), val.expectedColor)
+		}
+	}
+}
