@@ -217,3 +217,45 @@ func TestReadPixelDataFromPPM(t *testing.T) {
 		}
 	}
 }
+
+func TestPPMParseIgnoreCommentLines(t *testing.T) {
+	// PPM parsing ignores comment lines.
+
+	ppm :=
+		`P3
+# this is a comment
+2 1
+# this, too
+255
+# another comment
+255 255 255
+# oh, no, comments in the pixel data!
+255 0 255`
+
+	canvas, err := canvasFromPPM(ppm)
+
+	type testStruct struct {
+		x             int
+		y             int
+		expectedColor *Color
+	}
+
+	expectedTest := []testStruct{
+
+		{x: 0, y: 0, expectedColor: NewColor(1, 1, 1)},
+		{x: 1, y: 0, expectedColor: NewColor(1, 0, 1)},
+	}
+
+	if !(err == nil) {
+		t.Errorf("Reading pixel data from a PPM file: result %v should contain %v",
+			err, nil)
+	}
+
+	for _, val := range expectedTest {
+
+		if !((canvas).PixelAt(val.x, val.y).Equals(val.expectedColor)) {
+			t.Errorf("PPM parsing ignores comment lines, got: %v and expected to be %v",
+				(canvas).PixelAt(val.x, val.y), val.expectedColor)
+		}
+	}
+}

@@ -121,17 +121,28 @@ func canvasFromPPM(data string) (*Canvas, error) {
 	var stringRed, stringGreen, stringBlue string
 	var r, g, b int
 	x, y := 0, 0
+	mainIndex := 0
 
 	lines := strings.Split(data, "\n")
 
-	if strings.TrimSpace(lines[0]) != "" {
-		if lines[0] != "P3" {
+	if commentDetected(lines[mainIndex]) {
+
+		mainIndex++
+	}
+	if strings.TrimSpace(lines[mainIndex]) != "" {
+		if lines[mainIndex+0] != "P3" {
 
 			return nil, errors.New("Incorrect magic number at line 1: expected P3")
 		}
 	}
-	if strings.TrimSpace(lines[1]) != "" {
-		tokenSlice := strings.Fields(strings.TrimSpace(lines[1]))
+
+	if strings.TrimSpace(lines[mainIndex+1]) != "" {
+
+		if commentDetected(lines[mainIndex+1]) {
+
+			mainIndex++
+		}
+		tokenSlice := strings.Fields(strings.TrimSpace(lines[mainIndex+1]))
 
 		if width, err = strconv.Atoi(tokenSlice[0]); err != nil {
 
@@ -146,22 +157,28 @@ func canvasFromPPM(data string) (*Canvas, error) {
 
 	}
 
-	if strings.TrimSpace(lines[2]) != "" {
+	if strings.TrimSpace(lines[mainIndex+2]) != "" {
+		if commentDetected(lines[mainIndex+2]) {
 
-		if scale, err = strconv.Atoi(strings.TrimSpace(lines[2])); err != nil {
+			mainIndex++
+		}
+		if scale, err = strconv.Atoi(strings.TrimSpace(lines[mainIndex+2])); err != nil {
 
 			return nil, err
 		}
 	}
 
-	for i := 3; i < len(lines); i++ {
+	for i := mainIndex + 3; i < len(lines); i++ {
+		if commentDetected(lines[i]) {
+
+			continue
+		}
 		if strings.TrimSpace(lines[i]) != "" {
 			tokenSlice := strings.Fields(strings.TrimSpace(lines[i]))
 
 			// Pop Front/Shift
 			// x, a = a[0], a[1:]
 			for len(tokenSlice) >= 3 {
-
 				stringRed, tokenSlice = tokenSlice[0], tokenSlice[1:]
 				stringGreen, tokenSlice = tokenSlice[0], tokenSlice[1:]
 				stringBlue, tokenSlice = tokenSlice[0], tokenSlice[1:]
@@ -186,15 +203,27 @@ func canvasFromPPM(data string) (*Canvas, error) {
 					),
 				)
 
-				// move to next canvas pixel
+				// move to next canvas pixel for every triplet nnn nnn nnn entry for pixel color.
 				x++
 				if x >= width {
 					x = 0
 					y++
 				}
+				// mainIndex++
 			}
 		}
 	}
 
 	return canvas, nil
+}
+
+// commentDetected checks for commented line.
+func commentDetected(s string) bool {
+
+	// Ignore line if its commented.
+	if strings.Contains(s, "#") {
+		return true
+	}
+
+	return false
 }
