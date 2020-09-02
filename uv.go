@@ -137,7 +137,7 @@ func patternAt(textureMap *TextureMap, point *Tuple) *Color {
 
 // uvSphericalCheckersFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
 // only the 2 first colors from the parameter slice are processed.
-func uvSphericalCheckersFunc(colors []*Color, p *Tuple) *Color {
+func uvSphericalCheckersFunc(_ *Canvas, colors []*Color, p *Tuple) *Color {
 
 	checkers := uvCheckers(16, 8, colors[0], colors[1])
 	pattern := textureMap(checkers, sphericalMap)
@@ -147,7 +147,7 @@ func uvSphericalCheckersFunc(colors []*Color, p *Tuple) *Color {
 // uvSphericalCheckersPattern returns the appropiate *Pattern struct.
 func uvSphericalCheckersPattern(colors ...*Color) *Pattern {
 
-	return NewPattern([][]*Color{colors}, uvSphericalCheckersFunc)
+	return NewPattern(nil, [][]*Color{colors}, uvSphericalCheckersFunc)
 }
 
 // planarMap returns the u,v coordinates for a flattened surface.
@@ -179,7 +179,7 @@ func planarMap(point *Tuple) (u, v float64) {
 
 // uvPlanarCheckersFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
 // only the 2 first colors from the parameter slice are processed.
-func uvPlanarCheckersFunc(colors []*Color, p *Tuple) *Color {
+func uvPlanarCheckersFunc(_ *Canvas, colors []*Color, p *Tuple) *Color {
 
 	checkers := uvCheckers(16, 8, colors[0], colors[1])
 	pattern := textureMap(checkers, planarMap)
@@ -189,7 +189,7 @@ func uvPlanarCheckersFunc(colors []*Color, p *Tuple) *Color {
 // uvPlanarCheckersPattern returns the appropiate *Pattern struct.
 func uvPlanarCheckersPattern(colors ...*Color) *Pattern {
 
-	return NewPattern([][]*Color{colors}, uvPlanarCheckersFunc)
+	return NewPattern(nil, [][]*Color{colors}, uvPlanarCheckersFunc)
 }
 
 // cylindricalMap maps a 3D point (x, y, z) on the surface of cylindricalMap to a 2D point (u, v) on the flattened surface.
@@ -218,7 +218,7 @@ func cylindricalMap(point *Tuple) (u, v float64) {
 
 // uvCylindricalCheckersFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
 // only the 2 first colors from the parameter slice are processed.
-func uvCylindricalCheckersFunc(colors []*Color, p *Tuple) *Color {
+func uvCylindricalCheckersFunc(_ *Canvas, colors []*Color, p *Tuple) *Color {
 
 	checkers := uvCheckers(16, 8, colors[0], colors[1])
 	pattern := textureMap(checkers, cylindricalMap)
@@ -228,7 +228,7 @@ func uvCylindricalCheckersFunc(colors []*Color, p *Tuple) *Color {
 // uvCylindricalCheckersPattern returns the appropiate *Pattern struct.
 func uvCylindricalCheckersPattern(colors ...*Color) *Pattern {
 
-	return NewPattern([][]*Color{colors}, uvCylindricalCheckersFunc)
+	return NewPattern(nil, [][]*Color{colors}, uvCylindricalCheckersFunc)
 }
 
 // UVAlignCheck defines a struct for an align pattern.
@@ -248,7 +248,7 @@ func uvAlignCheck(main, ul, ur, bl, br *Color) *UVAlignCheck {
 
 // uvAlignCheckFunc adapts the patternType method and textureMap to be set as a func to the *Pattern struct.
 // only the 2 first colors from the parameter slice are processed.
-func uvAlignCheckFunc(_ []*Color, p *Tuple) *Color {
+func uvAlignCheckFunc(_ *Canvas, _ []*Color, p *Tuple) *Color {
 
 	// Predefined colors for UVAlignCheck.
 	alignCheck := uvAlignCheck(White, Red, Yellow, Green, Cyan)
@@ -260,7 +260,7 @@ func uvAlignCheckFunc(_ []*Color, p *Tuple) *Color {
 func uvAlignCheckPattern() *Pattern {
 
 	// Predefined colors for UVAlignCheck.
-	return NewPattern([][]*Color{{White}, {Red}, {Yellow}, {Green}, {Cyan}}, uvAlignCheckFunc)
+	return NewPattern(nil, [][]*Color{{White}, {Red}, {Yellow}, {Green}, {Cyan}}, uvAlignCheckFunc)
 }
 
 func faceFromPoint(point *Tuple) string {
@@ -403,7 +403,7 @@ func cubeMap(point *Tuple) *TextureMap {
 
 // cubeMapCheckFunc adapts the patternType method and textureMap to be set as a func to the *Pattern struct.
 // only the 2 first colors from the parameter slice are processed.
-func uvCubeMapAlignFunc(_ []*Color, p *Tuple) *Color {
+func uvCubeMapAlignFunc(_ *Canvas, _ []*Color, p *Tuple) *Color {
 
 	pattern := cubeMap(p)
 	return patternAt(pattern, p)
@@ -413,7 +413,7 @@ func uvCubeMapAlignFunc(_ []*Color, p *Tuple) *Color {
 func uvCubeMapAlignPattern() *Pattern {
 
 	// Predefined colors for uvCubeMapAlignFunc.
-	return NewPattern([][]*Color{{White}, {Red}}, uvCubeMapAlignFunc)
+	return NewPattern(nil, [][]*Color{{White}, {Red}}, uvCubeMapAlignFunc)
 }
 
 // UVImage encapsulates the parameters for uvImage.
@@ -432,4 +432,20 @@ func uvImage(canvas *Canvas) *UVImage {
 func (pattern *UVImage) isPattern() bool {
 
 	return true
+}
+
+// uvSphericalCanvasFunc adapts the uvCheckers and textureMap to be set as a func to the *Pattern struct.
+// only the 2 first colors from the parameter slice are processed.
+func uvSphericalCanvasFunc(canvas *Canvas, _ []*Color, p *Tuple) *Color {
+
+	// Create default canvas (Load PPM image into canvas later).
+	patternType := uvImage(canvas)
+	pattern := textureMap(patternType, sphericalMap)
+	return patternAt(pattern, p)
+}
+
+// uvSphericalCanvasPattern returns the appropiate *Pattern struct.
+func uvSphericalCanvasPattern(canvas *Canvas, colors ...*Color) *Pattern {
+
+	return NewPattern(canvas, [][]*Color{colors}, uvSphericalCanvasFunc)
 }

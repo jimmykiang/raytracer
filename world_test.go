@@ -394,7 +394,7 @@ func TestWorldRefractedColor(t *testing.T) {
 	A := w.objects[0]
 
 	A.Material().ambient = 1.0
-	A.Material().pattern = NewPattern([][]*Color{[]*Color{}}, func(colors []*Color, point *Tuple) *Color { return NewColor(point.x, point.y, point.z) })
+	A.Material().pattern = NewPattern(nil, [][]*Color{[]*Color{}}, func(_ *Canvas, colors []*Color, point *Tuple) *Color { return NewColor(point.x, point.y, point.z) })
 
 	B := w.objects[1]
 	B.Material().transparency = 1.0

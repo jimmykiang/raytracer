@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"time"
 )
 
@@ -27,13 +28,21 @@ func sceneUV() *Canvas {
 
 	middle.material = DefaultMaterial()
 	// middle.material.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
-	middle.material.pattern = uvSphericalCheckersPattern(NewColor(0, 0, 0), NewColor(1, 1, 1))
+	// middle.material.pattern = uvSphericalCheckersPattern(NewColor(0, 0, 0), NewColor(1, 1, 1))
 
-	// middle.material.pattern.SetTransform(RotationZ(PI / 6).
-	// 	MultiplyMatrix(RotationY(-PI / 3)).
-	// 	MultiplyMatrix(Scaling(0.03, 1, 1)))
+	// earth texture.
+	ppmFileByteSlice, _ := ioutil.ReadFile("earthmap1kYolo.ppm")
+	var textureCanvas *Canvas
+	var err error
+	if textureCanvas, err = canvasFromPPM(string(ppmFileByteSlice)); err != nil {
+		panic(err)
+	}
+	middle.material.pattern = uvSphericalCanvasPattern(textureCanvas, White)
 
-	middle.material.pattern.SetTransform(RotationZ(PI / 6))
+	middle.material.pattern.SetTransform(RotationZ(PI / 10).
+		MultiplyMatrix(RotationY(-4 * PI / 4)).
+		MultiplyMatrix(RotationX(PI / 4)).
+		MultiplyMatrix(Scaling(0.7, 1, 1)))
 
 	middle.material.color = NewColor(0.1, 1, 0.5)
 	middle.material.diffuse = 0.7
@@ -60,7 +69,7 @@ func sceneUV() *Canvas {
 	g := NewGroup()
 	g.AddChild(middle, right, left)
 
-	// g.Bounds()
+	g.Bounds()
 	Divide(g, 1)
 
 	world := NewWorld(lights, []Shape{p1, g})
