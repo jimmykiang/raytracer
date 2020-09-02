@@ -298,3 +298,40 @@ func TestPPMParseAllowRGBTripletSpanLine(t *testing.T) {
 		}
 	}
 }
+
+func TestPPMParseRespectsScaleSetting(t *testing.T) {
+	// PPM parsing respects the scale setting.
+
+	ppm :=
+		`P3
+2 2
+100
+100 100 100 50 50 50
+75 50 25 0 0 0`
+
+	canvas, err := canvasFromPPM(ppm)
+
+	type testStruct struct {
+		x             int
+		y             int
+		expectedColor *Color
+	}
+
+	expectedTest := []testStruct{
+
+		{x: 0, y: 1, expectedColor: NewColor(0.75, 0.5, 0.25)},
+	}
+
+	if !(err == nil) {
+		t.Errorf("PPM parsing respects the scale setting: result %v should contain %v",
+			err, nil)
+	}
+
+	for _, val := range expectedTest {
+
+		if !((canvas).PixelAt(val.x, val.y).Equals(val.expectedColor)) {
+			t.Errorf("PPM parsing respects the scale setting, got: %v and expected to be %v",
+				(canvas).PixelAt(val.x, val.y), val.expectedColor)
+		}
+	}
+}
