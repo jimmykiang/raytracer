@@ -69,6 +69,15 @@ func uvPatternAt(pattern patternType, u, v float64) *Color {
 		}
 		return p.main
 
+	case *UVImage:
+		// flip v over so it matches the image layout, with y at the top.
+		v := 1 - v
+		x := u * float64((p.canvas.width - 1))
+		y := v * float64((p.canvas.height - 1))
+
+		// be sure and round x and y to the nearest whole number.
+		return p.canvas.PixelAt(int(math.Round(x)), int(math.Round(y)))
+
 	default:
 		return nil
 	}
@@ -405,4 +414,22 @@ func uvCubeMapAlignPattern() *Pattern {
 
 	// Predefined colors for uvCubeMapAlignFunc.
 	return NewPattern([][]*Color{{White}, {Red}}, uvCubeMapAlignFunc)
+}
+
+// UVImage encapsulates the parameters for uvImage.
+type UVImage struct {
+	canvas *Canvas
+}
+
+// uvImage will return a data structure that encapsulates the function's parameters.
+func uvImage(canvas *Canvas) *UVImage {
+
+	return &UVImage{
+		canvas: canvas,
+	}
+}
+
+func (pattern *UVImage) isPattern() bool {
+
+	return true
 }

@@ -461,3 +461,52 @@ func TestFindColorsOnMappedCube(t *testing.T) {
 		}
 	}
 }
+
+func Test2DCheckPattern(t *testing.T) {
+	// Checker pattern in 2D.
+
+	ppm :=
+		`P3
+10 10
+10
+0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9
+1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0
+2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1
+3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2
+4 4 4  5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3
+5 5 5  6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4
+6 6 6  7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5
+7 7 7  8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6
+8 8 8  9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7
+9 9 9  0 0 0  1 1 1  2 2 2  3 3 3  4 4 4  5 5 5  6 6 6  7 7 7  8 8 8`
+
+	canvas, err := canvasFromPPM(ppm)
+
+	type testStruct struct {
+		u             float64
+		v             float64
+		expectedColor *Color
+	}
+
+	expectedTest := []testStruct{
+		{expectedColor: NewColor(0.9, 0.9, 0.9), u: 0, v: 0},
+		{expectedColor: NewColor(0.2, 0.2, 0.2), u: 0.3, v: 0},
+		{expectedColor: NewColor(0.1, 0.1, 0.1), u: 0.6, v: 0.3},
+		{expectedColor: NewColor(0.9, 0.9, 0.9), u: 1, v: 1},
+	}
+
+	if !(err == nil) {
+		t.Errorf("Checker pattern in 2D: result %v should contain %v",
+			err, nil)
+	}
+	pattern := uvImage(canvas)
+
+	for _, val := range expectedTest {
+
+		c := uvPatternAt(pattern, val.u, val.v)
+		if !(c.Equals(val.expectedColor)) {
+			t.Errorf("Checker pattern in 2D, got: %v and expected to be %v",
+				c, val.expectedColor)
+		}
+	}
+}
