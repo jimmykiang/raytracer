@@ -125,7 +125,7 @@ func canvasFromPPM(data string) (*Canvas, error) {
 
 	lines := strings.Split(data, "\n")
 
-	if commentDetected(lines[mainIndex]) {
+	if commentOrBlankDetected(lines[mainIndex]) {
 
 		mainIndex++
 	}
@@ -138,7 +138,7 @@ func canvasFromPPM(data string) (*Canvas, error) {
 
 	if strings.TrimSpace(lines[mainIndex+1]) != "" {
 
-		if commentDetected(lines[mainIndex+1]) {
+		if commentOrBlankDetected(lines[mainIndex+1]) {
 
 			mainIndex++
 		}
@@ -158,7 +158,7 @@ func canvasFromPPM(data string) (*Canvas, error) {
 	}
 
 	if strings.TrimSpace(lines[mainIndex+2]) != "" {
-		if commentDetected(lines[mainIndex+2]) {
+		if commentOrBlankDetected(lines[mainIndex+2]) {
 
 			mainIndex++
 		}
@@ -168,13 +168,67 @@ func canvasFromPPM(data string) (*Canvas, error) {
 		}
 	}
 
-	for i := mainIndex + 3; i < len(lines); i++ {
-		if commentDetected(lines[i]) {
+	for i := mainIndex + 3; i+mainIndex < len(lines); i++ {
+		if commentOrBlankDetected(lines[i]) {
 
 			continue
 		}
 		if strings.TrimSpace(lines[i]) != "" {
 			tokenSlice := strings.Fields(strings.TrimSpace(lines[i]))
+
+			if len(tokenSlice) == 1 {
+				offset := 0
+				tokenSlice = strings.Fields(strings.TrimSpace(lines[i+offset]))
+				for len(tokenSlice) == 0 || commentOrBlankDetected(tokenSlice[0]) {
+
+					offset++
+					tokenSlice = strings.Fields(strings.TrimSpace(lines[i+offset]))
+				}
+				stringRed = tokenSlice[0]
+				tokenSlice = strings.Fields(strings.TrimSpace(lines[i+offset+1]))
+				for len(tokenSlice) == 0 || commentOrBlankDetected(tokenSlice[0]) {
+
+					offset++
+					tokenSlice = strings.Fields(strings.TrimSpace(lines[i+offset]))
+				}
+				stringGreen = tokenSlice[0]
+				tokenSlice := strings.Fields(strings.TrimSpace(lines[i+offset+2]))
+				for len(tokenSlice) == 0 || commentOrBlankDetected(tokenSlice[0]) {
+
+					offset++
+					tokenSlice = strings.Fields(strings.TrimSpace(lines[i+offset+2]))
+				}
+				stringBlue = tokenSlice[0]
+
+				if r, err = strconv.Atoi(stringRed); err != nil {
+
+					return nil, err
+				}
+				if g, err = strconv.Atoi(stringGreen); err != nil {
+
+					return nil, err
+				}
+				if b, err = strconv.Atoi(stringBlue); err != nil {
+
+					return nil, err
+				}
+
+				canvas.WritePixel(x, y,
+					NewColor(float64(r)/float64(scale),
+						float64(g)/float64(scale),
+						float64(b)/float64(scale),
+					),
+				)
+
+				// move to next canvas pixel for every triplet nnn nnn nnn entry for pixel color.
+				x++
+				if x >= width {
+					x = 0
+					y++
+				}
+				// adjust "mainIndex" from the offset of skipping blank lines.
+				mainIndex = mainIndex + offset + 2
+			}
 
 			// Pop Front/Shift
 			// x, a = a[0], a[1:]
@@ -217,11 +271,11 @@ func canvasFromPPM(data string) (*Canvas, error) {
 	return canvas, nil
 }
 
-// commentDetected checks for commented line.
-func commentDetected(s string) bool {
+// commentOrBlankDetected checks for commented or empty line.
+func commentOrBlankDetected(s string) bool {
 
 	// Ignore line if its commented.
-	if strings.Contains(s, "#") {
+	if strings.Contains(s, "#") || s == "" {
 		return true
 	}
 

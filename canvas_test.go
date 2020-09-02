@@ -259,3 +259,42 @@ func TestPPMParseIgnoreCommentLines(t *testing.T) {
 		}
 	}
 }
+
+func TestPPMParseAllowRGBTripletSpanLine(t *testing.T) {
+	// PPM parsing allows an RGB triple to span lines.
+
+	ppm :=
+		`P3
+1 1
+255
+51
+153
+
+204`
+
+	canvas, err := canvasFromPPM(ppm)
+
+	type testStruct struct {
+		x             int
+		y             int
+		expectedColor *Color
+	}
+
+	expectedTest := []testStruct{
+
+		{x: 0, y: 0, expectedColor: NewColor(0.2, 0.6, 0.8)},
+	}
+
+	if !(err == nil) {
+		t.Errorf("PPM parsing allows an RGB triple to span lines: result %v should contain %v",
+			err, nil)
+	}
+
+	for _, val := range expectedTest {
+
+		if !((canvas).PixelAt(val.x, val.y).Equals(val.expectedColor)) {
+			t.Errorf("PPM parsing allows an RGB triple to span lines, got: %v and expected to be %v",
+				(canvas).PixelAt(val.x, val.y), val.expectedColor)
+		}
+	}
+}
