@@ -37,16 +37,29 @@ func sceneUV() *Canvas {
 	if textureCanvas, err = canvasFromPPM(string(ppmFileByteSlice)); err != nil {
 		panic(err)
 	}
-	middle.material.pattern = uvSphericalCanvasPattern(textureCanvas, White)
+	middle.material.pattern = uvSphericalCanvasPattern(textureCanvas)
+
+	secondSphere := NewSphere()
+	secondSphere.SetTransform(Scaling(1.1, 1.1, 1.1).
+		MultiplyMatrix(Translation(-0.5, 1, 0.5)).
+		MultiplyMatrix(RotationX(PI / 6)))
+
+	secondSphere.material = DefaultMaterial()
+	secondSphere.material.pattern = StripePattern(NewColor(0, 0, 0), NewColor(1, 1, 1), NewColor(0.5, 0.4, 0.7))
+	secondSphere.material.pattern.SetTransform(RotationZ(PI / 6).
+		MultiplyMatrix(RotationY(-PI / 3)).
+		MultiplyMatrix(Scaling(0.03, 1, 1)))
 
 	middle.material.pattern.SetTransform(RotationZ(PI / 10).
 		MultiplyMatrix(RotationY(-4 * PI / 4)).
 		MultiplyMatrix(RotationX(PI / 4)).
-		MultiplyMatrix(Scaling(0.7, 1, 1)))
+		MultiplyMatrix(Scaling(1, 1, 1)))
 
-	middle.material.color = NewColor(0.1, 1, 0.5)
-	middle.material.diffuse = 0.7
-	middle.material.specular = 0.3
+	middle.material.pattern = PatternChain(secondSphere.material.pattern, middle.material.pattern)
+
+	// middle.material.color = NewColor(0.1, 1, 0.5)
+	// middle.material.diffuse = 0.7
+	// middle.material.specular = 0.3
 
 	right := NewCylinder()
 	right.material.pattern = uvCylindricalCheckersPattern(NewColor(0, 0, 0), NewColor(1, 1, 1))

@@ -6,10 +6,10 @@ type getColorFunc func(*Canvas, []*Color, *Tuple) *Color
 
 // Pattern struct.
 type Pattern struct {
-	colors    [][]*Color
-	funcs     []getColorFunc
-	transform Matrix
-	canvas    *Canvas
+	colors     [][]*Color
+	funcs      []getColorFunc
+	transforms []Matrix
+	canvas     *Canvas
 }
 
 // ColorAtObject calculates the end color based on a worldPoint of the object.
@@ -18,16 +18,20 @@ type Pattern struct {
 func (pattern *Pattern) ColorAtObject(object Shape, worldPoint *Tuple) *Color {
 	// objectPoint := object.Transform().MultiplyMatrixByTuple(worldPoint)
 	objectPoint := WorldToObject(object, worldPoint)
-	patternPoint := pattern.transform.MultiplyMatrixByTuple(objectPoint)
+	// patternPoint := pattern.transform.MultiplyMatrixByTuple(objectPoint)
 
-	return pattern.ColorAt(patternPoint)
+	// return pattern.ColorAt(patternPoint)
+	return pattern.ColorAt(objectPoint)
 }
 
 // ColorAt returns a reference to Color at a specific point in world space of the pattern.
 func (pattern *Pattern) ColorAt(p *Tuple) *Color {
 	color := Black
+
+	// Final color at a specific point by applying individual transformations and patterns.
 	for i := 0; i < len(pattern.funcs); i++ {
-		color = color.Add(pattern.funcs[i](pattern.canvas, pattern.colors[i], p))
+		patternPoint := pattern.transforms[i].MultiplyMatrixByTuple(p)
+		color = color.Add(pattern.funcs[i](pattern.canvas, pattern.colors[i], patternPoint))
 	}
 	return color
 }
@@ -35,12 +39,12 @@ func (pattern *Pattern) ColorAt(p *Tuple) *Color {
 // StripePattern creates a new stripe patter using the stripeFunc().
 func StripePattern(colors ...*Color) *Pattern {
 
-	return NewPattern(nil, [][]*Color{colors}, stripeFunc)
+	return NewPattern(NewCanvas(0, 0), [][]*Color{colors}, stripeFunc)
 }
 
 // NewPattern returns a reference to a Pattern struct with a pattern generating function.
 func NewPattern(canvas *Canvas, colors [][]*Color, getColor ...getColorFunc) *Pattern {
-	return &Pattern{colors, getColor, NewIdentityMatrix(), canvas}
+	return &Pattern{colors, getColor, []Matrix{NewIdentityMatrix()}, canvas}
 }
 
 // stripeFunc defines the stripe pattern.
@@ -50,12 +54,12 @@ func stripeFunc(_ *Canvas, colors []*Color, p *Tuple) *Color {
 
 // SetTransform sets the transform for the pattern accordingly.
 func (pattern *Pattern) SetTransform(transform Matrix) {
-	pattern.transform = transform.Inverse()
+	pattern.transforms[0] = transform.Inverse()
 }
 
 // CheckersPattern creates a new checker pattern using the checkersFunc().
 func CheckersPattern(a, b *Color) *Pattern {
-	return NewPattern(nil, [][]*Color{[]*Color{a, b}}, checkersFunc)
+	return NewPattern(NewCanvas(0, 0), [][]*Color{[]*Color{a, b}}, checkersFunc)
 }
 
 // checkersFunc defines the checkers pattern.
@@ -76,14 +80,14 @@ func gradientFunc(_ *Canvas, colors []*Color, p *Tuple) *Color {
 
 // GradientPattern creates a new gradient pattern using the gradientFunc().
 func GradientPattern(a, b *Color) *Pattern {
-	return NewPattern(nil, [][]*Color{[]*Color{a, b}}, gradientFunc)
+	return NewPattern(NewCanvas(0, 0), [][]*Color{[]*Color{a, b}}, gradientFunc)
 }
 
-// PatternChain chains patterns together.
+// PatternChain chains patterns together. For now it will apply the canvas from the last pattern as valid image mapping.
 func PatternChain(patterns ...*Pattern) *Pattern {
 	colors := [][]*Color{}
 	funcs := []getColorFunc{}
-	transform := NewIdentityMatrix()
+	transforms := []Matrix{}
 	canvas := NewCanvas(0, 0)
 	for _, p := range patterns {
 		for _, cs := range p.colors {
@@ -96,9 +100,11 @@ func PatternChain(patterns ...*Pattern) *Pattern {
 			canvas = p.canvas
 		}
 
-		transform = transform.MultiplyMatrix(p.transform)
+		// transform = transform.MultiplyMatrix(p.transform)
+		transforms = append(transforms, p.transforms...)
 	}
 	resultPatterns := NewPattern(canvas, colors, funcs...)
-	resultPatterns.SetTransform(transform)
+	// resultPatterns.SetTransform(transform)
+	resultPatterns.transforms = transforms
 	return resultPatterns
 }

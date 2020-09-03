@@ -445,7 +445,8 @@ func uvSphericalCanvasFunc(canvas *Canvas, _ []*Color, p *Tuple) *Color {
 }
 
 // uvSphericalCanvasPattern returns the appropiate *Pattern struct.
-func uvSphericalCanvasPattern(canvas *Canvas, colors ...*Color) *Pattern {
+func uvSphericalCanvasPattern(canvas *Canvas) *Pattern {
 
-	return NewPattern(canvas, [][]*Color{colors}, uvSphericalCanvasFunc)
+	// Pass default unused color.
+	return NewPattern(canvas, [][]*Color{{White}, {White}}, uvSphericalCanvasFunc)
 }
